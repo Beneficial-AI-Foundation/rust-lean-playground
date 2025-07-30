@@ -62,7 +62,7 @@ pub fn has_zero_sum_pair_brute_force(numbers: &[i32]) -> bool {
 /// 
 /// # Arguments
 /// 
-/// * `numbers` - A slice of integers to check
+/// * `numbers` - A list of integers to check
 /// 
 /// # Returns
 /// 

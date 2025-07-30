@@ -66,6 +66,37 @@ Alternative brute force implementation.
 - Time Complexity: O(n²)
 - Space Complexity: O(1)
 
+## 
+
+Make sure `charon` is installed by running the script
+
+- `sudo apt-get install opam`
+- `opam switch create 4.14.0+options`
+- `eval $(opam env --switch=4.14.0+options)`
+
+- `scripts/check-charon-install.sh --force`
+- `cd charon/`
+- `opam install . --deps-only`
+
+- `nix build -L .#charon --extra-experimental-features nix-command --extra-experimental-features flakes`
+
+
+
+```
+/script
+
+Run `charon` to produce `LLBC` from the Rust code
+
+Another option:
+```
+nix run github:aeneasverif/aeneas#charon -L --extra-experimental-features nix-command --extra-experimental-features flakes
+```
+
+
+
+- Run `aeneas` to produce lean file
+
+
 ## To do:
 
 - Setup script to run Aeneas
