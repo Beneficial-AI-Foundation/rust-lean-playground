@@ -97,9 +97,29 @@ nix run github:aeneasverif/aeneas#charon -L --extra-experimental-features nix-co
 - Run `aeneas` to produce lean file
 
 
+## Setup
+
+### Aeneas Installation
+
+Run the automated setup script to install Aeneas and Charon:
+
+```bash
+./scripts/setup-aeneas.sh
+```
+
+**What setup-aeneas.sh does:**
+- Checks for required dependencies (git, OCaml/opam, make, Rust)
+- Sets up OCaml 4.14.2 environment with opam
+- Installs necessary OCaml packages
+- Clones the Aeneas verification tool repository
+- Sets up and builds Charon (Rust-to-LLBC compiler)
+- Builds Aeneas
+
+After setup, the tools will be available at:
+- Charon: `./aeneas/charon/bin/charon`
+- Aeneas: `./aeneas/bin/aeneas`
+
 ## To do:
 
-- Setup script to run Aeneas
 - Add lean specification
 - Add lean proof
-- Add lean specification to the documentation
