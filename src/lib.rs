@@ -11,7 +11,7 @@ pub fn add_with_carry(x: &mut Bignum, y: &Bignum) -> u8 {
         let (sum, c1) = x[i].overflowing_add(c0 as u32);
         let (sum, c2) = sum.overflowing_add(y[i]);
         // We have: c1 as u8 + c2 as u8 <= 1
-        c0 = (c1 as u8 + c2 as u8) as u8;
+        c0 = c1 as u8 + c2 as u8;
         x[i] = sum;
         i += 1;
     }
