@@ -3,8 +3,9 @@
 This repo is a playground for verifying Rust code using Lean. 
 the folder src is the source code of a rust crate
 the folder verify is a lean project
+The aim is to illustrate the toolchain for verification and provide an easy playground for testing different things. 
 
-**Why this is great**
+**Why this toolchain is great**
 The verification is confirmed by a ci workflow
 Lean means that there is massive amount of mathematics available for stating and proving properties of functions. 
 
