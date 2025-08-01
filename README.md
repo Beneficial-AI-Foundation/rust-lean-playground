@@ -42,6 +42,21 @@ After setup, the tools will be available at:
 - Charon: `./aeneas/charon/bin/charon`
 - Aeneas: `./aeneas/bin/aeneas`
 
+### Lean Project Setup
+
+Set up the Lean project with all dependencies:
+
+```bash
+bash scripts/setup-lean.sh
+```
+
+**What setup-lean.sh does:**
+- Lets Lake automatically install Lean/elan if needed (based on `verify/lean-toolchain`)
+- Updates project dependencies with `lake update`
+- Downloads mathlib cache for faster builds with `lake exe cache get`
+- Builds the Lean project in the `verify/` directory
+- Verifies the setup by testing compilation
+
 ### Lean Toolchain Sync
 
 Keep your Lean versions synchronized:
