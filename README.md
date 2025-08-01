@@ -91,8 +91,3 @@ bash scripts/extract-lean.sh
 - Runs Aeneas to translate LLBC to Lean code
 - Outputs generated Lean files to `verify/Verify/` directory
 - Synchronises Lean toolchain versions
-
-## To do:
-
-- Add lean specification
-- Add lean proof
