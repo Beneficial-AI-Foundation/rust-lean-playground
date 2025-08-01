@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "zero-sum-checker"
+name = "rust-lean-playground"
 version = "0.1.0"

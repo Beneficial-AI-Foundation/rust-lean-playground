@@ -1,15 +1,33 @@
-# Zero Sum Pair Checker
+# Rust ❤️ Lean - Playground 
 
+This repo is a playground for verifying Rust code using Lean. 
+the folder src is the source code of a rust crate
+the folder verify is a lean project
 
+**Why this is great**
+The verification is confirmed by a ci workflow
+Lean means that there is massive amount of mathematics available for stating and proving properties of functions. 
+
+**What would improve this:**
+the rust docs can include statements from lean which specify the behaviour of the public api of the crate and the validity of these lean statements is verified during the production of the docs. I.e., one can read the docs of the rust crate and can know that the function satisfies the stated specs without looking any further into the source code. 
+aeneas supporting some of the parts of rust which are not yet supported
+more theorems/simprocs/etc available to quickly dispatch common goals seen if this application of lean.
 
 ## Setup
+
+### Compile Rust code
+
+Assuming that Rust is installed, run:
+```bash
+cargo build
+```
 
 ### Aeneas Installation
 
 Run the automated setup script to install Aeneas and Charon:
 
 ```bash
-./scripts/setup-aeneas.sh
+bash scripts/setup-aeneas.sh
 ```
 
 **What setup-aeneas.sh does:**
@@ -43,7 +61,7 @@ Keep your Lean versions synchronized:
 Extract Lean verification code from the Rust implementation:
 
 ```bash
-./scripts/extract-lean.sh
+bash scripts/extract-lean.sh
 ```
 
 **What extract-lean.sh does:**

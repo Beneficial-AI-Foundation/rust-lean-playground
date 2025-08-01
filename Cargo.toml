@@ -1,5 +1,5 @@
 [package]
-name = "zero-sum-checker"
+name = "rust-lean-playground"
 version = "0.1.0"
 edition = "2024"
 

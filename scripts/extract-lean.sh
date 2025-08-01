@@ -12,7 +12,7 @@ echo
 CRATE_NAME=$(grep '^name = ' Cargo.toml | sed 's/name = "\(.*\)"/\1/' | tr '-' '_')
 CHARON_BIN="./aeneas/charon/bin/charon"
 AENEAS_BIN="./aeneas/bin/aeneas"
-OUTPUT_DIR="verify/Verify"
+OUTPUT_DIR="verify/Verify/Src"
 
 if [ -z "$CRATE_NAME" ]; then
     echo "Error: Could not determine crate name from Cargo.toml"
