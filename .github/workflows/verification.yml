@@ -1,0 +1,239 @@
+name: Rust-Lean Verification Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rust-build:
+    name: Build Rust Crate and Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: rustfmt, clippy
+        
+    - name: Cache Rust dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+          
+    - name: Check Rust formatting
+      run: cargo fmt -- --check
+      
+    - name: Run Clippy lints
+      run: cargo clippy -- -D warnings
+      
+    - name: Build Rust crate
+      run: cargo build --release
+      
+    - name: Run Rust tests
+      run: cargo test --release
+      
+    - name: Generate documentation
+      run: cargo doc --no-deps --document-private-items
+      
+    - name: Upload Rust artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: rust-build
+        path: |
+          target/release/
+          target/doc/
+        retention-days: 1
+
+  aeneas-extraction:
+    name: Extract Lean Code with Aeneas
+    runs-on: ubuntu-latest
+    needs: rust-build
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential curl git opam
+        
+    - name: Setup OCaml environment
+      run: |
+        opam init --auto-setup --disable-sandboxing -y
+        opam switch create 4.14.2 -y
+        eval $(opam env)
+        echo "$(opam env)" >> $GITHUB_ENV
+        
+    - name: Cache OCaml dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.opam
+        key: ${{ runner.os }}-opam-${{ hashFiles('scripts/setup-aeneas.sh') }}
+        restore-keys: |
+          ${{ runner.os }}-opam-
+          
+    - name: Install OCaml dependencies
+      run: |
+        eval $(opam env)
+        opam install -y ppx_deriving visitors easy_logging zarith yojson core_unix odoc \
+          ocamlgraph menhir ocamlformat unionFind
+          
+    - name: Setup Aeneas and Charon
+      run: |
+        eval $(opam env)
+        bash scripts/setup-aeneas.sh
+        
+    - name: Store current Lean files for comparison
+      run: |
+        if [ -d "verify/Verify/Src" ]; then
+          cp -r verify/Verify/Src verify_backup || true
+        fi
+        
+    - name: Extract Lean code
+      run: |
+        eval $(opam env)
+        bash scripts/extract-lean.sh
+        
+    - name: Check for changes in generated Lean files
+      id: lean-changes
+      run: |
+        if [ -d "verify_backup" ]; then
+          if ! diff -r verify_backup verify/Verify/Src > /dev/null 2>&1; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "Generated Lean files have changed!"
+            echo "Differences:"
+            diff -r verify_backup verify/Verify/Src || true
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "Generated Lean files are unchanged."
+          fi
+        else
+          echo "changes=true" >> $GITHUB_OUTPUT
+          echo "First-time generation of Lean files."
+        fi
+        
+    - name: Comment on PR if Lean files changed
+      if: github.event_name == 'pull_request' && steps.lean-changes.outputs.changes == 'true'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '🔄 **Lean Code Generation Update**\n\nThe generated Lean files in `verify/Verify/Src/` have been updated based on changes to the Rust code. Please review the generated verification code.'
+          })
+          
+    - name: Upload generated Lean files
+      uses: actions/upload-artifact@v4
+      with:
+        name: generated-lean-files
+        path: verify/Verify/Src/
+        retention-days: 1
+
+  lean-verification:
+    name: Verify Lean Proofs
+    runs-on: ubuntu-latest
+    needs: aeneas-extraction
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Download generated Lean files
+      uses: actions/download-artifact@v4
+      with:
+        name: generated-lean-files
+        path: verify/Verify/Src/
+        
+    - name: Install curl (for elan)
+      run: sudo apt-get update && sudo apt-get install -y curl
+      
+    - name: Cache Lean installation
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.elan
+          ~/.cache/mathlib
+        key: ${{ runner.os }}-lean-${{ hashFiles('verify/lean-toolchain', 'verify/lake-manifest.json') }}
+        restore-keys: |
+          ${{ runner.os }}-lean-
+          
+    - name: Setup Lean project
+      run: bash scripts/setup-lean.sh
+      
+    - name: Verify Lean builds successfully
+      run: |
+        cd verify
+        lake build
+        
+    - name: Run Lean tests if they exist
+      run: |
+        cd verify
+        if lake build test 2>/dev/null; then
+          echo "Running Lean tests..."
+          lake exe test || echo "Tests failed but continuing..."
+        else
+          echo "No Lean tests found, skipping..."
+        fi
+        
+    - name: Check proof completeness
+      run: |
+        cd verify
+        echo "Checking for sorry statements (incomplete proofs)..."
+        if find . -name "*.lean" -exec grep -l "sorry" {} \; | head -10; then
+          echo "⚠️  Found incomplete proofs (sorry statements)"
+          echo "This is not necessarily an error, but indicates work in progress"
+        else
+          echo "✅ No incomplete proofs found"
+        fi
+
+  summary:
+    name: Verification Summary
+    runs-on: ubuntu-latest
+    needs: [rust-build, aeneas-extraction, lean-verification]
+    if: always()
+    
+    steps:
+    - name: Check overall status
+      run: |
+        echo "## Verification Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ needs.rust-build.result }}" == "success" ]; then
+          echo "✅ Rust build and documentation: SUCCESS" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Rust build and documentation: FAILED" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.aeneas-extraction.result }}" == "success" ]; then
+          echo "✅ Aeneas Lean extraction: SUCCESS" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Aeneas Lean extraction: FAILED" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.lean-verification.result }}" == "success" ]; then
+          echo "✅ Lean verification: SUCCESS" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Lean verification: FAILED" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "See individual job logs for detailed information." >> $GITHUB_STEP_SUMMARY

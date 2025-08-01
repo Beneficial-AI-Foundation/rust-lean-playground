@@ -14,9 +14,10 @@ This verification workflow offers several key advantages:
 
 Several enhancements would make this toolchain even more powerful:
 
-- **Integrated documentation**: Rust docs could directly embed Lean specifications for public APIs, with verification status checked during documentation generation. This would allow developers to read function documentation and immediately understand proven behavioural guarantees without examining source code.
+- **Integrated specs**: Rust docs could directly embed Lean specifications for public APIs, with verification status checked during documentation generation. This would allow developers to read function documentation and immediately understand proven behavioural guarantees without examining source code.
+- **Specs which are easy to parse for humans**: At the moment the specs are written in Lean which provides a relatively easy to read presentation. However a DSL could improve this is some contexts.
 - **Expanded Rust support**: Enhanced Aeneas capabilities to handle more Rust language features and patterns
-- **Proof automation**: Additional theorems, simplification procedures, and tactics specifically designed for common verification goals in systems programming
+- **Even more proof automation**: Additional theorems, simplification procedures, and tactics specifically designed for common verification goals in systems programming
 
 ## Setup
 
