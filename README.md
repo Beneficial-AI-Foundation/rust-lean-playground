@@ -1,18 +1,22 @@
 # Rust ❤️ Lean - Playground 
 
-This repo is a playground for verifying Rust code using Lean. 
-the folder src is the source code of a rust crate
-the folder verify is a lean project
-The aim is to illustrate the toolchain for verification and provide an easy playground for testing different things. 
+This repository demonstrates a complete toolchain for formally verifying Rust code using Lean 4. The project consists of two main components: the `src/` folder containing a Rust crate, and the `verify/` folder containing a Lean project that proves properties about the Rust code.
 
-**Why this toolchain is great**
-The verification is confirmed by a ci workflow
-Lean means that there is massive amount of mathematics available for stating and proving properties of functions. 
+## What's great about this approach
 
-**What would improve this:**
-the rust docs can include statements from lean which specify the behaviour of the public api of the crate and the validity of these lean statements is verified during the production of the docs. I.e., one can read the docs of the rust crate and can know that the function satisfies the stated specs without looking any further into the source code. 
-aeneas supporting some of the parts of rust which are not yet supported
-more theorems/simprocs/etc available to quickly dispatch common goals seen if this application of lean.
+This verification workflow offers several key advantages:
+
+- **Automated verification**: The entire verification process is validated through CI workflows, ensuring proofs remain valid as code evolves
+- **Rich mathematical foundation**: Lean's extensive mathematical library (mathlib) provides powerful tools for expressing and proving complex properties about program behaviour
+- **Type-safe extraction**: The Aeneas tool translates Rust code to Lean while preserving semantic correctness
+
+## The dreamed of future
+
+Several enhancements would make this toolchain even more powerful:
+
+- **Integrated documentation**: Rust docs could directly embed Lean specifications for public APIs, with verification status checked during documentation generation. This would allow developers to read function documentation and immediately understand proven behavioural guarantees without examining source code.
+- **Expanded Rust support**: Enhanced Aeneas capabilities to handle more Rust language features and patterns
+- **Proof automation**: Additional theorems, simplification procedures, and tactics specifically designed for common verification goals in systems programming
 
 ## Setup
 
@@ -60,7 +64,7 @@ bash scripts/setup-lean.sh
 
 ### Lean Toolchain Sync
 
-Keep your Lean versions synchronized:
+Keep your Lean versions synchronised:
 
 ```bash
 ./scripts/update-lean-toolchain.sh
@@ -85,7 +89,7 @@ bash scripts/extract-lean.sh
 - Runs Charon to generate LLBC (Low-Level Borrow Checker) intermediate representation
 - Runs Aeneas to translate LLBC to Lean code
 - Outputs generated Lean files to `verify/Verify/` directory
-- Synchronizes Lean toolchain versions
+- Synchronises Lean toolchain versions
 
 ## To do:
 
