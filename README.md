@@ -20,6 +20,10 @@ Several enhancements would make this toolchain even more powerful:
 - **Expanded Rust support**: Enhanced Aeneas capabilities to handle more Rust language features and patterns
 - **Even more proof automation**: Additional theorems, simplification procedures, and tactics specifically designed for common verification goals in systems programming
 
+## Code docs
+
+📚 **[View the Rust Documentation](https://oliver-butterley.github.io/rust-lean-playground/)** - Auto-generated API docs deployed via CI.
+
 ## Setup
 
 ### Compile Rust code
