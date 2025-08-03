@@ -186,7 +186,9 @@ jobs:
           ${{ runner.os }}-lean-
           
     - name: Setup Lean project
-      run: bash scripts/setup-lean.sh
+      run: |
+        bash scripts/setup-lean.sh
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
       
     - name: Verify Lean builds successfully
       run: |
