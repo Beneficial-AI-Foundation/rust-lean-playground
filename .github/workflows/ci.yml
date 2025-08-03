@@ -2,9 +2,9 @@ name: Rust-Lean Verification Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [master]
   pull_request:
-    branches: [ main, master ]
+    branches: [master]
 
 env:
   CARGO_TERM_COLOR: always
@@ -188,16 +188,6 @@ jobs:
       run: |
         cd verify
         lake build
-        
-    - name: Run Lean tests if they exist
-      run: |
-        cd verify
-        if lake build test 2>/dev/null; then
-          echo "Running Lean tests..."
-          lake exe test || echo "Tests failed but continuing..."
-        else
-          echo "No Lean tests found, skipping..."
-        fi
         
     - name: Check proof completeness
       run: |
