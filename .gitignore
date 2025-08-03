@@ -2,3 +2,4 @@
 /aeneas
 .claude
 *.llbc
+.local
