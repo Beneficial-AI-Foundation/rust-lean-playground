@@ -267,7 +267,7 @@ jobs:
     - name: Prepare documentation for upload
       run: |
         mkdir -p docs
-        cp -r artifacts/target/doc/* docs/
+        cp -r artifacts/doc/* docs/
         
         # Create index.html that redirects to the main crate docs
         cat > docs/index.html << 'EOF'
