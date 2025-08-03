@@ -31,6 +31,49 @@ if [ ! -f "$VERIFY_DIR/lakefile.toml" ]; then
     exit 1
 fi
 
+# Function to install elan if not present
+install_elan_if_needed() {
+    echo "Checking for elan (Lean version manager)..."
+    
+    if command -v elan &> /dev/null; then
+        echo "✓ elan is already installed"
+        elan --version
+        return 0
+    fi
+    
+    echo "elan not found. Installing elan..."
+    
+    # Check if curl is available
+    if ! command -v curl &> /dev/null; then
+        echo "Error: curl is required to install elan but is not available."
+        echo "Please install curl first: sudo apt install curl (Ubuntu/Debian) or brew install curl (macOS)"
+        exit 1
+    fi
+    
+    # Install elan
+    echo "Downloading and installing elan..."
+    curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+    
+    # Source the environment to make elan available
+    if [ -f "$HOME/.elan/env" ]; then
+        source "$HOME/.elan/env"
+    fi
+    
+    # Add to PATH for this session
+    export PATH="$HOME/.elan/bin:$PATH"
+    
+    # Verify installation
+    if command -v elan &> /dev/null; then
+        echo "✓ elan installed successfully"
+        elan --version
+    else
+        echo "Error: elan installation failed"
+        exit 1
+    fi
+    
+    echo
+}
+
 # Function to check for curl (needed for elan auto-install)
 check_prerequisites() {
     echo "Checking prerequisites..."
@@ -106,10 +149,10 @@ verify_setup() {
 # Main execution
 main() {
     echo "Starting Lean project setup..."
-    echo "Note: Lake will automatically install Lean/elan if needed"
     echo
     
     check_prerequisites
+    install_elan_if_needed
     setup_project
     verify_setup
     

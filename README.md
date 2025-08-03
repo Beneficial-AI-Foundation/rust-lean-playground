@@ -8,6 +8,7 @@ This verification workflow offers several key advantages:
 
 - **Automated verification**: The entire verification process is validated through CI workflows, ensuring proofs remain valid as code evolves
 - **Rich mathematical foundation**: Lean's extensive mathematical library (mathlib) provides powerful tools for expressing and proving complex properties about program behaviour
+- **Expressive language for describing specifications**: The reason Lean has been astoundingly successful for mathematics will make Lean successful for this purpose, in particular the language is ultimately extendable giving the potential for specs of complex properties which are easy for humans to parse. 
 - **Type-safe extraction**: The Aeneas tool translates Rust code to Lean while preserving semantic correctness
 
 ## The dreamed of future
@@ -57,8 +58,8 @@ bash scripts/setup-lean.sh
 ```
 
 **What setup-lean.sh does:**
-- Lets Lake automatically install Lean/elan if needed (based on `verify/lean-toolchain`)
-- Updates project dependencies with `lake update`
+- Installs elan (Lean version manager) if not already present
+- Updates project dependencies with `lake update`  
 - Downloads mathlib cache for faster builds with `lake exe cache get`
 - Builds the Lean project in the `verify/` directory
 - Verifies the setup by testing compilation
