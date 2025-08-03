@@ -78,6 +78,11 @@ jobs:
       with:
         components: rustfmt
         
+    - name: Install nightly toolchain for Charon
+      run: |
+        rustup toolchain install nightly-2025-07-08
+        rustup component add --toolchain nightly-2025-07-08 rustfmt
+        
     - name: Setup OCaml environment
       run: |
         opam init --auto-setup --disable-sandboxing -y
