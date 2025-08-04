@@ -1,4 +1,4 @@
-// pub type Bignum = Vec<u32>;
+pub type Bignum = Vec<u32>;
 
 /// Add a bignum (`Vec<u32>`) in place, and return the carry.
 ///
@@ -36,7 +36,7 @@
 /// - `c.val ≤ 1`
 /// - `toInt x' + c.val * 2 ^ (32 * x'.length) = toInt x + toInt y`.  
 ///
-pub fn add_with_carry(x: &mut [u32], y: &[u32]) -> u8 {
+pub fn add_with_carry(x: &mut Bignum, y: &Bignum) -> u8 {
     let mut c0 = 0u8;
     let mut i = 0;
     // Remark: we have (and need) the invariant that: c0 <= 1
