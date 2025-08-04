@@ -281,7 +281,7 @@ jobs:
         if [ "${{ needs.publish-docs.result }}" == "success" ]; then
           echo "✅ Documentation publishing: SUCCESS" >> $GITHUB_STEP_SUMMARY
         elif [ "${{ needs.publish-docs.result }}" == "skipped" ]; then
-          echo "⏭️ Documentation publishing: SKIPPED (not master branch)" >> $GITHUB_STEP_SUMMARY
+          echo "⏭️ Documentation publishing: SKIPPED" >> $GITHUB_STEP_SUMMARY
         else
           echo "❌ Documentation publishing: FAILED" >> $GITHUB_STEP_SUMMARY
         fi
