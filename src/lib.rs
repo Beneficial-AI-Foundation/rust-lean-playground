@@ -30,13 +30,13 @@
 /// I.e.,
 /// Assume that:
 /// - `x` has the same length as `y`
-/// Then:
+///   Then:
 /// - `add_with_carry x y` returns ok with result `c` and `x'`, updated value of `x`
 /// - `x'` has the same length as `x`
 /// - `c.val ≤ 1`
 /// - `toInt x' + c.val * 2 ^ (32 * x'.length) = toInt x + toInt y`.  
 ///
-pub fn add_with_carry(x: &mut Vec<u32>, y: &Vec<u32>) -> u8 {
+pub fn add_with_carry(x: &mut [u32], y: &[u32]) -> u8 {
     let mut c0 = 0u8;
     let mut i = 0;
     // Remark: we have (and need) the invariant that: c0 <= 1
