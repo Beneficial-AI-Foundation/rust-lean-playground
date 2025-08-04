@@ -27,10 +27,10 @@ pub type Bignum = Vec<u32>;
 ///   add_with_carry_spec
 /// ```
 ///
-/// I.e.,
-/// Assume that:
+/// I.e., if:
 /// - `x` has the same length as `y`
-///   Then:
+/// 
+/// Then:
 /// - `add_with_carry x y` returns ok with result `c` and `x'`, updated value of `x`
 /// - `x'` has the same length as `x`
 /// - `c.val ≤ 1`
