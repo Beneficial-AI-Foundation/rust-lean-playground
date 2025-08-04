@@ -65,6 +65,55 @@ jobs:
           target/doc/
         retention-days: 1
 
+  publish-docs:
+    name: Publish Rust Documentation
+    runs-on: ubuntu-latest
+    needs: rust-build
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - name: Download Rust artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: rust-build
+        path: artifacts/
+        
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Prepare documentation for upload
+      run: |
+        mkdir -p docs
+        cp -r artifacts/doc/* docs/
+        
+        # Create index.html that redirects to the main crate docs
+        cat > docs/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Rust Documentation</title>
+          <meta http-equiv="refresh" content="0; url=./rust_lean_playground/">
+        </head>
+        <body>
+          <p>Redirecting to <a href="./rust_lean_playground/">rust_lean_playground documentation</a>...</p>
+        </body>
+        </html>
+        EOF
+        
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: docs/
+        
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
   aeneas-extraction:
     name: Extract Lean Code with Aeneas
     runs-on: ubuntu-latest
@@ -214,7 +263,7 @@ jobs:
   summary:
     name: Verification Summary
     runs-on: ubuntu-latest
-    needs: [rust-build, aeneas-extraction, lean-verification]
+    needs: [rust-build, publish-docs, aeneas-extraction, lean-verification]
     if: always()
     
     steps:
@@ -227,6 +276,14 @@ jobs:
           echo "✅ Rust build and documentation: SUCCESS" >> $GITHUB_STEP_SUMMARY
         else
           echo "❌ Rust build and documentation: FAILED" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.publish-docs.result }}" == "success" ]; then
+          echo "✅ Documentation publishing: SUCCESS" >> $GITHUB_STEP_SUMMARY
+        elif [ "${{ needs.publish-docs.result }}" == "skipped" ]; then
+          echo "⏭️ Documentation publishing: SKIPPED (not master branch)" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Documentation publishing: FAILED" >> $GITHUB_STEP_SUMMARY
         fi
         
         if [ "${{ needs.aeneas-extraction.result }}" == "success" ]; then
@@ -243,52 +300,3 @@ jobs:
         
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "See individual job logs for detailed information." >> $GITHUB_STEP_SUMMARY
-
-  publish-docs:
-    name: Publish Rust Documentation
-    runs-on: ubuntu-latest
-    needs: rust-build
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    
-    steps:
-    - name: Download Rust artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: rust-build
-        path: artifacts/
-        
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-      
-    - name: Prepare documentation for upload
-      run: |
-        mkdir -p docs
-        cp -r artifacts/doc/* docs/
-        
-        # Create index.html that redirects to the main crate docs
-        cat > docs/index.html << 'EOF'
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Rust Documentation</title>
-          <meta http-equiv="refresh" content="0; url=./rust_lean_playground/">
-        </head>
-        <body>
-          <p>Redirecting to <a href="./rust_lean_playground/">rust_lean_playground documentation</a>...</p>
-        </body>
-        </html>
-        EOF
-        
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: docs/
-        
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
