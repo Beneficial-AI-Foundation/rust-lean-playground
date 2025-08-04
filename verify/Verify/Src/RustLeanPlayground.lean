@@ -9,7 +9,7 @@ set_option linter.unusedVariables false
 namespace rust_lean_playground
 
 /- [rust_lean_playground::add_with_carry]: loop 0:
-   Source: 'src/lib.rs', lines 10:4-17:5 -/
+   Source: 'src/lib.rs', lines 43:4-50:5 -/
 def add_with_carry_loop
   (x : alloc.vec.Vec U32) (y : alloc.vec.Vec U32) (c0 : U8) (i : Usize) :
   Result (U8 × (alloc.vec.Vec U32))
@@ -40,7 +40,7 @@ def add_with_carry_loop
 partial_fixpoint
 
 /- [rust_lean_playground::add_with_carry]:
-   Source: 'src/lib.rs', lines 6:0-19:1 -/
+   Source: 'src/lib.rs', lines 39:0-52:1 -/
 @[reducible]
 def add_with_carry
   (x : alloc.vec.Vec U32) (y : alloc.vec.Vec U32) :
