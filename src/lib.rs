@@ -25,7 +25,7 @@ pub type Bignum = Vec<u32>;
 ///     c.val ≤ 1 ∧
 ///     toInt x' + c.val * 2 ^ (32 * x'.length) = toInt x + toInt y :=
 ///   add_with_carry_spec
-///  ```
+/// ```
 ///
 /// I.e.,
 /// Assume that:
