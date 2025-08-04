@@ -2,12 +2,12 @@
 
 /// Add a bignum (`Vec<u32>`) in place, and return the carry.
 ///
-/// We consider the bignum to be a little endian representation, 
+/// We consider the bignum to be a little endian representation,
 /// i.e., the first element is the least significant.
 /// For adding we assume the bignums have the same length
-/// 
+///
 /// ## Spec:
-/// 
+///
 /// If we define:
 /// ```lean
 /// def toInt (l : List U32) : Int :=
@@ -17,16 +17,16 @@
 ///    x + 2 ^ 32 * toInt l
 ///```
 /// Then the function satisfies:
-/// 
+///
 /// ```lean
 /// example (x : alloc.vec.Vec U32) (y : alloc.vec.Vec U32) (hLength : x.length = y.length) :
 ///     ∃ x' c, add_with_carry x y = ok (c, x') ∧
 ///     x'.length = x.length ∧
 ///     c.val ≤ 1 ∧
-///     toInt x' + c.val * 2 ^ (32 * x'.length) = toInt x + toInt y := 
+///     toInt x' + c.val * 2 ^ (32 * x'.length) = toInt x + toInt y :=
 ///   add_with_carry_spec
 ///  ```
-/// 
+///
 /// I.e.,
 /// Assume that:
 /// - `x` has the same length as `y`
@@ -35,7 +35,7 @@
 /// - `x'` has the same length as `x`
 /// - `c.val ≤ 1`
 /// - `toInt x' + c.val * 2 ^ (32 * x'.length) = toInt x + toInt y`.  
-/// 
+///
 pub fn add_with_carry(x: &mut Vec<u32>, y: &Vec<u32>) -> u8 {
     let mut c0 = 0u8;
     let mut i = 0;
