@@ -182,21 +182,21 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
   progress as ⟨ m2, hm2 ⟩      -- Array.index_usize limbs7 2
   have hm2' : m2 = j2 := by -- tracking through array updates
     simp [hm2, hlimbs7, hlimbs6, hlimbs5, hlimbs4, hlimbs3, hlimbs2]
-  have h_no_overflow2 : m2 + c1 ≤ U64.max := by simpa [hm2']
+  have : m2 + c1 ≤ U64.max := by simpa [hm2']
   progress as ⟨ n2, hn2 ⟩      -- i19 + c1
   progress as ⟨ limbs8, hlimbs8 ⟩   -- Array.update limbs7 2 i20
 
   progress as ⟨ m3, hm3 ⟩      -- Array.index_usize limbs8 3
   have hm3' : m3 = j3 := by -- tracking through array updates
     simp [hm3, hlimbs8, hlimbs7, hlimbs6, hlimbs5, hlimbs4, hlimbs3]
-  have h_no_overflow3 : m3 + c2 ≤ U64.max := by simpa [hm3']
+  have : m3 + c2 ≤ U64.max := by simpa [hm3']
   progress as ⟨ n3, hn3 ⟩      -- i21 + c2
   progress as ⟨ limbs9, hlimbs9 ⟩   -- Array.update limbs8 3 i22
 
   progress as ⟨ m4, hm4 ⟩      -- Array.index_usize limbs9 4
   have hm4' : m4 = j4 := by -- tracking through array updates
     simp [hm4, hlimbs9, hlimbs8, hlimbs7, hlimbs6, hlimbs5, hlimbs4]
-  have h_no_overflow4 : m4 + c3 ≤ U64.max := by simpa [hm4']
+  have : m4 + c3 ≤ U64.max := by simpa [hm4']
   progress as ⟨ n4, hn4 ⟩      -- i23 + c3
   progress as ⟨ limbs10, hlimbs10 ⟩  -- Array.update limbs9 4 i24
 
