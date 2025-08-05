@@ -25,12 +25,28 @@ theorem LOW_51_BIT_MASK_val_eq : LOW_51_BIT_MASK.val = 2^51 - 1 := by
   unfold LOW_51_BIT_MASK
   decide
 
+theorem LOW_51_BIT_MASK_bv_eq : LOW_51_BIT_MASK.bv = 2251799813685247#64 := by
+  unfold LOW_51_BIT_MASK
+  decide
+
+theorem and_LOW_51_BIT_MASK_le (a : U64) : (a &&& LOW_51_BIT_MASK).val ≤ LOW_51_BIT_MASK.val := by
+    -- Bitwise AND with a mask is always ≤ the mask
+    have := LOW_51_BIT_MASK_bv_eq
+    bvify 64 at *
+    bv_decide
+
+theorem and_LOW_51_BIT_MASK_lt (a : U64) : (a &&& LOW_51_BIT_MASK).val < 2^51 := by
+  have h1 := and_LOW_51_BIT_MASK_le a
+  rw [LOW_51_BIT_MASK_val_eq] at h1
+  omega
+
+/-! ## Spec for `FieldElement51.reduce` -/
+
 /-- **Spec and proof concerning `reduce`**:
 - Returns a result
 - All the limbs of the result are small
 - If the limbs are small then the result is equal the input
-- the result is equal to the input mod p.
- -/
+- the result is equal to the input mod p. -/
 theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
     ∃ r, FieldElement51.reduce limbs = ok (r) := by
 
@@ -48,6 +64,8 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
   progress as ⟨ i4, hi4 ⟩       -- Array.index_usize limbs 4
   progress as ⟨ c4, hc4, hc4' ⟩       -- i4 >>> 51
 
+  -- TO DO: extract the logic used in each of the following into a theorem
+  --
   -- Each c_i is the result of right-shifting a 64-bit value by 51 bits,
   -- leaving at most 13 bits, so c_i.val ≤ 2^13 - 1.
   -- The bvify tactic converts this to bitvector reasoning and bv_decide verifies it.
@@ -88,41 +106,89 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
   progress as ⟨ limbs5, hlimbs5 ⟩   -- Array.update limbs4 4 i13
   progress as ⟨ l5, hl5 ⟩      -- c4 * 19
 
+  -- Bitwise AND with (2^51 - 1) keeps only the lower 51 bits
+  -- So j_i.val ≤ 2^51 - 1 < 2^51 for all i
+  have hj0'' : j0.val ≤ 2^51 := by
+    rw [hj0]
+    exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt i0)
+  have hj1'' : j1.val ≤ 2^51 := by
+    rw [hj1]
+    exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt l1)
+  have hj2'' : j2.val ≤ 2^51 := by
+    rw [hj2]
+    exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt l2)
+  have hj3'' : j3.val ≤ 2^51 := by
+    rw [hj3]
+    exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt l3)
+  have hj4'' : j4.val ≤ 2^51 := by
+    rw [hj4]
+    exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt l4)
+
+  -- Check for no overflow prior to adding
+  have h_no_overflow0 : j0 + l5 ≤ U64.max := by
+    rw [U64.max_eq, hl5]
+    have : c4.val * 19 ≤ (2^13 - 1) * 19 := by simpa
+    have : j0.val + c4.val * 19 ≤ 2^51 + (2^13 - 1) * 19 := by omega
+    omega
+
+  have h_no_overflow1 : j1 + c0 ≤ U64.max := by
+    rw [U64.max_eq]
+    have : j1.val + c0.val ≤ 2^51 + 2^13 - 1 := by omega
+    omega
+
+  have h_no_overflow2 : j2 + c1 ≤ U64.max := by
+    rw [U64.max_eq]
+    have : j2.val + c1.val ≤ 2^51 + 2^13 - 1 := by omega
+    omega
+
+  have h_no_overflow3 : j3 + c2 ≤ U64.max := by
+    rw [U64.max_eq]
+    have : j3.val + c2.val ≤ 2^51 + 2^13 - 1 := by omega
+    omega
+
+  have h_no_overflow4 : j4 + c3 ≤ U64.max := by
+    rw [U64.max_eq]
+    have : j4.val + c3.val ≤ 2^51 + 2^13 - 1 := by omega
+    omega
+
   -- Add the parts of limbs together
   progress as ⟨ m0, hm0 ⟩      -- Array.index_usize limbs5 0
-  have h_no_overflow : m0 + l5 ≤ U64.max := by
+  have hm0' : m0 = j0 := by
+    -- m0 = limbs5[0] = j0 (tracking through array updates)
     sorry
+  have : m0 + l5 ≤ U64.max := by simpa [hm0']
   progress as ⟨ n0, hn0 ⟩      -- i15 + i14
   progress as ⟨ limbs6, hlimbs6 ⟩   -- Array.update limbs5 0 i16
 
   progress as ⟨ m1, hm1 ⟩      -- Array.index_usize limbs6 1
-  have h_no_overflow2 : m1 + c0 ≤ U64.max := by
-    have := U64.max_eq
-    -- The mathematical reasoning is:
-    -- i17 ≤ 2^51 - 1 (from masking with LOW_51_BIT_MASK)
-    -- c0 ≤ 2^13 - 1 (from >>> 51 on a u64)
-    -- So i17 + c0 ≤ 2^51 + 2^13 - 2 < 2^64 - 1 = U64.max
-    have : m1.val ≤ 2^51 - 1 := by
-      rw [hm1]
-      sorry
-    have : c0.val ≤ 2^13 - 1 := by
-      sorry
+  have hm1' : m1 = j1 := by
+    -- (tracking through array updates)
     sorry
+  have : m1 + c0 ≤ U64.max := by simpa [hm1']
   progress as ⟨ n1, hn1 ⟩      -- i17 + c0
   progress as ⟨ limbs7, hlimbs7 ⟩   -- Array.update limbs6 1 i18
 
   progress as ⟨ m2, hm2 ⟩      -- Array.index_usize limbs7 2
-  have h_no_overflow3 : m2 + c1 ≤ U64.max := by sorry
+  have hm2' : m2 = j2 := by
+    -- (tracking through array updates)
+    sorry
+  have h_no_overflow2 : m2 + c1 ≤ U64.max := by simpa [hm2']
   progress as ⟨ n2, hn2 ⟩      -- i19 + c1
   progress as ⟨ limbs8, hlimbs8 ⟩   -- Array.update limbs7 2 i20
 
   progress as ⟨ m3, hm3 ⟩      -- Array.index_usize limbs8 3
-  have h_no_overflow4 : m3 + c2 ≤ U64.max := by sorry
+  have hm3' : m3 = j3 := by
+    -- (tracking through array updates)
+    sorry
+  have h_no_overflow3 : m3 + c2 ≤ U64.max := by simpa [hm3']
   progress as ⟨ n3, hn3 ⟩      -- i21 + c2
   progress as ⟨ limbs9, hlimbs9 ⟩   -- Array.update limbs8 3 i22
 
   progress as ⟨ m4, hm4 ⟩      -- Array.index_usize limbs9 4
-  have h_no_overflow5 : m4 + c3 ≤ U64.max := by sorry
+  have hm4' : m4 = j4 := by
+    -- (tracking through array updates)
+    sorry
+  have h_no_overflow4 : m4 + c3 ≤ U64.max := by simpa [hm4']
   progress as ⟨ n4, hn4 ⟩      -- i23 + c3
   progress as ⟨ limbs10, hlimbs10 ⟩  -- Array.update limbs9 4 i24
 
