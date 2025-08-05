@@ -30,7 +30,7 @@ def toInt (l : List U32) : Int :=
 @[simp]
 theorem toInt_drop (l : List U32) (i : Nat) (h0 : i < l.length) :
   toInt (l.drop i) = l[i]! + 2 ^ 32 * toInt (l.drop (i + 1)) := by
-  cases l with
+  induction l with
   | nil => simp at *
   | cons hd tl =>
     simp_all
@@ -93,7 +93,7 @@ theorem add_with_carry_loop_spec
       scalar_tac +split
     progress as ⟨ c4, x1, _, _, hc4 ⟩
     -- Proving the post-condition
-    split_conjs
+    refine ⟨?_, ?_, ?_⟩
     · simp [*]
     · simp [*]
     · simp [hc4]
