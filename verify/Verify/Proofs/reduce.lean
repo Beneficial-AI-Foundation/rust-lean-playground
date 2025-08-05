@@ -136,15 +136,19 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
   have hj0'' : j0.val ≤ 2^51 := by
     rw [hj0]
     exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt i0)
+
   have hj1'' : j1.val ≤ 2^51 := by
     rw [hj1]
     exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt l1)
+
   have hj2'' : j2.val ≤ 2^51 := by
     rw [hj2]
     exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt l2)
+
   have hj3'' : j3.val ≤ 2^51 := by
     rw [hj3]
     exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt l3)
+
   have hj4'' : j4.val ≤ 2^51 := by
     rw [hj4]
     exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt l4)
@@ -178,41 +182,36 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
 
   -- Add the parts of limbs together
   progress as ⟨ m0, hm0 ⟩      -- Array.index_usize limbs5 0
-  have hm0' : m0 = j0 := by
-    -- tracking through array updates
+  have hm0' : m0 = j0 := by -- tracking through array updates
     simp [hm0, hlimbs5, hlimbs4, hlimbs3, hlimbs2, hlimbs1]
   have : m0 + l5 ≤ U64.max := by simpa [hm0']
   progress as ⟨ n0, hn0 ⟩      -- i15 + i14
   progress as ⟨ limbs6, hlimbs6 ⟩   -- Array.update limbs5 0 i16
 
   progress as ⟨ m1, hm1 ⟩      -- Array.index_usize limbs6 1
-  have hm1' : m1 = j1 := by
-    -- (tracking through array updates)
-    sorry
+  have hm1' : m1 = j1 := by -- tracking through array updates
+    simp [hm1, hlimbs6, hlimbs5, hlimbs4, hlimbs3, hlimbs2, hlimbs1]
   have : m1 + c0 ≤ U64.max := by simpa [hm1']
   progress as ⟨ n1, hn1 ⟩      -- i17 + c0
   progress as ⟨ limbs7, hlimbs7 ⟩   -- Array.update limbs6 1 i18
 
   progress as ⟨ m2, hm2 ⟩      -- Array.index_usize limbs7 2
-  have hm2' : m2 = j2 := by
-    -- (tracking through array updates)
-    sorry
+  have hm2' : m2 = j2 := by -- tracking through array updates
+    simp [hm2, hlimbs7, hlimbs6, hlimbs5, hlimbs4, hlimbs3, hlimbs2]
   have h_no_overflow2 : m2 + c1 ≤ U64.max := by simpa [hm2']
   progress as ⟨ n2, hn2 ⟩      -- i19 + c1
   progress as ⟨ limbs8, hlimbs8 ⟩   -- Array.update limbs7 2 i20
 
   progress as ⟨ m3, hm3 ⟩      -- Array.index_usize limbs8 3
-  have hm3' : m3 = j3 := by
-    -- (tracking through array updates)
-    sorry
+  have hm3' : m3 = j3 := by -- tracking through array updates
+    simp [hm3, hlimbs8, hlimbs7, hlimbs6, hlimbs5, hlimbs4, hlimbs3]
   have h_no_overflow3 : m3 + c2 ≤ U64.max := by simpa [hm3']
   progress as ⟨ n3, hn3 ⟩      -- i21 + c2
   progress as ⟨ limbs9, hlimbs9 ⟩   -- Array.update limbs8 3 i22
 
   progress as ⟨ m4, hm4 ⟩      -- Array.index_usize limbs9 4
-  have hm4' : m4 = j4 := by
-    -- (tracking through array updates)
-    sorry
+  have hm4' : m4 = j4 := by -- tracking through array updates
+    simp [hm4, hlimbs9, hlimbs8, hlimbs7, hlimbs6, hlimbs5, hlimbs4]
   have h_no_overflow4 : m4 + c3 ≤ U64.max := by simpa [hm4']
   progress as ⟨ n4, hn4 ⟩      -- i23 + c3
   progress as ⟨ limbs10, hlimbs10 ⟩  -- Array.update limbs9 4 i24
