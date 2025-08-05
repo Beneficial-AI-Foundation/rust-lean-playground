@@ -17,9 +17,9 @@ attribute [-simp] Int.reducePow Nat.reducePow
 /-! ## Auxillary defs and theorems -/
 
 -- Auxiliary definition to interpret a vector of u32 as a mathematical integer
-def FieldElement51_to_Nat (_f : FieldElement51) : Nat :=
-  -- TO DO: insert correct definition
-  sorry
+-- def FieldElement51_to_Nat (_f : FieldElement51) : Nat :=
+--   -- TO DO: insert correct definition
+--   sorry
 
 theorem LOW_51_BIT_MASK_val_eq : LOW_51_BIT_MASK.val = 2^51 - 1 := by
   unfold LOW_51_BIT_MASK
