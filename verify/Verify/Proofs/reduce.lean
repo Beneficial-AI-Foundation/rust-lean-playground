@@ -19,7 +19,9 @@ set_option linter.hashCommand false
 attribute [-simp] Int.reducePow Nat.reducePow
 
 -- Auxiliary definition to interpret a vector of u32 as a mathematical integer
-def FieldElement51_to_Nat (_f : FieldElement51) := 0
+def FieldElement51_to_Nat (_f : FieldElement51) : Nat :=
+  -- TO DO: insert correct definition
+  sorry
 
 theorem LOW_51_BIT_MASK_val_eq : LOW_51_BIT_MASK.val = 2^51 - 1 := by
   unfold LOW_51_BIT_MASK
@@ -29,16 +31,53 @@ theorem LOW_51_BIT_MASK_bv_eq : LOW_51_BIT_MASK.bv = 2251799813685247#64 := by
   unfold LOW_51_BIT_MASK
   decide
 
+-- Bitwise AND with (2^51 - 1) keeps only the lower 51 bits so bounded ≤ 2^51 - 1 < 2^51
 theorem and_LOW_51_BIT_MASK_le (a : U64) : (a &&& LOW_51_BIT_MASK).val ≤ LOW_51_BIT_MASK.val := by
     -- Bitwise AND with a mask is always ≤ the mask
     have := LOW_51_BIT_MASK_bv_eq
     bvify 64 at *
     bv_decide
 
+-- Bitwise AND with (2^51 - 1) keeps only the lower 51 bits so bounded ≤ 2^51 - 1 < 2^51
 theorem and_LOW_51_BIT_MASK_lt (a : U64) : (a &&& LOW_51_BIT_MASK).val < 2^51 := by
   have h1 := and_LOW_51_BIT_MASK_le a
   rw [LOW_51_BIT_MASK_val_eq] at h1
   omega
+
+-- right-shifting a 64-bit value by 51 bits leaves at most 13 bits so bounded by 2^13 - 1.
+theorem U64_shiftRight_le (a : U64) : a.val >>> 51 ≤ 2 ^ 13 - 1 := by
+  bvify 64 at *
+  bv_decide
+
+@[simp]
+theorem Array.set_apply (bs : Array U64 5#usize) (a : U64) (i : Nat) (h : i < 5) :
+    (bs.set i#usize a)[i]! = a := by
+  rw [Array.getElem!_Nat_eq, Array.set_val_eq]
+  simp_lists
+
+theorem Array.val_getElem!_eq (bs : Array U64 5#usize) (i : Nat) (h : i < bs.length) :
+    (bs.val)[i]! = bs.val[i] := by
+  unfold Subtype.val
+  exact getElem!_pos bs.val i _
+
+theorem Array.val_getElem!_eq' (bs : Array U64 5#usize) (i : Nat) (h : i < bs.length) :
+    (bs.val)[i]! = bs[i] := by
+  unfold Subtype.val
+  exact getElem!_pos bs.val i _
+
+theorem p (bs : Array U64 5#usize) (a : U64) (i : Nat) (h : i < 5) :
+    (bs.set 4#usize a)[0]! = bs[0] := by
+  -- have h0 : 0 < bs.val.length := by simp [Array.length_eq]
+  rw [Array.getElem!_Nat_eq, Array.set_val_eq]
+  simp_lists
+  apply Array.val_getElem!_eq'
+
+@[simp]
+theorem Array.set_of_ne (bs : Array U64 5#usize) (a : U64) (i j : Nat) (hi : i < bs.length)
+    (hj : j < bs.length) (h : i ≠ j) :
+    (bs.set j#usize a)[i]! = bs[i] := by
+  rw [Array.getElem!_Nat_eq, Array.set_val_eq, ← Array.val_getElem!_eq' bs i hi]
+  exact List.getElem!_set_ne (↑bs) j i a (by omega)
 
 /-! ## Spec for `FieldElement51.reduce` -/
 
@@ -64,26 +103,12 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
   progress as ⟨ i4, hi4 ⟩       -- Array.index_usize limbs 4
   progress as ⟨ c4, hc4, hc4' ⟩       -- i4 >>> 51
 
-  -- TO DO: extract the logic used in each of the following into a theorem
-  --
-  -- Each c_i is the result of right-shifting a 64-bit value by 51 bits,
-  -- leaving at most 13 bits, so c_i.val ≤ 2^13 - 1.
-  -- The bvify tactic converts this to bitvector reasoning and bv_decide verifies it.
-  have hc0'' : c0.val ≤ 2^13 - 1 := by
-      bvify 64 at *
-      bv_decide
-  have hc1'' : c1.val ≤ 2^13 - 1 := by
-      bvify 64 at *
-      bv_decide
-  have hc2'' : c2.val ≤ 2^13 - 1 := by
-      bvify 64 at *
-      bv_decide
-  have hc3'' : c3.val ≤ 2^13 - 1 := by
-      bvify 64 at *
-      bv_decide
-  have hc4'' : c4.val ≤ 2^13 - 1 := by
-      bvify 64 at *
-      bv_decide
+  -- Right-shifting a 64-bit value by 51 bits leaves at most 13 bits so bounded by 2^13 - 1.
+  have hc0'' : c0.val ≤ 2^13 - 1 := by simp [hc0, U64_shiftRight_le]
+  have hc1'' : c1.val ≤ 2^13 - 1 := by simp [hc1, U64_shiftRight_le]
+  have hc2'' : c2.val ≤ 2^13 - 1 := by simp [hc2, U64_shiftRight_le]
+  have hc3'' : c3.val ≤ 2^13 - 1 := by simp [hc3, U64_shiftRight_le]
+  have hc4'' : c4.val ≤ 2^13 - 1 := by simp [hc4, U64_shiftRight_le]
 
   -- Perform `&&& LOW_51_BIT_MASK` on each of the limbs
   progress as ⟨ j0, hj0, hj0' ⟩       -- cast (i &&& LOW_51_BIT_MASK)
@@ -155,6 +180,11 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
   progress as ⟨ m0, hm0 ⟩      -- Array.index_usize limbs5 0
   have hm0' : m0 = j0 := by
     -- m0 = limbs5[0] = j0 (tracking through array updates)
+    have : (limbs.set 0#usize j0)[0]! = j0 := by simp
+    rw [hm0]
+    rw [hlimbs5]
+
+    -- The rest follows by tracking that updates at indices ≠ 0 preserve limbs[0]
     sorry
   have : m0 + l5 ≤ U64.max := by simpa [hm0']
   progress as ⟨ n0, hn0 ⟩      -- i15 + i14
