@@ -3,20 +3,18 @@ import Verify.Src.RustLeanPlayground
 
 /-! # Reduce
 
-The main statement concerning `reduce` is `reduce_spec` (see the end of this file).
+The main statement concerning `FieldElement51.reduce` is `FieldElement51.reduce_spec` (below).
 
 -/
 
 open Aeneas.Std Result
 open rust_lean_playground
 
-set_option linter.hashCommand false
-#setup_aeneas_simps
-
+-- set_option linter.hashCommand false
+-- #setup_aeneas_simps
+attribute [-simp] Int.reducePow Nat.reducePow
 
 /-! ## Auxillary defs and theorems -/
-
-attribute [-simp] Int.reducePow Nat.reducePow
 
 -- Auxiliary definition to interpret a vector of u32 as a mathematical integer
 def FieldElement51_to_Nat (_f : FieldElement51) : Nat :=
@@ -33,10 +31,9 @@ theorem LOW_51_BIT_MASK_bv_eq : LOW_51_BIT_MASK.bv = 2251799813685247#64 := by
 
 -- Bitwise AND with (2^51 - 1) keeps only the lower 51 bits so bounded ≤ 2^51 - 1 < 2^51
 theorem and_LOW_51_BIT_MASK_le (a : U64) : (a &&& LOW_51_BIT_MASK).val ≤ LOW_51_BIT_MASK.val := by
-    -- Bitwise AND with a mask is always ≤ the mask
-    have := LOW_51_BIT_MASK_bv_eq
-    bvify 64 at *
-    bv_decide
+  -- Bitwise AND with a mask is always ≤ the mask
+  bvify 64 at *
+  bv_decide
 
 -- Bitwise AND with (2^51 - 1) keeps only the lower 51 bits so bounded ≤ 2^51 - 1 < 2^51
 theorem and_LOW_51_BIT_MASK_lt (a : U64) : (a &&& LOW_51_BIT_MASK).val < 2^51 := by
@@ -55,36 +52,23 @@ theorem Array.set_apply (bs : Array U64 5#usize) (a : U64) (i : Nat) (h : i < 5)
   rw [Array.getElem!_Nat_eq, Array.set_val_eq]
   simp_lists
 
-theorem Array.val_getElem!_eq (bs : Array U64 5#usize) (i : Nat) (h : i < bs.length) :
-    (bs.val)[i]! = bs.val[i] := by
-  unfold Subtype.val
-  exact getElem!_pos bs.val i _
-
 theorem Array.val_getElem!_eq' (bs : Array U64 5#usize) (i : Nat) (h : i < bs.length) :
     (bs.val)[i]! = bs[i] := by
   unfold Subtype.val
   exact getElem!_pos bs.val i _
-
-theorem p (bs : Array U64 5#usize) (a : U64) (i : Nat) (h : i < 5) :
-    (bs.set 4#usize a)[0]! = bs[0] := by
-  -- have h0 : 0 < bs.val.length := by simp [Array.length_eq]
-  rw [Array.getElem!_Nat_eq, Array.set_val_eq]
-  simp_lists
-  apply Array.val_getElem!_eq'
 
 @[simp]
 theorem Array.set_of_ne (bs : Array U64 5#usize) (a : U64) (i j : Nat) (hi : i < bs.length)
     (hj : j < bs.length) (h : i ≠ j) :
     (bs.set j#usize a)[i]! = bs[i] := by
   rw [Array.getElem!_Nat_eq, Array.set_val_eq, ← Array.val_getElem!_eq' bs i hi]
-  exact List.getElem!_set_ne (↑bs) j i a (by omega)
+  exact List.getElem!_set_ne bs j i a (by omega)
 
 /-! ## Spec for `FieldElement51.reduce` -/
 
 /-- **Spec and proof concerning `reduce`**:
-- Returns a result
-- All the limbs of the result are small
-- If the limbs are small then the result is equal the input
+- Does not overflow and hence returns a result
+- All the limbs of the result are small, < (1u64 << 52)
 - the result is equal to the input mod p. -/
 theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
     ∃ r, FieldElement51.reduce limbs = ok (r) := by
@@ -216,7 +200,7 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
   progress as ⟨ n4, hn4 ⟩      -- i23 + c3
   progress as ⟨ limbs10, hlimbs10 ⟩  -- Array.update limbs9 4 i24
 
--- r.limbs == spec_reduce(limbs),
+-- TO DO:
 -- forall|i: int| 0 <= i < 5 ==> r.limbs[i] < (1u64 << 52),
 -- (forall|i: int| 0 <= i < 5 ==> limbs[i] < (1u64 << 51)) ==> (r.limbs =~= limbs),
 -- as_nat(r.limbs) == as_nat(limbs) - p() * (limbs[4] >> 51),
