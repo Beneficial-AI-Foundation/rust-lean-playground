@@ -179,13 +179,8 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
   -- Add the parts of limbs together
   progress as ⟨ m0, hm0 ⟩      -- Array.index_usize limbs5 0
   have hm0' : m0 = j0 := by
-    -- m0 = limbs5[0] = j0 (tracking through array updates)
-    have : (limbs.set 0#usize j0)[0]! = j0 := by simp
-    rw [hm0]
-    rw [hlimbs5]
-
-    -- The rest follows by tracking that updates at indices ≠ 0 preserve limbs[0]
-    sorry
+    -- tracking through array updates
+    simp [hm0, hlimbs5, hlimbs4, hlimbs3, hlimbs2, hlimbs1]
   have : m0 + l5 ≤ U64.max := by simpa [hm0']
   progress as ⟨ n0, hn0 ⟩      -- i15 + i14
   progress as ⟨ limbs6, hlimbs6 ⟩   -- Array.update limbs5 0 i16
