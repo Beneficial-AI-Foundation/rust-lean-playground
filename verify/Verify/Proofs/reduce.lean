@@ -19,7 +19,13 @@ attribute [-simp] Int.reducePow Nat.reducePow
 
 -- Auxiliary definition to interpret a vector of u32 as a mathematical integer
 def ArrayU645_to_Nat (limbs : Array U64 5#usize) : Nat :=
-  ∑ i : Fin 5, 2^(51 * i.val) * (limbs[i.val]!).val
+  ∑ i : Fin 5, 2^(51 * i.val) * (limbs[i]!).val
+
+-- Write out a sum of 5 terms as 5 terms
+theorem Finset.sum.five (f : Fin 5 → Nat) :
+  ∑ i : Fin 5, f i = f 0 + f 1 + f 2 + f 3 + f 4 := by
+
+sorry
 
 -- Auxiliary definition to interpret a `FieldElement51` as a mathematical integer
 def rust_lean_playground.FieldElement51.to_Nat (f : FieldElement51) := ArrayU645_to_Nat f.limbs
@@ -239,7 +245,7 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
       simpa [hlimbs10, hn4, hm4']
 
   -- Prove equality of the result and the input `[MOD p]`
-  · -- Crux: the result of `reduce limbs` is `ArrayU645_to_Nat limbs - p * (limbs[4] >> 51)`
+  · -- This follows from the more precise result: `ArrayU645_to_Nat limbs - p * (limbs[4] >> 51)`
     have h : ArrayU645_to_Nat limbs10 + p * (limbs[4].val >>> 51) = ArrayU645_to_Nat limbs := by
 
       -- // ci = limbs[i] / 2^52
@@ -261,27 +267,54 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
       have j4_limbs : j4.val = (limbs[4] &&& LOW_51_BIT_MASK) := by
         simp [hj4, hl4, hlimbs4, hlimbs3, hlimbs2, hlimbs1]; rfl
 
-      -- Key insight: x = (x & mask) + (x >> 51) * 2^51
-      have : limbs[0].val = j0 + c0 * 2^51 := by
+      -- x = (x & mask) + (x >> 51) * 2^51
+      have hlimbs_0 : (limbs.val)[0].val = j0 + c0 * 2^51 := by
         simpa [hc0_limbs, j0_limbs] using U64.split_51 limbs[0]
-      have : limbs[1].val = j1 + c1 * 2^51 := by
+      have hlimbs_1 : (limbs.val)[1].val = j1 + c1 * 2^51 := by
         simpa [hc1_limbs, j1_limbs] using U64.split_51 limbs[1]
-      have : limbs[2].val = j2 + c2 * 2^51 := by
+      have hlimbs_2 : (limbs.val)[2].val = j2 + c2 * 2^51 := by
         simpa [hc2_limbs, j2_limbs] using U64.split_51 limbs[2]
-      have : limbs[3].val = j3 + c3 * 2^51 := by
+      have hlimbs_3 : (limbs.val)[3].val = j3 + c3 * 2^51 := by
         simpa [hc3_limbs, j3_limbs] using U64.split_51 limbs[3]
-      have : limbs[4].val = j4 + c4 * 2^51 := by
+      have hlimbs_4 : (limbs.val)[4].val = j4 + c4 * 2^51 := by
         simpa [hc4_limbs, j4_limbs] using U64.split_51 limbs[4]
 
-      have : limbs10[0].val = j0 + c4 * 19 := by sorry
-      have : limbs10[1].val = j1 + c0 := by sorry
-      have : limbs10[2].val = j2 + c1 := by sorry
-      have : limbs10[3].val = j3 + c2 := by sorry
-      have : limbs10[4].val = j4 + c3 := by sorry
+      -- formulae from the construction of `reduce`
+      have hlimbs10_0 : (limbs10.val)[0].val = j0 + c4 * 19 := by
+        simp [hlimbs10, hlimbs9, hlimbs8, hlimbs7, hlimbs6, hn0, hm0', hl5]
+      have hlimbs10_1 : (limbs10.val)[1].val = j1 + c0 := by
+        simp [hlimbs10, hlimbs9, hlimbs8, hlimbs7, hn1, hm1']
+      have hlimbs10_2 : (limbs10.val)[2].val = j2 + c1 := by
+        simp [hlimbs10, hlimbs9, hlimbs8, hn2, hm2']
+      have hlimbs10_3 : (limbs10.val)[3].val = j3 + c2 := by
+        simp [hlimbs10, hlimbs9, hn3, hm3']
+      have hlimbs10_4 : (limbs10.val)[4].val = j4 + c3 := by
+        simp [hlimbs10, hn4, hm4']
 
-      unfold ArrayU645_to_Nat p
-
-      sorry
+      calc ArrayU645_to_Nat limbs10 + p * (limbs[4].val >>> 51)
+        _ = ∑ i : Fin 5, 2^(51 * i.val) * (limbs10[i.val]!).val + (2 ^ 255 - 19) * c4 := by
+          simp [ArrayU645_to_Nat, p, hc4_limbs]
+        _ = 2^(51 * 0) * (limbs10[0]!).val +
+            2^(51 * 1) * (limbs10[1]!).val +
+            2^(51 * 2) * (limbs10[2]!).val +
+            2^(51 * 3) * (limbs10[3]!).val +
+            2^(51 * 4) * (limbs10[4]!).val +
+            (2 ^ 255 - 19) * c4 := by
+          have := Finset.sum.five (fun i ↦ 2 ^ (51 * i.val) * limbs10[i]!)
+          congr
+        _ = 2^(51 * 0) * (limbs[0]!).val +
+            2^(51 * 1) * (limbs[1]!).val +
+            2^(51 * 2) * (limbs[2]!).val +
+            2^(51 * 3) * (limbs[3]!).val +
+            2^(51 * 4) * (limbs[4]!).val := by
+          simp [hlimbs_0, hlimbs_1, hlimbs_2, hlimbs_3, hlimbs_4,
+            hlimbs10_0, hlimbs10_1, hlimbs10_2, hlimbs10_3, hlimbs10_4]
+          ring
+        _ = _ := by
+          unfold ArrayU645_to_Nat
+          have := Finset.sum.five (fun i ↦ 2 ^ (51 * i.val) * limbs[i]!)
+          rw [this]
+          simp
 
     rw [← h, Nat.ModEq]
     calc (ArrayU645_to_Nat limbs10 + p * (limbs[4].val >>> 51)) % p
