@@ -246,12 +246,13 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
       -- Key insight: For any x, we have x = (x & mask) + (x >> 51) * 2^51
 
       -- // ai = limbs[i] / 2^52
-      let a0 := (limbs[0] >>> 51#i32); -- c0
-      let a1 := (limbs[1] >>> 51#i32); -- c1
-      let a2 := (limbs[2] >>> 51#i32); -- c2
-      let a3 := (limbs[3] >>> 51#i32); -- c3
-      let a4 := (limbs[4] >>> 51#i32); -- c4
+      have : c0 = (limbs[0].val >>> 51) := by simp [hc0, hi0]; rfl
+      have : c1 = (limbs[1].val >>> 51) := by simp [hc1, hi1]; rfl
+      have : c2 = (limbs[2].val >>> 51) := by simp [hc2, hi2]; rfl
+      have : c3 = (limbs[3].val >>> 51) := by simp [hc3, hi3]; rfl
+      have : c4 = (limbs[4].val >>> 51) := by simp [hc4, hi4]; rfl
 
+      -- TO DO: swap this for j
       -- // bi = limbs[i] % 2^52
       let b0 := (limbs[0] &&& LOW_51_BIT_MASK); -- j0
       let b1 := (limbs[1] &&& LOW_51_BIT_MASK); -- j1
@@ -259,12 +260,13 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
       let b3 := (limbs[3] &&& LOW_51_BIT_MASK); -- j3
       let b4 := (limbs[4] &&& LOW_51_BIT_MASK); -- j4
 
+      -- TO DO: turn this into a statement
       -- as_nat(rr) ==
-      -- 19 *  a4 + b0 +
-      -- pow2(51) * a0 + pow2(51) * b1 +
-      -- pow2(51) * (pow2(51) * a1) + pow2(102) * b2 +
-      -- pow2(102) * (pow2(51) * a2) + pow2(153) * b3 +
-      -- pow2(153) * (pow2(51) * a3) + pow2(204) * b4
+      -- 19 *  c4 + b0 +
+      -- pow2(51) * c0 + pow2(51) * b1 +
+      -- pow2(51) * (pow2(51) * c1) + pow2(102) * b2 +
+      -- pow2(102) * (pow2(51) * c2) + pow2(153) * b3 +
+      -- pow2(153) * (pow2(51) * c3) + pow2(204) * b4
 
       -- Apply the split lemma using the correct equalities
       -- have h0 : limbs[0]!.val = (i0 &&& LOW_51_BIT_MASK).val + (i0.val >>> 51) * 2^51 := by
@@ -298,13 +300,29 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
       -- have : l3 = i3 := by simp [hl3, hlimbs3, hi3]
       -- have : l4 = i4 := by simp [hl4, hlimbs4, hi4]
 
+      -- The key is to show that each limb was split and recombined correctly
+      -- limbs10[0] = (i0 & mask) + (i4 >> 51) * 19
+      -- limbs10[1] = (i1 & mask) + (i0 >> 51)
+      -- limbs10[2] = (i2 & mask) + (i1 >> 51)
+      -- limbs10[3] = (i3 & mask) + (i2 >> 51)
+      -- limbs10[4] = (i4 & mask) + (i3 >> 51)
+
+      -- Track through the algorithm what values we have
+      simp  [hlimbs10, hlimbs9, hlimbs8, hlimbs7, hlimbs6, hlimbs5, hlimbs4, hlimbs3, hlimbs2, hlimbs1, hn0, hn1, hn2, hn3, hn4, hm0', hm1', hm2', hm3', hm4', hj0, hj1, hj2, hj3, hj4, hl5, hc0, hc1, hc2, hc3, hc4]
+
+      -- Use that l1 = i1, l2 = i2, l3 = i3, l4 = i4 from array updates
+      have : l1 = i1 := by simp [hl1, hlimbs1]
+      have : l2 = i2 := by simp [hl2, hlimbs2]
+      have : l3 = i3 := by simp [hl3, hlimbs3]
+      have : l4 = i4 := by simp [hl4, hlimbs4]
+      simp [*]
+
+      -- Apply split_51 to decompose each original limb
       simp [hi0, hi1, hi2, hi3, hi4]
+      rw [i0.split_51, i1.split_51, i2.split_51, i3.split_51, i4.split_51]
 
-      -- The calculation shows:
-      -- Sum_i 2^(51*i) * limbs10[i] + (2^255 - 19) * (limbs[4] >> 51) = Sum_i 2^(51*i) * limbs[i]
-
-      -- rw [h0, h1, h2, h3, h4]
-      sorry
+      -- The arithmetic shows the identity
+      ring
     rw [← h, Nat.ModEq]
     calc (ArrayU645_to_Nat limbs10 + p * (limbs[4].val >>> 51)) % p
       _ = (ArrayU645_to_Nat limbs10 % p + (p * (limbs[4].val >>> 51)) % p) % p := by simp
