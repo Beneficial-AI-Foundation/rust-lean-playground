@@ -226,11 +226,9 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
       unfold ArrayU645_to_Nat
       -- TO DO: complete this using the specifics of the calculation
       sorry
-    -- TO DO: the following calculation could be slicker?
     rw [← h, Nat.ModEq]
     calc (ArrayU645_to_Nat limbs10 + p * (limbs[4].val >>> 51)) % p
-      = (ArrayU645_to_Nat limbs10 % p + (p * (limbs[4].val >>> 51)) % p) % p := by rw [Nat.add_mod]
+      _ = (ArrayU645_to_Nat limbs10 % p + (p * (limbs[4].val >>> 51)) % p) % p := by simp
       _ = (ArrayU645_to_Nat limbs10 % p + 0) % p := by
-        have : p * (limbs[4].val >>> 51) % p = 0 := Nat.mod_eq_zero_of_dvd <| dvd_mul_right p _
-        rw [this]
+        rw [Nat.mod_eq_zero_of_dvd <| dvd_mul_right p _]
       _ = ArrayU645_to_Nat limbs10 % p := by simp
