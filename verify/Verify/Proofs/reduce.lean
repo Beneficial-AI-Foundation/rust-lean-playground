@@ -220,11 +220,17 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
       have : j4.val + c3.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
       simpa [hlimbs10, hn4, hm4']
 
-  -- Prove equality `[MOD p]`
-  · unfold ArrayU645_to_Nat
-
-    sorry
-
--- TO DO:
--- as_nat(r.limbs) == as_nat(limbs) - p() * (limbs[4] >> 51),
--- as_nat(r.limbs) % p() == as_nat(limbs) % p()
+  -- Prove equality of the result and the input `[MOD p]`
+  · -- Crux: `reduce` computes `ArrayU645_to_Nat limbs - p * (limbs[4] >> 51)`
+    have h : ArrayU645_to_Nat limbs10 + p * (limbs[4].val >>> 51) = ArrayU645_to_Nat limbs := by
+      unfold ArrayU645_to_Nat
+      -- TO DO: complete this using the specifics of the calculation
+      sorry
+    -- TO DO: the following calculation could be slicker?
+    rw [← h, Nat.ModEq]
+    calc (ArrayU645_to_Nat limbs10 + p * (limbs[4].val >>> 51)) % p
+      = (ArrayU645_to_Nat limbs10 % p + (p * (limbs[4].val >>> 51)) % p) % p := by rw [Nat.add_mod]
+      _ = (ArrayU645_to_Nat limbs10 % p + 0) % p := by
+        have : p * (limbs[4].val >>> 51) % p = 0 := Nat.mod_eq_zero_of_dvd <| dvd_mul_right p _
+        rw [this]
+      _ = ArrayU645_to_Nat limbs10 % p := by simp
