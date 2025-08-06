@@ -18,9 +18,14 @@ attribute [-simp] Int.reducePow Nat.reducePow
 /-! ## Auxillary defs and theorems -/
 
 -- Auxiliary definition to interpret a vector of u32 as a mathematical integer
--- def FieldElement51_to_Nat (_f : FieldElement51) : Nat :=
---   -- TO DO: insert correct definition
---   sorry
+def ArrayU645_to_Nat (limbs : Array U64 5#usize) : Nat :=
+  ∑ i : Fin 5, 2^(51 * i.val) * (limbs[i.val]!).val
+
+-- Auxiliary definition to interpret a `FieldElement51` as a mathematical integer
+def rust_lean_playground.FieldElement51.to_Nat (f : FieldElement51) := ArrayU645_to_Nat f.limbs
+
+-- curve25519 is the elliptic curve over the prime field with order p
+def p : Nat := 2^255 - 19
 
 theorem LOW_51_BIT_MASK_val_eq : LOW_51_BIT_MASK.val = 2^51 - 1 := by
   unfold LOW_51_BIT_MASK
@@ -72,7 +77,8 @@ theorem Array.set_of_ne (bs : Array U64 5#usize) (a : U64) (i j : Nat) (hi : i <
 - the result is equal to the input mod p. -/
 theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
     ∃ r, FieldElement51.reduce limbs = ok (r) ∧
-    ∀ i, i < 5 → (r.limbs[i]!).val ≤ 2^51 + (2^13 - 1) * 19 := by
+    (∀ i, i < 5 → (r.limbs[i]!).val ≤ 2^51 + (2^13 - 1) * 19) ∧
+    ArrayU645_to_Nat limbs ≡ ArrayU645_to_Nat r.limbs [MOD p] := by
   unfold FieldElement51.reduce
 
   -- Perform `>>> 51` on each of the limbs
@@ -194,25 +200,30 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
   progress as ⟨ n4, hn4 ⟩      -- i23 + c3
   progress as ⟨ limbs10, hlimbs10 ⟩  -- Array.update limbs9 4 i24
 
-  -- Prove upper bounds on each limb of the result
-  intro i hi
-  interval_cases i
-  · -- Case i = 0
-    have : j0.val + c4.val * 19 ≤ 2^51 + (2^13 - 1) * 19 := by omega
-    simpa [hlimbs10, hlimbs9, hlimbs8, hlimbs7, hlimbs6, hn0, hm0', hl5]
-  · -- Case i = 1
-    have : j1.val + c0.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
-    simpa [hlimbs10, hlimbs9, hlimbs8, hlimbs7, hn1, hm1']
-  · -- Case i = 2
-    have : j2.val + c1.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
-    simpa [hlimbs10, hlimbs9, hlimbs8, hn2, hm2']
-  · -- Case i = 3
-    have : j3.val + c2.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
-    simpa [hlimbs10, hlimbs9, hn3, hm3']
-  · -- Case i = 4
-    have : j4.val + c3.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
-    simpa [hlimbs10, hn4, hm4']
+  refine ⟨fun i hi ↦ ?_, ?_⟩
 
+  -- Prove upper bounds on each limb of the result
+  · interval_cases i
+    · -- Case i = 0
+      have : j0.val + c4.val * 19 ≤ 2^51 + (2^13 - 1) * 19 := by omega
+      simpa [hlimbs10, hlimbs9, hlimbs8, hlimbs7, hlimbs6, hn0, hm0', hl5]
+    · -- Case i = 1
+      have : j1.val + c0.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
+      simpa [hlimbs10, hlimbs9, hlimbs8, hlimbs7, hn1, hm1']
+    · -- Case i = 2
+      have : j2.val + c1.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
+      simpa [hlimbs10, hlimbs9, hlimbs8, hn2, hm2']
+    · -- Case i = 3
+      have : j3.val + c2.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
+      simpa [hlimbs10, hlimbs9, hn3, hm3']
+    · -- Case i = 4
+      have : j4.val + c3.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
+      simpa [hlimbs10, hn4, hm4']
+
+  -- Prove equality `[MOD p]`
+  · unfold ArrayU645_to_Nat
+
+    sorry
 
 -- TO DO:
 -- as_nat(r.limbs) == as_nat(limbs) - p() * (limbs[4] >> 51),
