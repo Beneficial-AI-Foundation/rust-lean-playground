@@ -1,5 +1,6 @@
 import Aeneas
 import Verify.Src.RustLeanPlayground
+import Mathlib
 
 /-! # Reduce
 
@@ -46,16 +47,15 @@ theorem U64_shiftRight_le (a : U64) : a.val >>> 51 ≤ 2 ^ 13 - 1 := by
   bvify 64 at *
   bv_decide
 
-@[simp]
-theorem Array.set_apply (bs : Array U64 5#usize) (a : U64) (i : Nat) (h : i < 5) :
-    (bs.set i#usize a)[i]! = a := by
-  rw [Array.getElem!_Nat_eq, Array.set_val_eq]
-  simp_lists
+-- @[simp]
+-- theorem Array.set_apply (bs : Array U64 5#usize) (a : U64) (i : Nat) (h : i < 5) :
+--     (bs.set i#usize a)[i]! = a := by
+--   rw [Array.getElem!_Nat_eq, Array.set_val_eq]
+--   simp_lists
 
 theorem Array.val_getElem!_eq' (bs : Array U64 5#usize) (i : Nat) (h : i < bs.length) :
     (bs.val)[i]! = bs[i] := by
-  unfold Subtype.val
-  exact getElem!_pos bs.val i _
+  simpa [Subtype.val] using getElem!_pos bs.val i _
 
 @[simp]
 theorem Array.set_of_ne (bs : Array U64 5#usize) (a : U64) (i j : Nat) (hi : i < bs.length)
@@ -71,8 +71,8 @@ theorem Array.set_of_ne (bs : Array U64 5#usize) (a : U64) (i j : Nat) (hi : i <
 - All the limbs of the result are small, < (1u64 << 52)
 - the result is equal to the input mod p. -/
 theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
-    ∃ r, FieldElement51.reduce limbs = ok (r) := by
-
+    ∃ r, FieldElement51.reduce limbs = ok (r) ∧
+    ∀ i, i < 5 → (r.limbs[i]!).val ≤ 2^51 + (2^13 - 1) * 19 := by
   unfold FieldElement51.reduce
 
   -- Perform `>>> 51` on each of the limbs
@@ -117,51 +117,45 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
 
   -- Bitwise AND with (2^51 - 1) keeps only the lower 51 bits
   -- So j_i.val ≤ 2^51 - 1 < 2^51 for all i
-  have hj0'' : j0.val ≤ 2^51 := by
-    rw [hj0]
-    exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt i0)
+  have hj0'' : j0.val < 2^51 := by
+    simpa [hj0] using and_LOW_51_BIT_MASK_lt i0
 
-  have hj1'' : j1.val ≤ 2^51 := by
-    rw [hj1]
-    exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt l1)
+  have hj1'' : j1.val < 2^51 := by
+    simpa [hj1] using and_LOW_51_BIT_MASK_lt l1
 
-  have hj2'' : j2.val ≤ 2^51 := by
-    rw [hj2]
-    exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt l2)
+  have hj2'' : j2.val < 2^51 := by
+    simpa [hj2] using and_LOW_51_BIT_MASK_lt l2
 
-  have hj3'' : j3.val ≤ 2^51 := by
-    rw [hj3]
-    exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt l3)
+  have hj3'' : j3.val < 2^51 := by
+    simpa [hj3] using and_LOW_51_BIT_MASK_lt l3
 
-  have hj4'' : j4.val ≤ 2^51 := by
-    rw [hj4]
-    exact Nat.le_of_lt (and_LOW_51_BIT_MASK_lt l4)
+  have hj4'' : j4.val < 2^51 := by
+    simpa [hj4] using and_LOW_51_BIT_MASK_lt l4
 
   -- Check for no overflow prior to adding
   have h_no_overflow0 : j0 + l5 ≤ U64.max := by
     rw [U64.max_eq, hl5]
-    have : c4.val * 19 ≤ (2^13 - 1) * 19 := by simpa
-    have : j0.val + c4.val * 19 ≤ 2^51 + (2^13 - 1) * 19 := by omega
+    -- have : j0.val + c4.val * 19 ≤ 2^51 + (2^13 - 1) * 19 := by omega
     omega
 
   have h_no_overflow1 : j1 + c0 ≤ U64.max := by
     rw [U64.max_eq]
-    have : j1.val + c0.val ≤ 2^51 + 2^13 - 1 := by omega
+    -- have : j1.val + c0.val ≤ 2^51 + 2^13 - 1 := by omega
     omega
 
   have h_no_overflow2 : j2 + c1 ≤ U64.max := by
     rw [U64.max_eq]
-    have : j2.val + c1.val ≤ 2^51 + 2^13 - 1 := by omega
+    -- have : j2.val + c1.val ≤ 2^51 + 2^13 - 1 := by omega
     omega
 
   have h_no_overflow3 : j3 + c2 ≤ U64.max := by
     rw [U64.max_eq]
-    have : j3.val + c2.val ≤ 2^51 + 2^13 - 1 := by omega
+    -- have : j3.val + c2.val ≤ 2^51 + 2^13 - 1 := by omega
     omega
 
   have h_no_overflow4 : j4 + c3 ≤ U64.max := by
     rw [U64.max_eq]
-    have : j4.val + c3.val ≤ 2^51 + 2^13 - 1 := by omega
+    -- have : j4.val + c3.val ≤ 2^51 + 2^13 - 1 := by omega
     omega
 
   -- Add the parts of limbs together
@@ -200,8 +194,26 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
   progress as ⟨ n4, hn4 ⟩      -- i23 + c3
   progress as ⟨ limbs10, hlimbs10 ⟩  -- Array.update limbs9 4 i24
 
+  -- Prove upper bounds on each limb of the result
+  intro i hi
+  interval_cases i
+  · -- Case i = 0
+    have : j0.val + c4.val * 19 ≤ 2^51 + (2^13 - 1) * 19 := by omega
+    simpa [hlimbs10, hlimbs9, hlimbs8, hlimbs7, hlimbs6, hn0, hm0', hl5]
+  · -- Case i = 1
+    have : j1.val + c0.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
+    simpa [hlimbs10, hlimbs9, hlimbs8, hlimbs7, hn1, hm1']
+  · -- Case i = 2
+    have : j2.val + c1.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
+    simpa [hlimbs10, hlimbs9, hlimbs8, hn2, hm2']
+  · -- Case i = 3
+    have : j3.val + c2.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
+    simpa [hlimbs10, hlimbs9, hn3, hm3']
+  · -- Case i = 4
+    have : j4.val + c3.val ≤ 2^51 + (2^13 - 1) * 19 := by omega
+    simpa [hlimbs10, hn4, hm4']
+
+
 -- TO DO:
--- forall|i: int| 0 <= i < 5 ==> r.limbs[i] < (1u64 << 52),
--- (forall|i: int| 0 <= i < 5 ==> limbs[i] < (1u64 << 51)) ==> (r.limbs =~= limbs),
 -- as_nat(r.limbs) == as_nat(limbs) - p() * (limbs[4] >> 51),
 -- as_nat(r.limbs) % p() == as_nat(limbs) % p()
