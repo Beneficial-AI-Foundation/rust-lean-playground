@@ -17,7 +17,7 @@ pub type Bignum = Vec<u32>;
 ///  | x :: l =>
 ///    x + 2 ^ 32 * toInt l
 ///```
-/// 
+///
 /// Then the function satisfies:
 /// ```lean
 /// example (x : alloc.vec.Vec U32) (y : alloc.vec.Vec U32) (hLength : x.length = y.length) :
@@ -65,31 +65,31 @@ pub struct FieldElement51 {
 // curve25519-dalek/src/backend/serial/u64/field.rs
 impl FieldElement51 {
     /// Given 64-bit input limbs, reduce to enforce the bound 2^(51 + epsilon).
-    /// 
+    ///
     /// ## Spec:
-    /// 
+    ///
     /// If we define:
     /// ```lean
     /// def ArrayU645_to_Nat (limbs : Array U64 5#usize) : Nat :=
     ///   ∑ i ∈ Finset.range 5, 2^(51 * i) * (limbs[i]!).val
-    /// 
+    ///
     /// def p : Nat := 2^255 - 19
     /// ```
-    /// 
+    ///
     /// Then the function satisfies:
     /// ```lean
     /// example (limbs : Array U64 5#usize) :
     ///     ∃ r, FieldElement51.reduce limbs = ok (r) ∧
     ///     (∀ i, i < 5 → (r.limbs[i]!).val ≤ 2^51 + (2^13 - 1) * 19) ∧
-    ///     ArrayU645_to_Nat limbs ≡ ArrayU645_to_Nat r.limbs [MOD p] := 
+    ///     ArrayU645_to_Nat limbs ≡ ArrayU645_to_Nat r.limbs [MOD p] :=
     ///   FieldElement51.reduce_spec limbs
     /// ```
-    /// 
+    ///
     /// I.e.,
     /// - The function does not overflow and hence returns a result
     /// - All the limbs of the result are small, ≤ 2^(51 + ε)
     /// - The result is equal to the input mod p.
-    /// 
+    ///
     #[inline(always)]
     pub fn reduce(mut limbs: [u64; 5]) -> FieldElement51 {
         // Since the input limbs are bounded by 2^64, the biggest
