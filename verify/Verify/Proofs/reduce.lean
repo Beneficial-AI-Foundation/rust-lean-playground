@@ -241,52 +241,45 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
   -- Prove equality of the result and the input `[MOD p]`
   · -- Crux: the result of `reduce limbs` is `ArrayU645_to_Nat limbs - p * (limbs[4] >> 51)`
     have h : ArrayU645_to_Nat limbs10 + p * (limbs[4].val >>> 51) = ArrayU645_to_Nat limbs := by
-      unfold ArrayU645_to_Nat p
-
-      -- Key insight: x = (x & mask) + (x >> 51) * 2^51
 
       -- // ci = limbs[i] / 2^52
-      have : c0 = (limbs[0].val >>> 51) := by simp [hc0, hi0]; rfl
-      have : c1 = (limbs[1].val >>> 51) := by simp [hc1, hi1]; rfl
-      have : c2 = (limbs[2].val >>> 51) := by simp [hc2, hi2]; rfl
-      have : c3 = (limbs[3].val >>> 51) := by simp [hc3, hi3]; rfl
-      have : c4 = (limbs[4].val >>> 51) := by simp [hc4, hi4]; rfl
+      have hc0_limbs : c0 = (limbs[0].val >>> 51) := by simp [hc0, hi0]; rfl
+      have hc1_limbs : c1 = (limbs[1].val >>> 51) := by simp [hc1, hi1]; rfl
+      have hc2_limbs : c2 = (limbs[2].val >>> 51) := by simp [hc2, hi2]; rfl
+      have hc3_limbs : c3 = (limbs[3].val >>> 51) := by simp [hc3, hi3]; rfl
+      have hc4_limbs : c4 = (limbs[4].val >>> 51) := by simp [hc4, hi4]; rfl
 
       -- // ji = limbs[i] % 2^52
-      have : j0.val = (limbs[0] &&& LOW_51_BIT_MASK) := by simp [hj0, hi0]; rfl
-      have : j1.val = (limbs[1] &&& LOW_51_BIT_MASK) := by
+      have j0_limbs : j0.val = (limbs[0] &&& LOW_51_BIT_MASK) := by
+        simp [hj0, hi0]; rfl
+      have j1_limbs : j1.val = (limbs[1] &&& LOW_51_BIT_MASK) := by
         simp [hj1, hl1, hlimbs1]; rfl
-      have : j2.val = (limbs[2] &&& LOW_51_BIT_MASK) := by
+      have j2_limbs : j2.val = (limbs[2] &&& LOW_51_BIT_MASK) := by
         simp [hj2, hl2, hlimbs2, hlimbs1]; rfl
-      have : j3.val = (limbs[3] &&& LOW_51_BIT_MASK) := by
+      have j3_limbs : j3.val = (limbs[3] &&& LOW_51_BIT_MASK) := by
         simp [hj3, hl3, hlimbs3, hlimbs2, hlimbs1]; rfl
-      have : j4.val = (limbs[4] &&& LOW_51_BIT_MASK) := by
+      have j4_limbs : j4.val = (limbs[4] &&& LOW_51_BIT_MASK) := by
         simp [hj4, hl4, hlimbs4, hlimbs3, hlimbs2, hlimbs1]; rfl
 
-      -- as_nat(rr) ==
-      -- 19 *  c4 + j0 +
-      -- pow2(51) * c0 + pow2(51) * j1 +
-      -- pow2(51) * (pow2(51) * c1) + pow2(102) * j2 +
-      -- pow2(102) * (pow2(51) * c2) + pow2(153) * j3 +
-      -- pow2(153) * (pow2(51) * c3) + pow2(204) * j4
+      -- Key insight: x = (x & mask) + (x >> 51) * 2^51
+      have : limbs[0].val = j0 + c0 * 2^51 := by
+        simpa [hc0_limbs, j0_limbs] using U64.split_51 limbs[0]
+      have : limbs[1].val = j1 + c1 * 2^51 := by
+        simpa [hc1_limbs, j1_limbs] using U64.split_51 limbs[1]
+      have : limbs[2].val = j2 + c2 * 2^51 := by
+        simpa [hc2_limbs, j2_limbs] using U64.split_51 limbs[2]
+      have : limbs[3].val = j3 + c3 * 2^51 := by
+        simpa [hc3_limbs, j3_limbs] using U64.split_51 limbs[3]
+      have : limbs[4].val = j4 + c4 * 2^51 := by
+        simpa [hc4_limbs, j4_limbs] using U64.split_51 limbs[4]
 
-      -- Apply the split lemma using the correct equalities
-      -- have h0 : limbs[0]!.val = (i0 &&& LOW_51_BIT_MASK).val + (i0.val >>> 51) * 2^51 := by
-      --   rw [← hi0]; exact split_lemma i0
-      -- have h1 : limbs[1]!.val = (i1 &&& LOW_51_BIT_MASK).val + (i1.val >>> 51) * 2^51 := by
-      --   rw [← hi1]; exact split_lemma i1
-      -- have h2 : limbs[2]!.val = (i2 &&& LOW_51_BIT_MASK).val + (i2.val >>> 51) * 2^51 := by
-      --   rw [← hi2]; exact split_lemma i2
-      -- have h3 : limbs[3]!.val = (i3 &&& LOW_51_BIT_MASK).val + (i3.val >>> 51) * 2^51 := by
-      --   rw [← hi3]; exact split_lemma i3
-      -- have h4 : limbs[4]!.val = (i4 &&& LOW_51_BIT_MASK).val + (i4.val >>> 51) * 2^51 := by
-      --   rw [← hi4]; exact split_lemma i4
+      have : limbs10[0].val = j0 + c4 * 19 := by sorry
+      have : limbs10[1].val = j1 + c0 := by sorry
+      have : limbs10[2].val = j2 + c1 := by sorry
+      have : limbs10[3].val = j3 + c2 := by sorry
+      have : limbs10[4].val = j4 + c3 := by sorry
 
-      -- limbs10[0] = j0 + l5 = (i0 & mask) + (i4 >> 51) * 19
-      -- limbs10[1] = j1 + c0 = (i1 & mask) + (i0 >> 51)
-      -- limbs10[2] = j2 + c1 = (i2 & mask) + (i1 >> 51)
-      -- limbs10[3] = j3 + c2 = (i3 & mask) + (i2 >> 51)
-      -- limbs10[4] = j4 + c3 = (i4 & mask) + (i3 >> 51)
+      unfold ArrayU645_to_Nat p
 
       sorry
 
