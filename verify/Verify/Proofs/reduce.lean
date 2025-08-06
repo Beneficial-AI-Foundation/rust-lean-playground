@@ -69,12 +69,23 @@ theorem Array.set_of_ne (bs : Array U64 5#usize) (a : U64) (i j : Nat) (hi : i <
   rw [Array.getElem!_Nat_eq, Array.set_val_eq, ← Array.val_getElem!_eq' bs i hi]
   exact List.getElem!_set_ne bs j i a (by omega)
 
+-- Bitwise AND with 2^51 - 1 (which is a mask with all 1s in the lower 51 bits) extracts
+-- the lower 51 bits of the number, which is equivalent to taking the value modulo 2^51.
+theorem Aeneas.Std.U64.and_LOW_51_BIT_MASK (x : U64) :
+    (x &&& LOW_51_BIT_MASK).val = x.val % 2^51 := by
+  bvify 64 at *
+  rw [LOW_51_BIT_MASK_bv_eq]
+  bv_decide
 
-theorem Aeneas.Std.U64.split51 (x : U64) :
+-- Right shift by 51 is equivalent to division by 2^51
+theorem Aeneas.Std.U64.shiftRight_51 (x : U64) : x.val >>> 51 = x.val / 2^51 := by
+  simp [Nat.shiftRight_eq_div_pow]
+
+-- Fundamental property of bit operations: a number can be split into lower and upper bits
+theorem Aeneas.Std.U64.split_51 (x : U64) :
     x.val = (x &&& LOW_51_BIT_MASK).val + (x.val >>> 51) * 2^51 := by
-  -- This is a fundamental property of bit operations
-  -- x = lower_bits + upper_bits * 2^51
-  sorry
+  rw [x.and_LOW_51_BIT_MASK, x.shiftRight_51]
+  omega
 
 /-! ## Spec for `FieldElement51.reduce` -/
 
@@ -233,10 +244,6 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
       unfold ArrayU645_to_Nat p
 
       -- Key insight: For any x, we have x = (x & mask) + (x >> 51) * 2^51
-      -- This is because mask = 2^51 - 1, so x & mask gives lower 51 bits,
-      -- and x >> 51 gives the upper bits, which when shifted back by 51 bits
-      -- (multiplied by 2^51) reconstructs the original value
-
 
       -- // ai = limbs[i] / 2^52
       let a0 := (limbs[0] >>> 51#i32); -- c0
