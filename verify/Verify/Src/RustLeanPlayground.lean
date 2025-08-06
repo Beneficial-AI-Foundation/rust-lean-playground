@@ -61,7 +61,7 @@ structure FieldElement51 where
   limbs : Array U64 5#usize
 
 /- [rust_lean_playground::{rust_lean_playground::FieldElement51}::reduce]:
-   Source: 'src/lib.rs', lines 69:4-100:5 -/
+   Source: 'src/lib.rs', lines 94:4-125:5 -/
 def FieldElement51.reduce
   (limbs : Array U64 5#usize) : Result FieldElement51 :=
   do
