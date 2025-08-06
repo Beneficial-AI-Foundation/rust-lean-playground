@@ -53,7 +53,8 @@ pub fn add_with_carry(x: &mut Bignum, y: &Bignum) -> u8 {
 }
 
 // -----------------------------------------------------------------------//
-// From: curve25519-dalek/src/backend/serial/u64/field.rs
+// Source:
+// [curve25519-dalek](https://docs.rs/curve25519-dalek/latest/src/curve25519_dalek/backend/serial/u64/field.rs.html#288)
 
 // pub const LOW_51_BIT_MASK: u64 = (1u64 << 51) - 1;
 pub const LOW_51_BIT_MASK: u64 = 2251799813685247u64; // 2^51  -1
@@ -61,7 +62,7 @@ pub struct FieldElement51 {
     pub limbs: [u64; 5],
 }
 
-// From: curve25519-dalek/src/backend/serial/u64/field.rs
+// curve25519-dalek/src/backend/serial/u64/field.rs
 impl FieldElement51 {
     /// Given 64-bit input limbs, reduce to enforce the bound 2^(51 + epsilon).
     #[inline(always)]
