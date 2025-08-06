@@ -69,6 +69,13 @@ theorem Array.set_of_ne (bs : Array U64 5#usize) (a : U64) (i j : Nat) (hi : i <
   rw [Array.getElem!_Nat_eq, Array.set_val_eq, ← Array.val_getElem!_eq' bs i hi]
   exact List.getElem!_set_ne bs j i a (by omega)
 
+
+theorem Aeneas.Std.U64.split51 (x : U64) :
+    x.val = (x &&& LOW_51_BIT_MASK).val + (x.val >>> 51) * 2^51 := by
+  -- This is a fundamental property of bit operations
+  -- x = lower_bits + upper_bits * 2^51
+  sorry
+
 /-! ## Spec for `FieldElement51.reduce` -/
 
 /-- **Spec and proof concerning `reduce`**:
@@ -221,10 +228,75 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
       simpa [hlimbs10, hn4, hm4']
 
   -- Prove equality of the result and the input `[MOD p]`
-  · -- Crux: `reduce` computes `ArrayU645_to_Nat limbs - p * (limbs[4] >> 51)`
+  · -- Crux: the result of `reduce limbs` is `ArrayU645_to_Nat limbs - p * (limbs[4] >> 51)`
     have h : ArrayU645_to_Nat limbs10 + p * (limbs[4].val >>> 51) = ArrayU645_to_Nat limbs := by
-      unfold ArrayU645_to_Nat
-      -- TO DO: complete this using the specifics of the calculation
+      unfold ArrayU645_to_Nat p
+
+      -- Key insight: For any x, we have x = (x & mask) + (x >> 51) * 2^51
+      -- This is because mask = 2^51 - 1, so x & mask gives lower 51 bits,
+      -- and x >> 51 gives the upper bits, which when shifted back by 51 bits
+      -- (multiplied by 2^51) reconstructs the original value
+
+
+      -- // ai = limbs[i] / 2^52
+      let a0 := (limbs[0] >>> 51#i32); -- c0
+      let a1 := (limbs[1] >>> 51#i32); -- c1
+      let a2 := (limbs[2] >>> 51#i32); -- c2
+      let a3 := (limbs[3] >>> 51#i32); -- c3
+      let a4 := (limbs[4] >>> 51#i32); -- c4
+
+      -- // bi = limbs[i] % 2^52
+      let b0 := (limbs[0] &&& LOW_51_BIT_MASK); -- j0
+      let b1 := (limbs[1] &&& LOW_51_BIT_MASK); -- j1
+      let b2 := (limbs[2] &&& LOW_51_BIT_MASK); -- j2
+      let b3 := (limbs[3] &&& LOW_51_BIT_MASK); -- j3
+      let b4 := (limbs[4] &&& LOW_51_BIT_MASK); -- j4
+
+      -- as_nat(rr) ==
+      -- 19 *  a4 + b0 +
+      -- pow2(51) * a0 + pow2(51) * b1 +
+      -- pow2(51) * (pow2(51) * a1) + pow2(102) * b2 +
+      -- pow2(102) * (pow2(51) * a2) + pow2(153) * b3 +
+      -- pow2(153) * (pow2(51) * a3) + pow2(204) * b4
+
+      -- Apply the split lemma using the correct equalities
+      -- have h0 : limbs[0]!.val = (i0 &&& LOW_51_BIT_MASK).val + (i0.val >>> 51) * 2^51 := by
+      --   rw [← hi0]; exact split_lemma i0
+      -- have h1 : limbs[1]!.val = (i1 &&& LOW_51_BIT_MASK).val + (i1.val >>> 51) * 2^51 := by
+      --   rw [← hi1]; exact split_lemma i1
+      -- have h2 : limbs[2]!.val = (i2 &&& LOW_51_BIT_MASK).val + (i2.val >>> 51) * 2^51 := by
+      --   rw [← hi2]; exact split_lemma i2
+      -- have h3 : limbs[3]!.val = (i3 &&& LOW_51_BIT_MASK).val + (i3.val >>> 51) * 2^51 := by
+      --   rw [← hi3]; exact split_lemma i3
+      -- have h4 : limbs[4]!.val = (i4 &&& LOW_51_BIT_MASK).val + (i4.val >>> 51) * 2^51 := by
+      --   rw [← hi4]; exact split_lemma i4
+
+      -- Now track what limbs10 contains
+      -- limbs10[0] = j0 + l5 = (i0 & mask) + (i4 >> 51) * 19
+      -- limbs10[1] = j1 + c0 = (i1 & mask) + (i0 >> 51)
+      -- limbs10[2] = j2 + c1 = (i2 & mask) + (i1 >> 51)
+      -- limbs10[3] = j3 + c2 = (i3 & mask) + (i2 >> 51)
+      -- limbs10[4] = j4 + c3 = (i4 & mask) + (i3 >> 51)
+
+      -- simp only [hlimbs10, hlimbs9, hlimbs8, hlimbs7, hlimbs6]
+      -- simp only [hn0, hn1, hn2, hn3, hn4]
+      -- simp only [hm0', hm1', hm2', hm3', hm4']
+      -- simp only [hj0, hj1, hj2, hj3, hj4]
+      -- simp only [hc0, hc1, hc2, hc3, hc4]
+      -- simp only [hl5]
+
+      -- Use that l1 = i1, l2 = i2, l3 = i3, l4 = i4 from the array updates
+      -- have : l1 = i1 := by simp [hl1, hlimbs1, hi1]
+      -- have : l2 = i2 := by simp [hl2, hlimbs2, hi2]
+      -- have : l3 = i3 := by simp [hl3, hlimbs3, hi3]
+      -- have : l4 = i4 := by simp [hl4, hlimbs4, hi4]
+
+      simp [hi0, hi1, hi2, hi3, hi4]
+
+      -- The calculation shows:
+      -- Sum_i 2^(51*i) * limbs10[i] + (2^255 - 19) * (limbs[4] >> 51) = Sum_i 2^(51*i) * limbs[i]
+
+      -- rw [h0, h1, h2, h3, h4]
       sorry
     rw [← h, Nat.ModEq]
     calc (ArrayU645_to_Nat limbs10 + p * (limbs[4].val >>> 51)) % p
