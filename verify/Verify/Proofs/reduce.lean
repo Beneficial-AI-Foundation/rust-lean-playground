@@ -13,7 +13,7 @@ open rust_lean_playground
 
 attribute [-simp] Int.reducePow Nat.reducePow
 
-/-! ## Auxillary defs and theorems -/
+/-! ## Auxillary defs required for specs -/
 
 -- Auxiliary definition to interpret a vector of u32 as an integer
 def ArrayU645_to_Nat (limbs : Array U64 5#usize) : Nat :=
@@ -21,6 +21,8 @@ def ArrayU645_to_Nat (limbs : Array U64 5#usize) : Nat :=
 
 -- Curve25519 is the elliptic curve over the prime field with order p
 def p : Nat := 2^255 - 19
+
+/-! ## Auxillary theorems -/
 
 theorem LOW_51_BIT_MASK_val_eq : LOW_51_BIT_MASK.val = 2^51 - 1 := by
   unfold LOW_51_BIT_MASK; decide
@@ -178,14 +180,14 @@ theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
   · -- First we show a more precise result
     have h : ArrayU645_to_Nat limbs10 + p * (limbs[4].val >>> 51) = ArrayU645_to_Nat limbs := by
 
-      -- // ci = limbs[i] / 2^52
+      -- // ci = limbs[i] / 2^51
       have hc0_limbs : c0 = (limbs[0].val >>> 51) := by simp [hc0, hi0]; rfl
       have hc1_limbs : c1 = (limbs[1].val >>> 51) := by simp [hc1, hi1]; rfl
       have hc2_limbs : c2 = (limbs[2].val >>> 51) := by simp [hc2, hi2]; rfl
       have hc3_limbs : c3 = (limbs[3].val >>> 51) := by simp [hc3, hi3]; rfl
       have hc4_limbs : c4 = (limbs[4].val >>> 51) := by simp [hc4, hi4]; rfl
 
-      -- // ji = limbs[i] % 2^52
+      -- // ji = limbs[i] % 2^51
       have j0_limbs : j0.val = (limbs[0] &&& LOW_51_BIT_MASK) := by
         simp [hj0, hi0]; rfl
       have j1_limbs : j1.val = (limbs[1] &&& LOW_51_BIT_MASK) := by
