@@ -9,7 +9,7 @@ set_option linter.unusedVariables false
 namespace rust_lean_playground
 
 /- [rust_lean_playground::add_with_carry]: loop 0:
-   Source: 'src/lib.rs', lines 43:4-50:5 -/
+   Source: 'src/lib.rs', lines 44:4-51:5 -/
 def add_with_carry_loop
   (x : alloc.vec.Vec U32) (y : alloc.vec.Vec U32) (c0 : U8) (i : Usize) :
   Result (U8 × (alloc.vec.Vec U32))
@@ -40,12 +40,71 @@ def add_with_carry_loop
 partial_fixpoint
 
 /- [rust_lean_playground::add_with_carry]:
-   Source: 'src/lib.rs', lines 39:0-52:1 -/
+   Source: 'src/lib.rs', lines 40:0-53:1 -/
 @[reducible]
 def add_with_carry
   (x : alloc.vec.Vec U32) (y : alloc.vec.Vec U32) :
   Result (U8 × (alloc.vec.Vec U32))
   :=
   add_with_carry_loop x y 0#u8 0#usize
+
+/- [rust_lean_playground::LOW_51_BIT_MASK]
+   Source: 'src/lib.rs', lines 60:0-60:53 -/
+@[global_simps]
+def LOW_51_BIT_MASK_body : Result U64 := ok 2251799813685247#u64
+@[global_simps, irreducible]
+def LOW_51_BIT_MASK : U64 := eval_global LOW_51_BIT_MASK_body
+
+/- [rust_lean_playground::FieldElement51]
+   Source: 'src/lib.rs', lines 61:0-63:1 -/
+structure FieldElement51 where
+  limbs : Array U64 5#usize
+
+/- [rust_lean_playground::{rust_lean_playground::FieldElement51}::reduce]:
+   Source: 'src/lib.rs', lines 94:4-125:5 -/
+def FieldElement51.reduce
+  (limbs : Array U64 5#usize) : Result FieldElement51 :=
+  do
+  let i ← Array.index_usize limbs 0#usize
+  let c0 ← i >>> 51#i32
+  let i1 ← Array.index_usize limbs 1#usize
+  let c1 ← i1 >>> 51#i32
+  let i2 ← Array.index_usize limbs 2#usize
+  let c2 ← i2 >>> 51#i32
+  let i3 ← Array.index_usize limbs 3#usize
+  let c3 ← i3 >>> 51#i32
+  let i4 ← Array.index_usize limbs 4#usize
+  let c4 ← i4 >>> 51#i32
+  let i5 ← (↑(i &&& LOW_51_BIT_MASK) : Result U64)
+  let limbs1 ← Array.update limbs 0#usize i5
+  let i6 ← Array.index_usize limbs1 1#usize
+  let i7 ← (↑(i6 &&& LOW_51_BIT_MASK) : Result U64)
+  let limbs2 ← Array.update limbs1 1#usize i7
+  let i8 ← Array.index_usize limbs2 2#usize
+  let i9 ← (↑(i8 &&& LOW_51_BIT_MASK) : Result U64)
+  let limbs3 ← Array.update limbs2 2#usize i9
+  let i10 ← Array.index_usize limbs3 3#usize
+  let i11 ← (↑(i10 &&& LOW_51_BIT_MASK) : Result U64)
+  let limbs4 ← Array.update limbs3 3#usize i11
+  let i12 ← Array.index_usize limbs4 4#usize
+  let i13 ← (↑(i12 &&& LOW_51_BIT_MASK) : Result U64)
+  let limbs5 ← Array.update limbs4 4#usize i13
+  let i14 ← c4 * 19#u64
+  let i15 ← Array.index_usize limbs5 0#usize
+  let i16 ← i15 + i14
+  let limbs6 ← Array.update limbs5 0#usize i16
+  let i17 ← Array.index_usize limbs6 1#usize
+  let i18 ← i17 + c0
+  let limbs7 ← Array.update limbs6 1#usize i18
+  let i19 ← Array.index_usize limbs7 2#usize
+  let i20 ← i19 + c1
+  let limbs8 ← Array.update limbs7 2#usize i20
+  let i21 ← Array.index_usize limbs8 3#usize
+  let i22 ← i21 + c2
+  let limbs9 ← Array.update limbs8 3#usize i22
+  let i23 ← Array.index_usize limbs9 4#usize
+  let i24 ← i23 + c3
+  let limbs10 ← Array.update limbs9 4#usize i24
+  ok { limbs := limbs10 }
 
 end rust_lean_playground
