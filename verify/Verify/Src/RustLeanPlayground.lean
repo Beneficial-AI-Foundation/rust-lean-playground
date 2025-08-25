@@ -8,60 +8,20 @@ set_option linter.unusedVariables false
 
 namespace rust_lean_playground
 
-/- [rust_lean_playground::add_with_carry]: loop 0:
-   Source: 'src/lib.rs', lines 44:4-51:5 -/
-def add_with_carry_loop
-  (x : alloc.vec.Vec U32) (y : alloc.vec.Vec U32) (c0 : U8) (i : Usize) :
-  Result (U8 × (alloc.vec.Vec U32))
-  :=
-  let i1 := alloc.vec.Vec.len x
-  if i < i1
-  then
-    do
-    let i2 ←
-      alloc.vec.Vec.index (core.slice.index.SliceIndexUsizeSliceInst U32) x i
-    let i3 ← (↑(UScalar.cast .U32 c0) : Result U32)
-    let (sum, c1) ←
-      (↑(core.num.U32.overflowing_add i2 i3) : Result (U32 × Bool))
-    let i4 ←
-      alloc.vec.Vec.index (core.slice.index.SliceIndexUsizeSliceInst U32) y i
-    let (sum1, c2) ←
-      (↑(core.num.U32.overflowing_add sum i4) : Result (U32 × Bool))
-    let i5 ← (↑(UScalar.cast_fromBool .U8 c1) : Result U8)
-    let i6 ← (↑(UScalar.cast_fromBool .U8 c2) : Result U8)
-    let c01 ← i5 + i6
-    let (_, index_mut_back) ←
-      alloc.vec.Vec.index_mut (core.slice.index.SliceIndexUsizeSliceInst U32) x
-        i
-    let i7 ← i + 1#usize
-    let x1 := index_mut_back sum1
-    add_with_carry_loop x1 y c01 i7
-  else ok (c0, x)
-partial_fixpoint
-
-/- [rust_lean_playground::add_with_carry]:
-   Source: 'src/lib.rs', lines 40:0-53:1 -/
-@[reducible]
-def add_with_carry
-  (x : alloc.vec.Vec U32) (y : alloc.vec.Vec U32) :
-  Result (U8 × (alloc.vec.Vec U32))
-  :=
-  add_with_carry_loop x y 0#u8 0#usize
-
 /- [rust_lean_playground::LOW_51_BIT_MASK]
-   Source: 'src/lib.rs', lines 60:0-60:53 -/
+   Source: 'src/lib.rs', lines 4:0-4:53 -/
 @[global_simps]
 def LOW_51_BIT_MASK_body : Result U64 := ok 2251799813685247#u64
 @[global_simps, irreducible]
 def LOW_51_BIT_MASK : U64 := eval_global LOW_51_BIT_MASK_body
 
 /- [rust_lean_playground::FieldElement51]
-   Source: 'src/lib.rs', lines 61:0-63:1 -/
+   Source: 'src/lib.rs', lines 5:0-7:1 -/
 structure FieldElement51 where
   limbs : Array U64 5#usize
 
 /- [rust_lean_playground::{rust_lean_playground::FieldElement51}::reduce]:
-   Source: 'src/lib.rs', lines 94:4-125:5 -/
+   Source: 'src/lib.rs', lines 38:4-69:5 -/
 def FieldElement51.reduce
   (limbs : Array U64 5#usize) : Result FieldElement51 :=
   do
