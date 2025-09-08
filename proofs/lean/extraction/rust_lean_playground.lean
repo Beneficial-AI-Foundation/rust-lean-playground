@@ -266,8 +266,7 @@ def field_from_limbs (limbs : (RustArray UInt64 5))
   : Result (RustArray UInt64 5) := do
   limbs
 
-def field_ZERO : Result (RustArray UInt64 5) := do
-  (← field_from_limbs #v[0, 0, 0, 0, 0)
+def field_ZERO : Result (RustArray UInt64 5) := do #v[0, 0, 0, 0, 0
 
 def field_ONE : Result (RustArray UInt64 5) := do
   (← field_from_limbs #v[1, 0, 0, 0, 0)
@@ -755,3 +754,5 @@ def field_square2 (input : (RustArray UInt64 5))
 
 
 
+
+def ZERO : Result (RustArray UInt64 5) := do #v[0, 0, 0, 0, 0

@@ -227,7 +227,12 @@ pub(crate) const fn from_limbs(limbs: [u64; 5]) -> [u64; 5] {
 }
 
 /// The scalar \\( 0 \\).
-pub const ZERO: [u64; 5] = from_limbs([0, 0, 0, 0, 0]);
+// pub const ZERO: [u64; 5] = from_limbs([0, 0, 0, 0, 0]);
+
+/// The scalar \\( 0 \\).
+pub const ZERO: [u64; 5] = [0, 0, 0, 0, 0];
+
+
 /// The scalar \\( 1 \\).
 pub const ONE: [u64; 5] = from_limbs([1, 0, 0, 0, 0]);
 /// The scalar \\( -1 \\).
