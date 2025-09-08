@@ -1,0 +1,25 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=/home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/packages/Cli/.lake/build/lib/lean:/home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/packages/batteries/.lake/build/lib/lean:/home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/packages/Qq/.lake/build/lib/lean:/home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/packages/aesop/.lake/build/lib/lean:/home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/packages/importGraph/.lake/build/lib/lean:/home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/packages/plausible/.lake/build/lib/lean:/home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/packages/mathlib/.lake/build/lib/lean:/home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/packages/aeneas/backends/lean/.lake/build/lib/lean:/home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/build/lib/lean /home/oliver/.elan/toolchains/leanprover--lean4---v4.21.0/bin/lean -Dpp.unicode.fun=true -DautoImplicit=false -DrelaxedAutoImplicit=false -Dweak.linter.mathlibStandardSet=true -DmaxSynthPendingDepth=3 /home/oliver/Projects/BAIF/rust-lean-playground/verify/Verify/Src/RustLeanPlayground.lean -R /home/oliver/Projects/BAIF/rust-lean-playground/verify -o /home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/build/lib/lean/Verify/Src/RustLeanPlayground.olean -i /home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/build/lib/lean/Verify/Src/RustLeanPlayground.ilean -c /home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/build/ir/Verify/Src/RustLeanPlayground.c --json",
+   "level": "trace"}],
+ "inputs":
+ [["Verify.Src.RustLeanPlayground:deps",
+   [["deps",
+     [["verify/Verify:extraDep", [["@verify:extraDep", "1723"]]],
+      ["import oleans",
+       [["Aeneas:olean",
+         [["Aeneas:deps", "15014217890520017503"],
+          ["/home/oliver/Projects/BAIF/rust-lean-playground/verify/.lake/packages/aeneas/backends/lean/.lake/build/lib/lean/Aeneas.olean",
+           "3692068771870279810"]]]]]]],
+    ["libs",
+     [["import dynlibs", "1723"],
+      ["package external libraries", "1723"],
+      ["module dynlibs", "1723"],
+      ["module plugins", "1723"]]]]],
+  ["Lean 4.21.0, commit 6741444a63eec253a7eae7a83f1beb3de015023d",
+   "11123825329739276520"],
+  ["Module.leanArgs: #[-Dpp.unicode.fun=true, -DautoImplicit=false, -DrelaxedAutoImplicit=false, -Dweak.linter.mathlibStandardSet=true, -DmaxSynthPendingDepth=3]",
+   "17649996026770819444"],
+  ["/home/oliver/Projects/BAIF/rust-lean-playground/verify/Verify/Src/RustLeanPlayground.lean",
+   "15857171318093260242"]],
+ "depHash": "14796860337806621412"}

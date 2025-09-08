@@ -11,7 +11,6 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
-
 /-- Partial right shift on u64 -/
 instance UInt64.instHaxShiftRight : HaxShiftRight u64 u64 where
   shiftRight x y :=
@@ -40,8 +39,14 @@ infixl:60 " &&&? " => fun a b => pure (HAnd.hAnd a b)
 @[simp, spec]
 def Rust_primitives.Hax.Machine_int.bitand {α} [HAnd α α α] (a b: α) : Result α := a &&&? b
 
+def Rust_primitives.Hax.Machine_int.shl (a : u64) (b : i32) : Result u64 := sorry
 
-def Rust_lean_playground.reduce.LOW_51_BIT_MASK : u64 := 2251799813685247
+/-- Partial right shift on u64 (by i32) -/
+instance UInt64.instHaxShiftRight' : HaxShiftRight u64 i32 where
+  shiftRight x y := sorry
+
+def Rust_lean_playground.reduce.LOW_51_BIT_MASK   : Result u64 := do
+  (← (← Rust_primitives.Hax.Machine_int.shl (1 : u64) (51 : i32)) -? (1 : u64))
 
 def Rust_lean_playground.reduce  (limbs : (RustArray u64 5))
   : Result (RustArray u64 5)

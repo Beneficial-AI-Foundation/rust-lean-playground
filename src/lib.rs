@@ -5,7 +5,11 @@
 /// Given 64-bit input limbs, reduce to enforce the bound 2^(51 + epsilon).
 // #[inline(always)]
 pub fn reduce(mut limbs: [u64; 5]) -> [u64; 5] {
-    const LOW_51_BIT_MASK: u64 = (1u64 << 51) - 1;
+
+    // const LOW_51_BIT_MASK: u64 = (1u64 << 51) - 1; // original code
+
+    const LOW_51_BIT_MASK: u64 = 2251799813685247u64; // 2^51  -1
+
 
     // Since the input limbs are bounded by 2^64, the biggest
     // carry-out is bounded by 2^13.
