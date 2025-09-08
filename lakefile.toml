@@ -1,7 +1,7 @@
-name = "verify"
+name = "RustLean"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["Verify"]
+defaultTargets = ["RustLean"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -11,10 +11,16 @@ weak.linter.mathlibStandardSet = true
 maxSynthPendingDepth = 3
 
 [[require]]
-name = "aeneas"
-git = "https://github.com/AeneasVerif/aeneas.git"
-subDir = "backends/lean"
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.22.0-rc4"
+
+[[require]]
+name = "Hax"
+git = "https://github.com/cryspen/hax.git"
+subDir = "hax-lib/proof-libs/lean"
 rev = "main"  # or a specific commit hash
 
 [[lean_lib]]
-name = "Verify"
+name = "RustLean"
+srcDir = "proofs/lean"
