@@ -15,15 +15,9 @@ def LOW_51_BIT_MASK_body : Result U64 := ok 2251799813685247#u64
 @[global_simps, irreducible]
 def LOW_51_BIT_MASK : U64 := eval_global LOW_51_BIT_MASK_body
 
-/- [rust_lean_playground::FieldElement51]
-   Source: 'src/lib.rs', lines 5:0-7:1 -/
-structure FieldElement51 where
-  limbs : Array U64 5#usize
-
-/- [rust_lean_playground::{rust_lean_playground::FieldElement51}::reduce]:
-   Source: 'src/lib.rs', lines 38:4-69:5 -/
-def FieldElement51.reduce
-  (limbs : Array U64 5#usize) : Result FieldElement51 :=
+/- [rust_lean_playground::reduce]:
+   Source: 'src/lib.rs', lines 35:0-66:1 -/
+def reduce (limbs : Array U64 5#usize) : Result (Array U64 5#usize) :=
   do
   let i ← Array.index_usize limbs 0#usize
   let c0 ← i >>> 51#i32
@@ -64,7 +58,6 @@ def FieldElement51.reduce
   let limbs9 ← Array.update limbs8 3#usize i22
   let i23 ← Array.index_usize limbs9 4#usize
   let i24 ← i23 + c3
-  let limbs10 ← Array.update limbs9 4#usize i24
-  ok { limbs := limbs10 }
+  Array.update limbs9 4#usize i24
 
 end rust_lean_playground

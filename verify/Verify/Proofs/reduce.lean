@@ -4,7 +4,7 @@ import Mathlib
 
 /-! # Reduce
 
-The main statement concerning `FieldElement51.reduce` is `FieldElement51.reduce_spec` (below).
+The main statement concerning `reduce` is `reduce_spec` (below).
 
 -/
 
@@ -63,18 +63,18 @@ theorem Aeneas.Std.U64.split_51 (x : U64) :
   rw [x.and_LOW_51_BIT_MASK, x.shiftRight_51]
   omega
 
-/-! ## Spec for `FieldElement51.reduce` -/
+/-! ## Spec for `reduce` -/
 
 /-- **Spec and proof concerning `reduce`**:
 - Does not overflow and hence returns a result
 - All the limbs of the result are small, ≤ 2^(51 + ε)
 - The result is equal to the input mod p. -/
-theorem FieldElement51.reduce_spec (limbs : Array U64 5#usize) :
-    ∃ r, FieldElement51.reduce limbs = ok (r) ∧
-    (∀ i, i < 5 → (r.limbs[i]!).val ≤ 2^51 + (2^13 - 1) * 19) ∧
-    ArrayU645_to_Nat limbs ≡ ArrayU645_to_Nat r.limbs [MOD p] := by
+theorem reduce_spec (limbs : Array U64 5#usize) :
+    ∃ r, reduce limbs = ok (r) ∧
+    (∀ i, i < 5 → (r[i]!).val ≤ 2^51 + (2^13 - 1) * 19) ∧
+    ArrayU645_to_Nat limbs ≡ ArrayU645_to_Nat r [MOD p] := by
 
-  unfold FieldElement51.reduce
+  unfold reduce
 
   -- Perform `>>> 51` on each of the limbs
   progress as ⟨ i0, hi0 ⟩             -- Array.index_usize limbs 0
