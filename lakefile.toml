@@ -19,7 +19,7 @@ rev = "v4.22.0-rc4"
 name = "Hax"
 git = "https://github.com/cryspen/hax.git"
 subDir = "hax-lib/proof-libs/lean"
-rev = "lean-nightly"  # or a specific commit hash
+rev = "main"  # or a specific commit hash
 
 [[lean_lib]]
 name = "RustLean"
