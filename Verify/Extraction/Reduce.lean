@@ -1,4 +1,4 @@
--- This file produced by `cargo hax into lean` and then some edits.
+-- This file produced by `cargo hax into lean` from `src/lib.rs` and then some edits.
 import Verify.Lib.Lib
 import Std.Tactic.Do
 import Std.Do.Triple
