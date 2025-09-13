@@ -2,9 +2,6 @@ import Verify.Lib.Lib
 import Verify.Extraction.Reduce
 import Mathlib
 
--- set_option mvcgen.warning false
--- set_option linter.unusedVariables false
-
 open Std.Do
 open Std.Tactic
 
@@ -25,16 +22,9 @@ theorem LOW_51_BIT_MASK_val_eq : LOW_51_BIT_MASK.toFin = 2^51 - 1 := by
 theorem reduce_spec (limbs : (RustArray u64 5)) :
     ⦃ ⌜True⌝ ⦄
     reduce limbs
-    ⦃ ⇓ result =>
+    ⦃ ⇓ result ↦
       (∀ (i : Fin 5), (result[i]!).toFin.toNat ≤ 2^51 + (2^13 - 1) * 19) ∧
       U64x5_toNat limbs ≡ U64x5_toNat result [MOD p] ⦄ := by
-
-
-
-  simp
-  intro _
-  unfold reduce
-
 
 
   sorry
