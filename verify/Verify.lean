@@ -1,2 +1,2 @@
+import Verify.Proofs.Reduce
 import Verify.Src.RustLeanPlayground
-import Verify.Proofs.reduce
