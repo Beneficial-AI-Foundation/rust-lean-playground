@@ -60,11 +60,11 @@ theorem reduce_spec (limbs : Array U64 5#usize) :
   progress as ⟨ j4, hj4, hj4' ⟩; progress as ⟨ limbs5, hlimbs5 ⟩; progress as ⟨ l5, hl5 ⟩
 
   -- Bitwise `&&& LOW_51_BIT_MASK` keeps only the lower 51 bits so j_i.val ≤ 2^51 - 1 < 2^51
-  have hj0'' : j0.val < 2^51 := by simpa [hj0] using and_LOW_51_BIT_MASK_lt i0
-  have hj1'' : j1.val < 2^51 := by simpa [hj1] using and_LOW_51_BIT_MASK_lt l1
-  have hj2'' : j2.val < 2^51 := by simpa [hj2] using and_LOW_51_BIT_MASK_lt l2
-  have hj3'' : j3.val < 2^51 := by simpa [hj3] using and_LOW_51_BIT_MASK_lt l3
-  have hj4'' : j4.val < 2^51 := by simpa [hj4] using and_LOW_51_BIT_MASK_lt l4
+  have hj0'' : j0.val < 2^51 := by simpa [*] using and_LOW_51_BIT_MASK_lt i0
+  have hj1'' : j1.val < 2^51 := by simpa [*] using and_LOW_51_BIT_MASK_lt l1
+  have hj2'' : j2.val < 2^51 := by simpa [*] using and_LOW_51_BIT_MASK_lt l2
+  have hj3'' : j3.val < 2^51 := by simpa [*] using and_LOW_51_BIT_MASK_lt l3
+  have hj4'' : j4.val < 2^51 := by simpa [*] using and_LOW_51_BIT_MASK_lt l4
 
   -- Upper bounds on each limb of the result, shows no overflow and gives the bound required later
   have : j0.val + c4.val * 19 ≤ 2^51 + (2^13 - 1) * 19 := by omega
@@ -75,27 +75,27 @@ theorem reduce_spec (limbs : Array U64 5#usize) :
 
   -- Add the parts of limbs together
   progress as ⟨ m0, hm0 ⟩
-  have hm0' : m0 = j0 := by simp [hm0, hlimbs5, hlimbs4, hlimbs3, hlimbs2, hlimbs1]
+  have hm0' : m0 = j0 := by simp [*]
   have : m0 + l5 ≤ U64.max := by simp [U64.max_eq, hm0']; omega
   progress as ⟨ n0, hn0 ⟩; progress as ⟨ limbs6, hlimbs6 ⟩
 
   progress as ⟨ m1, hm1 ⟩
-  have hm1' : m1 = j1 := by simp [hm1, hlimbs6, hlimbs5, hlimbs4, hlimbs3, hlimbs2, hlimbs1]
+  have hm1' : m1 = j1 := by simp [*]
   have : m1 + c0 ≤ U64.max := by rw [U64.max_eq, hm1']; omega
   progress as ⟨ n1, hn1 ⟩; progress as ⟨ limbs7, hlimbs7 ⟩
 
   progress as ⟨ m2, hm2 ⟩
-  have hm2' : m2 = j2 := by simp [hm2, hlimbs7, hlimbs6, hlimbs5, hlimbs4, hlimbs3, hlimbs2]
+  have hm2' : m2 = j2 := by simp [*]
   have : m2 + c1 ≤ U64.max := by rw [U64.max_eq, hm2']; omega
   progress as ⟨ n2, hn2 ⟩; progress as ⟨ limbs8, hlimbs8 ⟩
 
   progress as ⟨ m3, hm3 ⟩
-  have hm3' : m3 = j3 := by simp [hm3, hlimbs8, hlimbs7, hlimbs6, hlimbs5, hlimbs4, hlimbs3]
+  have hm3' : m3 = j3 := by simp [*]
   have : m3 + c2 ≤ U64.max := by rw [U64.max_eq, hm3']; omega
   progress as ⟨ n3, hn3 ⟩; progress as ⟨ limbs9, hlimbs9 ⟩
 
   progress as ⟨ m4, hm4 ⟩
-  have hm4' : m4 = j4 := by simp [hm4, hlimbs9, hlimbs8, hlimbs7, hlimbs6, hlimbs5, hlimbs4]
+  have hm4' : m4 = j4 := by simp [*]
   have : m4 + c3 ≤ U64.max := by rw [U64.max_eq, hm4']; omega
   progress as ⟨ n4, hn4 ⟩; progress as ⟨ limbs10, hlimbs10 ⟩
 
@@ -113,11 +113,11 @@ theorem reduce_spec (limbs : Array U64 5#usize) :
   · have h : ArrayU645_to_Nat limbs10 + p * (limbs[4].val >>> 51) = ArrayU645_to_Nat limbs := by
 
       -- x = (x & mask) + (x >> 51) * 2^51
-      have hlimbs_0 : (limbs.val)[0].val = j0 + c0 * 2^51 := by simpa [hc0, hi0, hj0, hi0] using U64.split_51 limbs[0]
-      have hlimbs_1 : (limbs.val)[1].val = j1 + c1 * 2^51 := by simpa [hc1, hi1, hj1, hl1, hlimbs1] using U64.split_51 limbs[1]
-      have hlimbs_2 : (limbs.val)[2].val = j2 + c2 * 2^51 := by simpa [hc2, hi2, hj2, hl2, hlimbs2, hlimbs1] using U64.split_51 limbs[2]
-      have hlimbs_3 : (limbs.val)[3].val = j3 + c3 * 2^51 := by simpa [hc3, hi3, hj3, hl3, hlimbs3, hlimbs2, hlimbs1] using U64.split_51 limbs[3]
-      have hlimbs_4 : (limbs.val)[4].val = j4 + c4 * 2^51 := by simpa [hc4, hi4, hj4, hl4, hlimbs4, hlimbs3, hlimbs2, hlimbs1] using U64.split_51 limbs[4]
+      have hlimbs_0 : (limbs.val)[0].val = j0 + c0 * 2^51 := by simpa [*] using U64.split_51 limbs[0]
+      have hlimbs_1 : (limbs.val)[1].val = j1 + c1 * 2^51 := by simpa [*] using U64.split_51 limbs[1]
+      have hlimbs_2 : (limbs.val)[2].val = j2 + c2 * 2^51 := by simpa [*] using U64.split_51 limbs[2]
+      have hlimbs_3 : (limbs.val)[3].val = j3 + c3 * 2^51 := by simpa [*] using U64.split_51 limbs[3]
+      have hlimbs_4 : (limbs.val)[4].val = j4 + c4 * 2^51 := by simpa [*] using U64.split_51 limbs[4]
 
       -- formulae from the construction of `reduce`
       have hlimbs10_0 : (limbs10.val)[0].val = j0 + c4 * 19 := by simp [hlimbs10, hlimbs9, hlimbs8, hlimbs7, hlimbs6, hn0, hm0', hl5]
