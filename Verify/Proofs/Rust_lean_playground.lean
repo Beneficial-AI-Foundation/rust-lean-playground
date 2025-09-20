@@ -11,6 +11,7 @@ open Std.Tactic
 
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
+set_option maxHeartbeats 5000000
 
 def Rust_lean_playground.LOW_51_BIT_MASK : u64 := 2251799813685247
 
@@ -115,7 +116,14 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
   · -- The result is equal [Mod p] the input
     expose_names
     subst_vars
-    simp [ -Int.reducePow, -Nat.reducePow, Finset.range]
+    simp [-Int.reducePow, -Nat.reducePow, Finset.range]
+
+
+    have : ((UInt64.toNat limbs[1] &&& 2251799813685247) + UInt64.toNat limbs[0] >>> 51) <
+        2 ^ 64 := by
+      sorry
+    rw [Nat.mod_eq_of_lt this]
+
 
     -- Remaining goals is:
     -- ⊢ 2 ^ 204 * UInt64.toNat limbs[4] +
@@ -124,14 +132,14 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
     --  (2 ^ 51 * UInt64.toNat limbs[1] +
     --  UInt64.toNat limbs[0]))) ≡
     --  2 ^ 204 * (((UInt64.toNat limbs[4] &&& 2251799813685247) +
-    --  UInt64.toNat limbs[3] >>> 51) % 2 ^ 64) +
+    --    UInt64.toNat limbs[3] >>> 51) % 2 ^ 64) +
     --  (2 ^ 153 * (((UInt64.toNat limbs[3] &&& 2251799813685247) +
-    --  UInt64.toNat limbs[2] >>> 51) % 2 ^ 64) +
+    --    UInt64.toNat limbs[2] >>> 51) % 2 ^ 64) +
     --  (2 ^ 102 * (((UInt64.toNat limbs[2] &&& 2251799813685247) +
-    --  UInt64.toNat limbs[1] >>> 51) % 2 ^ 64) +
+    --    UInt64.toNat limbs[1] >>> 51) % 2 ^ 64) +
     --  (2 ^ 51 * (((UInt64.toNat limbs[1] &&& 2251799813685247) +
-    --  UInt64.toNat limbs[0] >>> 51) % 2 ^ 64) +
+    --    UInt64.toNat limbs[0] >>> 51) % 2 ^ 64) +
     --  ((UInt64.toNat limbs[0] &&& 2251799813685247) +
-    --  UInt64.toNat limbs[4] >>> 51 * 19) % 2 ^ 64))) [MOD p]
+    --    UInt64.toNat limbs[4] >>> 51 * 19) % 2 ^ 64))) [MOD p]
 
     sorry
