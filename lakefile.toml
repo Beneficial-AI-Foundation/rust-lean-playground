@@ -13,7 +13,13 @@ maxSynthPendingDepth = 3
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.22.0-rc4"
+# rev = "v4.23.0"
+
+# [[require]]
+# name = "Hax"
+# git = "https://github.com/cryspen/hax.git"
+# subDir = "hax-lib/proof-libs/lean"
+# rev = "lean-lib-update"
 
 [[lean_lib]]
 name = "Verify"

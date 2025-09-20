@@ -2,7 +2,6 @@
 /aeneas
 .claude
 *.llbc
-.local/.lake
-/.lake
-/.lake
-/.lake
+/.local
+.lake
+
