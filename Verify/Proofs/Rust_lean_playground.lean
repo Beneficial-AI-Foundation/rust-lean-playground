@@ -89,7 +89,7 @@ def ArrayU645_to_Nat (limbs : RustArray u64 5) : Nat :=
 /-- Curve25519 is the elliptic curve over the prime field with order p -/
 def p : Nat := 2^255 - 19
 
-def post (limbs res : RustArray u64 (5: usize)) :=
+def post (limbs res : RustArray u64 (5 : usize)) :=
   let limbs : RustArray u64 5 := limbs.cast (by simp);
   let res : RustArray u64 5 := res.cast (by simp);
 
@@ -100,20 +100,38 @@ def post (limbs res : RustArray u64 (5: usize)) :=
 
 attribute [spec, simp] Rust_lean_playground.LOW_51_BIT_MASK
 theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
- ⦃ ⌜ True ⌝ ⦄
- (Rust_lean_playground.reduce limbs)
- ⦃ ⇓ res => ⌜ post limbs res ⌝ ⦄
- := by
- open Spec.BV in mvcgen [Rust_lean_playground.reduce]
-   <;> simp [Vector.size] at *
- all_goals try (subst_vars; (try simp at *) ; bv_decide)
- simp [post, -Nat.reducePow, -Int.reducePow]
- constructor
- . intros i h
-   iterate 5 (
-     rcases i with _ | i ; focus (
-       subst_vars ; simp ; bv_decide (config := {timeout := 1})))
-   omega
- . expose_names
-   subst_vars; simp [ -Int.reducePow, -Nat.reducePow, Finset.range]
-   sorry
+    ⦃ ⌜ True ⌝ ⦄
+    (Rust_lean_playground.reduce limbs)
+    ⦃ ⇓ res => ⌜ post limbs res ⌝ ⦄ := by
+  open Spec.BV in mvcgen [Rust_lean_playground.reduce]
+  -- No overflow because of the bit shift and bit mask prior to addition
+  all_goals simp [Vector.size] at *
+  all_goals try (subst_vars; (try simp at *); bv_decide)
+  -- Remains to show the post condition
+  constructor
+  · -- All the limbs of the result are bounded
+    intro i _; interval_cases i
+    all_goals subst_vars; simp; bv_decide
+  · -- The result is equal [Mod p] the input
+    expose_names
+    subst_vars
+    simp [ -Int.reducePow, -Nat.reducePow, Finset.range]
+
+    -- Remaining goals is:
+    -- ⊢ 2 ^ 204 * UInt64.toNat limbs[4] +
+    --  (2 ^ 153 * UInt64.toNat limbs[3] +
+    --  (2 ^ 102 * UInt64.toNat limbs[2] +
+    --  (2 ^ 51 * UInt64.toNat limbs[1] +
+    --  UInt64.toNat limbs[0]))) ≡
+    --  2 ^ 204 * (((UInt64.toNat limbs[4] &&& 2251799813685247) +
+    --  UInt64.toNat limbs[3] >>> 51) % 2 ^ 64) +
+    --  (2 ^ 153 * (((UInt64.toNat limbs[3] &&& 2251799813685247) +
+    --  UInt64.toNat limbs[2] >>> 51) % 2 ^ 64) +
+    --  (2 ^ 102 * (((UInt64.toNat limbs[2] &&& 2251799813685247) +
+    --  UInt64.toNat limbs[1] >>> 51) % 2 ^ 64) +
+    --  (2 ^ 51 * (((UInt64.toNat limbs[1] &&& 2251799813685247) +
+    --  UInt64.toNat limbs[0] >>> 51) % 2 ^ 64) +
+    --  ((UInt64.toNat limbs[0] &&& 2251799813685247) +
+    --  UInt64.toNat limbs[4] >>> 51 * 19) % 2 ^ 64))) [MOD p]
+
+    sorry
