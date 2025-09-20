@@ -118,12 +118,48 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
     subst_vars
     simp [-Int.reducePow, -Nat.reducePow, Finset.range]
 
-
     have : ((UInt64.toNat limbs[1] &&& 2251799813685247) + UInt64.toNat limbs[0] >>> 51) <
         2 ^ 64 := by
-      sorry
+      have : UInt64.toNat limbs[1] &&& 2251799813685247 ≤ 2251799813685247 := Nat.and_le_right
+      have : UInt64.toNat limbs[0] >>> 51 ≤ 2^13 - 1 := by
+        have := limbs[0].toNat_lt; omega
+      grind
     rw [Nat.mod_eq_of_lt this]
 
+    have : ((UInt64.toNat limbs[2] &&& 2251799813685247) + UInt64.toNat limbs[1] >>> 51) <
+        2 ^ 64 := by
+      have : UInt64.toNat limbs[2] &&& 2251799813685247 ≤ 2251799813685247 := Nat.and_le_right
+      have : UInt64.toNat limbs[1] >>> 51 ≤ 2^13 - 1 := by
+        have := limbs[1].toNat_lt; omega
+      grind
+    rw [Nat.mod_eq_of_lt this]
+
+    have : ((UInt64.toNat limbs[3] &&& 2251799813685247) + UInt64.toNat limbs[2] >>> 51) <
+        2 ^ 64 := by
+      have : UInt64.toNat limbs[3] &&& 2251799813685247 ≤ 2251799813685247 := Nat.and_le_right
+      have : UInt64.toNat limbs[2] >>> 51 ≤ 2^13 - 1 := by
+        have := limbs[2].toNat_lt; omega
+      grind
+    rw [Nat.mod_eq_of_lt this]
+
+    have : ((UInt64.toNat limbs[4] &&& 2251799813685247) + UInt64.toNat limbs[3] >>> 51) <
+        2 ^ 64 := by
+      have : UInt64.toNat limbs[4] &&& 2251799813685247 ≤ 2251799813685247 := Nat.and_le_right
+      have : UInt64.toNat limbs[3] >>> 51 ≤ 2^13 - 1 := by
+        have := limbs[3].toNat_lt; omega
+      grind
+    rw [Nat.mod_eq_of_lt this]
+
+    have : ((UInt64.toNat limbs[0] &&& 2251799813685247) + UInt64.toNat limbs[4] >>> 51 * 19) <
+        2 ^ 64 := by
+      have : UInt64.toNat limbs[0] &&& 2251799813685247 ≤ 2251799813685247 := Nat.and_le_right
+      have : UInt64.toNat limbs[4] >>> 51 * 19 ≤ (2^13 - 1) * 19 := by
+        have := limbs[4].toNat_lt; omega
+      grind
+    rw [Nat.mod_eq_of_lt this]
+
+    have : 2251799813685247 = 2 ^ 51 - 1 := by simp
+    rw [this]
 
     -- Remaining goals is:
     -- ⊢ 2 ^ 204 * UInt64.toNat limbs[4] +
@@ -131,15 +167,10 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
     --  (2 ^ 102 * UInt64.toNat limbs[2] +
     --  (2 ^ 51 * UInt64.toNat limbs[1] +
     --  UInt64.toNat limbs[0]))) ≡
-    --  2 ^ 204 * (((UInt64.toNat limbs[4] &&& 2251799813685247) +
-    --    UInt64.toNat limbs[3] >>> 51) % 2 ^ 64) +
-    --  (2 ^ 153 * (((UInt64.toNat limbs[3] &&& 2251799813685247) +
-    --    UInt64.toNat limbs[2] >>> 51) % 2 ^ 64) +
-    --  (2 ^ 102 * (((UInt64.toNat limbs[2] &&& 2251799813685247) +
-    --    UInt64.toNat limbs[1] >>> 51) % 2 ^ 64) +
-    --  (2 ^ 51 * (((UInt64.toNat limbs[1] &&& 2251799813685247) +
-    --    UInt64.toNat limbs[0] >>> 51) % 2 ^ 64) +
-    --  ((UInt64.toNat limbs[0] &&& 2251799813685247) +
-    --    UInt64.toNat limbs[4] >>> 51 * 19) % 2 ^ 64))) [MOD p]
+    --  2 ^ 204 * ((UInt64.toNat limbs[4] &&& 2 ^ 51 - 1) + UInt64.toNat limbs[3] >>> 51) +
+    --  (2 ^ 153 * ((UInt64.toNat limbs[3] &&& 2 ^ 51 - 1) + UInt64.toNat limbs[2] >>> 51) +
+    --  (2 ^ 102 * ((UInt64.toNat limbs[2] &&& 2 ^ 51 - 1) + UInt64.toNat limbs[1] >>> 51) +
+    --  (2 ^ 51 * ((UInt64.toNat limbs[1] &&& 2 ^ 51 - 1) + UInt64.toNat limbs[0] >>> 51) +
+    --  (UInt64.toNat limbs[0] &&& 2 ^ 51 - 1) + UInt64.toNat limbs[4] >>> 51 * 19))) [MOD p]
 
     sorry
