@@ -125,6 +125,7 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
         have := limbs[0].toNat_lt; omega
       grind
     rw [Nat.mod_eq_of_lt this]
+    clear this
 
     have : ((UInt64.toNat limbs[2] &&& 2251799813685247) + UInt64.toNat limbs[1] >>> 51) <
         2 ^ 64 := by
@@ -133,6 +134,7 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
         have := limbs[1].toNat_lt; omega
       grind
     rw [Nat.mod_eq_of_lt this]
+    clear this
 
     have : ((UInt64.toNat limbs[3] &&& 2251799813685247) + UInt64.toNat limbs[2] >>> 51) <
         2 ^ 64 := by
@@ -141,6 +143,7 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
         have := limbs[2].toNat_lt; omega
       grind
     rw [Nat.mod_eq_of_lt this]
+    clear this
 
     have : ((UInt64.toNat limbs[4] &&& 2251799813685247) + UInt64.toNat limbs[3] >>> 51) <
         2 ^ 64 := by
@@ -149,6 +152,7 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
         have := limbs[3].toNat_lt; omega
       grind
     rw [Nat.mod_eq_of_lt this]
+    clear this
 
     have : ((UInt64.toNat limbs[0] &&& 2251799813685247) + UInt64.toNat limbs[4] >>> 51 * 19) <
         2 ^ 64 := by
@@ -157,9 +161,18 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
         have := limbs[4].toNat_lt; omega
       grind
     rw [Nat.mod_eq_of_lt this]
+    clear this
 
-    have : 2251799813685247 = 2 ^ 51 - 1 := by simp
-    rw [this]
+    rw [show 2251799813685247 = 2 ^ 51 - 1 by simp]
+
+    rw [Nat.ModEq]
+    unfold p
+
+    have : 2^255 ≡ 19 [MOD p] := by
+      unfold p
+      rw [Nat.ModEq]
+      grind
+
 
     -- Remaining goals is:
     -- ⊢ 2 ^ 204 * UInt64.toNat limbs[4] +
