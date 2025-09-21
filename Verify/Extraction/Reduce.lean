@@ -1,5 +1,6 @@
 /- This is the file produce by `hax into lean` and should not be edited manually (although in this
 case some minor edits were required). This is the Lean representation of the Rust source code. -/
+
 import Verify.Hax
 import Std.Tactic.Do
 import Std.Do.Triple
