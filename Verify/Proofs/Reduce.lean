@@ -13,8 +13,11 @@ set_option mvcgen.warning false
 instance {α : Type} : Coe (RustArray α (5:usize)) (RustArray α 5) where
   coe x := x.cast (by simp)
 
+-- Theorem to upstream?
 theorem UInt64.shiftRight_lt (n : Nat) (h : n ≤ 64) (x : UInt64) : x.toNat >>> n < 2^(64 - n) := by
   have := UInt64.toNat_lt x; interval_cases n <;> omega
+
+attribute [spec, simp] LOW_51_BIT_MASK
 
 /-- Auxiliary definition to convert a vector of u64 to a natural number -/
 @[simp]
@@ -28,8 +31,6 @@ def p : Nat := 2^255 - 19
 def post (limbs result : RustArray u64 5) :=
   (∀ i, (h:i < 5) → result[i] ≤ (2^51 + (2^13 - 1) * 19).toUInt64)
   ∧ ArrayU645_to_Nat limbs ≡ ArrayU645_to_Nat result [MOD p]
-
-attribute [spec, simp] LOW_51_BIT_MASK
 
 set_option maxHeartbeats 5000000 in
 -- Simp is expensive here
