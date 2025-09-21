@@ -27,7 +27,17 @@ pub fn reduce(mut limbs: [u64; 5]) -> [u64; 5] {
     let c2 = limbs[2] >> 51;
     let c3 = limbs[3] >> 51;
     let c4 = limbs[4] >> 51;
+    let c0 = limbs[0] >> 51;
+    let c1 = limbs[1] >> 51;
+    let c2 = limbs[2] >> 51;
+    let c3 = limbs[3] >> 51;
+    let c4 = limbs[4] >> 51;
 
+    limbs[0] &= LOW_51_BIT_MASK;
+    limbs[1] &= LOW_51_BIT_MASK;
+    limbs[2] &= LOW_51_BIT_MASK;
+    limbs[3] &= LOW_51_BIT_MASK;
+    limbs[4] &= LOW_51_BIT_MASK;
     limbs[0] &= LOW_51_BIT_MASK;
     limbs[1] &= LOW_51_BIT_MASK;
     limbs[2] &= LOW_51_BIT_MASK;
@@ -39,6 +49,12 @@ pub fn reduce(mut limbs: [u64; 5]) -> [u64; 5] {
     limbs[2] += c1;
     limbs[3] += c2;
     limbs[4] += c3;
+    limbs[0] += c4 * 19;
+    limbs[1] += c0;
+    limbs[2] += c1;
+    limbs[3] += c2;
+    limbs[4] += c3;
 
+    limbs
     limbs
 }
