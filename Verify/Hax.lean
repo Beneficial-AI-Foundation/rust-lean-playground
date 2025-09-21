@@ -23,3 +23,7 @@ import Verify.Hax.Rust_primitives
 
 /- Tactics -/
 import Verify.Hax.Tactics
+
+
+-- NOTE: this file and the Hax folder copied here rather than added as a library to solve
+-- mathlib version issues.

@@ -1,0 +1,1 @@
+The spec theorem and proof is in `Verify.Proofs.Reduce`
