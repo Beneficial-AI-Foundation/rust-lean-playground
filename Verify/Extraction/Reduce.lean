@@ -12,10 +12,10 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
-def Rust_lean_playground.LOW_51_BIT_MASK : u64 := 2251799813685247
+def LOW_51_BIT_MASK : u64 := 2251799813685247
 
 @[spec]
-def Rust_lean_playground.reduce
+def reduce
   (limbs : (RustArray u64 (5 : usize)))
   : Result (RustArray u64 (5 : usize))
   := do
@@ -29,31 +29,31 @@ def Rust_lean_playground.reduce
         limbs
         (0 : usize)
         (← (← limbs[(0 : usize)]_?)
-          &&&? Rust_lean_playground.LOW_51_BIT_MASK)));
+          &&&? LOW_51_BIT_MASK)));
   let limbs : (RustArray u64 (5 : usize)) ← (pure
     (← Rust_primitives.Hax.Monomorphized_update_at.update_at_usize
         limbs
         (1 : usize)
         (← (← limbs[(1 : usize)]_?)
-          &&&? Rust_lean_playground.LOW_51_BIT_MASK)));
+          &&&? LOW_51_BIT_MASK)));
   let limbs : (RustArray u64 (5 : usize)) ← (pure
     (← Rust_primitives.Hax.Monomorphized_update_at.update_at_usize
         limbs
         (2 : usize)
         (← (← limbs[(2 : usize)]_?)
-          &&&? Rust_lean_playground.LOW_51_BIT_MASK)));
+          &&&? LOW_51_BIT_MASK)));
   let limbs : (RustArray u64 (5 : usize)) ← (pure
     (← Rust_primitives.Hax.Monomorphized_update_at.update_at_usize
         limbs
         (3 : usize)
         (← (← limbs[(3 : usize)]_?)
-          &&&? Rust_lean_playground.LOW_51_BIT_MASK)));
+          &&&? LOW_51_BIT_MASK)));
   let limbs : (RustArray u64 (5 : usize)) ← (pure
     (← Rust_primitives.Hax.Monomorphized_update_at.update_at_usize
         limbs
         (4 : usize)
         (← (← limbs[(4 : usize)]_?)
-          &&&? Rust_lean_playground.LOW_51_BIT_MASK)));
+          &&&? LOW_51_BIT_MASK)));
   let limbs : (RustArray u64 (5 : usize)) ← (pure
     (← Rust_primitives.Hax.Monomorphized_update_at.update_at_usize
         limbs

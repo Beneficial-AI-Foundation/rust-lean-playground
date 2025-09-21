@@ -29,35 +29,36 @@ def post (limbs result : RustArray u64 5) :=
   (∀ i, (h:i < 5) → result[i] ≤ (2^51 + (2^13 - 1) * 19).toUInt64)
   ∧ ArrayU645_to_Nat limbs ≡ ArrayU645_to_Nat result [MOD p]
 
-attribute [spec, simp] Rust_lean_playground.LOW_51_BIT_MASK
+attribute [spec, simp] LOW_51_BIT_MASK
 
 set_option maxHeartbeats 5000000 in
--- simp is expensive here
+-- Simp is expensive here
+/-- Spec theroem for `reduce` -/
 theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
     ⦃ ⌜ True ⌝ ⦄
-    (Rust_lean_playground.reduce limbs)
+    (reduce limbs)
     ⦃ ⇓ result => ⌜ post limbs result ⌝ ⦄ := by
-  -- step through the program using the [Spec.BV] set of triples
+  -- Step through the program using the [Spec.BV] set of triples
   open Spec.BV in
-  mvcgen [Rust_lean_playground.reduce]
-  -- discard array access side conditions
+  mvcgen [reduce]
+  -- Discard array access side conditions
   all_goals simp [Vector.size, -Int.reducePow, -Nat.reducePow] at *
-  -- discard arithmetic overflows
+  -- Discard arithmetic overflows
   all_goals try (subst_vars; simp at * ; bv_decide)
-  -- remains to show the post condition
+  -- Remains to show the post condition
   constructor
-  · -- all the limbs of the result are bounded
+  · -- All the limbs of the result are bounded
     intro i _; interval_cases i
     all_goals subst_vars; simp; bv_decide
-  · -- the result is equal [Mod p] the input
+  · -- The result is equal [Mod p] the input
     subst_vars; simp [-Int.reducePow, -Nat.reducePow, Finset.range] at *
     rw [show 2251799813685247 = 2 ^ 51 - 1 by simp]
-    -- masking is remainder
+    -- Masking is remainder
     have h_mask : ∀ (x : u64) (y:Nat), x.toNat &&& (2^y - 1) = x.toNat % 2^y := by simp
     repeat rw [h_mask]
-    -- remove `% 2^64` on results of arithmetic operations
+    -- Remove `% 2^64` on results of arithmetic operations
     have := UInt64.shiftRight_lt 51 (by simp)
     repeat rw [Nat.mod_eq_of_lt (b := 2^64) (by grind)]
-    -- unfold and finish
+    -- Unfold and finish
     unfold p Nat.ModEq
     omega
