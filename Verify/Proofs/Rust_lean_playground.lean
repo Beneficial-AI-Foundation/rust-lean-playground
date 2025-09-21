@@ -81,15 +81,29 @@ def Rust_lean_playground.reduce
         (← (← limbs[(4 : usize)]_?) +? c3)));
   limbs
 
-
 /-- Fundamental property of bit operations: a number can be split into lower and upper bits -/
+@[grind]
 theorem UInt64.split_51 (a : UInt64) : a.toNat = (a.toNat &&& 2 ^ 51 - 1) +
     (a.toNat >>> 51) * 2^51 := by
   have := a.toNat.and_two_pow_sub_one_eq_mod 51
   have := a.toNat.shiftRight_eq_div_pow 51
   grind
 
-/-- Auxiliary definition to interpret a vector of u32 as an integer -/
+/-- Unexpectedly needed to be explicit with this estimate. -/
+theorem mask_shift_lt (a b : u64) :
+    ((UInt64.toNat a &&& 2 ^ 51 - 1 ) + UInt64.toNat b >>> 51) < 2 ^ 64 := by
+  have : UInt64.toNat a &&& 2 ^ 51 - 1  ≤ 2 ^ 51 - 1 := Nat.and_le_right
+  have := b.toNat_lt
+  grind
+
+/-- Unexpectedly needed to be explicit with this estimate. -/
+theorem mask_shift_lt' (a b : u64) :
+    ((UInt64.toNat a &&& 2 ^ 51 - 1 ) + UInt64.toNat b >>> 51 * 19) < 2 ^ 64 := by
+  have : UInt64.toNat a &&& 2 ^ 51 - 1  ≤ 2 ^ 51 - 1 := Nat.and_le_right
+  have := b.toNat_lt
+  grind
+
+/-- Auxiliary definition to interpret a vector of u64 as an natural number -/
 @[simp]
 def ArrayU645_to_Nat (limbs : RustArray u64 5) : Nat :=
   ∑ i ∈ Finset.range 5, 2^(51 * i) * (limbs[i]!).toFin
@@ -102,9 +116,7 @@ def post (limbs res : RustArray u64 (5 : usize)) :=
   let res : RustArray u64 5 := res.cast (by simp);
 
   (∀ i, (h : i < 5) → res[i] ≤ (2^51 + (2^13 - 1) * 19).toUInt64)
-   ∧ ArrayU645_to_Nat limbs ≡ ArrayU645_to_Nat res [MOD p] -- the one we want
---  ArrayU645_to_Nat res + p * (limbs[4].val >>> 51) = ArrayU645_to_Nat limbs -- fallback
-
+   ∧ ArrayU645_to_Nat limbs ≡ ArrayU645_to_Nat res [MOD p]
 
 attribute [spec, simp] Rust_lean_playground.LOW_51_BIT_MASK
 
@@ -124,64 +136,14 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
     intro i _; interval_cases i
     all_goals subst_vars; simp; bv_decide
   · -- The result is equal [Mod p] the input
-    expose_names
     subst_vars
     simp [-Int.reducePow, -Nat.reducePow, Finset.range]
-
-    have : ((UInt64.toNat limbs[1] &&& 2251799813685247) + UInt64.toNat limbs[0] >>> 51) <
-        2 ^ 64 := by
-      have : UInt64.toNat limbs[1] &&& 2251799813685247 ≤ 2251799813685247 := Nat.and_le_right
-      have : UInt64.toNat limbs[0] >>> 51 ≤ 2^13 - 1 := by
-        have := limbs[0].toNat_lt; omega
-      grind
-    rw [Nat.mod_eq_of_lt this]
-    clear this
-
-    have : ((UInt64.toNat limbs[2] &&& 2251799813685247) + UInt64.toNat limbs[1] >>> 51) <
-        2 ^ 64 := by
-      have : UInt64.toNat limbs[2] &&& 2251799813685247 ≤ 2251799813685247 := Nat.and_le_right
-      have : UInt64.toNat limbs[1] >>> 51 ≤ 2^13 - 1 := by
-        have := limbs[1].toNat_lt; omega
-      grind
-    rw [Nat.mod_eq_of_lt this]
-    clear this
-
-    have : ((UInt64.toNat limbs[3] &&& 2251799813685247) + UInt64.toNat limbs[2] >>> 51) <
-        2 ^ 64 := by
-      have : UInt64.toNat limbs[3] &&& 2251799813685247 ≤ 2251799813685247 := Nat.and_le_right
-      have : UInt64.toNat limbs[2] >>> 51 ≤ 2^13 - 1 := by
-        have := limbs[2].toNat_lt; omega
-      grind
-    rw [Nat.mod_eq_of_lt this]
-    clear this
-
-    have : ((UInt64.toNat limbs[4] &&& 2251799813685247) + UInt64.toNat limbs[3] >>> 51) <
-        2 ^ 64 := by
-      have : UInt64.toNat limbs[4] &&& 2251799813685247 ≤ 2251799813685247 := Nat.and_le_right
-      have : UInt64.toNat limbs[3] >>> 51 ≤ 2^13 - 1 := by
-        have := limbs[3].toNat_lt; omega
-      grind
-    rw [Nat.mod_eq_of_lt this]
-    clear this
-
-    have : ((UInt64.toNat limbs[0] &&& 2251799813685247) + UInt64.toNat limbs[4] >>> 51 * 19) <
-        2 ^ 64 := by
-      have : UInt64.toNat limbs[0] &&& 2251799813685247 ≤ 2251799813685247 := Nat.and_le_right
-      have : UInt64.toNat limbs[4] >>> 51 * 19 ≤ (2^13 - 1) * 19 := by
-        have := limbs[4].toNat_lt; omega
-      grind
-    rw [Nat.mod_eq_of_lt this]
-    clear this
-
-    -- rw [show 2251799813685247 = 2 ^ 51 - 1 by simp]
-
-    rw [Nat.ModEq]
+    rw [Nat.ModEq, show 2251799813685247 = 2 ^ 51 - 1 by simp]
     unfold p
-
-    have := limbs[0].split_51
-    have := limbs[1].split_51
-    have := limbs[2].split_51
-    have := limbs[3].split_51
-    have := limbs[4].split_51
-
+    rw [Nat.mod_eq_of_lt (mask_shift_lt limbs[4] limbs[3]),
+      Nat.mod_eq_of_lt (mask_shift_lt limbs[3] limbs[2]),
+      Nat.mod_eq_of_lt (mask_shift_lt limbs[2] limbs[1]),
+      Nat.mod_eq_of_lt (mask_shift_lt limbs[1] limbs[0]),
+      Nat.mod_eq_of_lt (mask_shift_lt' limbs[0] limbs[4])]
+    -- Here we need `limbs[0].split_51`, `limbs[1].split_51`, etc., but grind does it automatically
     grind
