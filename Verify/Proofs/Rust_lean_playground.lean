@@ -11,7 +11,6 @@ open Std.Tactic
 
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
-set_option maxHeartbeats 5000000
 
 def Rust_lean_playground.LOW_51_BIT_MASK : u64 := 2251799813685247
 
@@ -82,6 +81,14 @@ def Rust_lean_playground.reduce
         (← (← limbs[(4 : usize)]_?) +? c3)));
   limbs
 
+
+/-- Fundamental property of bit operations: a number can be split into lower and upper bits -/
+theorem UInt64.split_51 (a : UInt64) : a.toNat = (a.toNat &&& 2 ^ 51 - 1) +
+    (a.toNat >>> 51) * 2^51 := by
+  have := a.toNat.and_two_pow_sub_one_eq_mod 51
+  have := a.toNat.shiftRight_eq_div_pow 51
+  grind
+
 /-- Auxiliary definition to interpret a vector of u32 as an integer -/
 @[simp]
 def ArrayU645_to_Nat (limbs : RustArray u64 5) : Nat :=
@@ -94,12 +101,15 @@ def post (limbs res : RustArray u64 (5 : usize)) :=
   let limbs : RustArray u64 5 := limbs.cast (by simp);
   let res : RustArray u64 5 := res.cast (by simp);
 
-  (∀ i, (h:i < 5) → res[i] ≤ (2^51 + (2^13 - 1) * 19).toUInt64)
+  (∀ i, (h : i < 5) → res[i] ≤ (2^51 + (2^13 - 1) * 19).toUInt64)
    ∧ ArrayU645_to_Nat limbs ≡ ArrayU645_to_Nat res [MOD p] -- the one we want
---  ArrayU645_to_Nat r + p * (limbs[4].val >>> 51) = ArrayU645_to_Nat limbs -- fallback
+--  ArrayU645_to_Nat res + p * (limbs[4].val >>> 51) = ArrayU645_to_Nat limbs -- fallback
 
 
 attribute [spec, simp] Rust_lean_playground.LOW_51_BIT_MASK
+
+set_option maxHeartbeats 5000000 in
+-- likely that this could be done more efficiently
 theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
     ⦃ ⌜ True ⌝ ⦄
     (Rust_lean_playground.reduce limbs)
@@ -163,27 +173,15 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
     rw [Nat.mod_eq_of_lt this]
     clear this
 
-    rw [show 2251799813685247 = 2 ^ 51 - 1 by simp]
+    -- rw [show 2251799813685247 = 2 ^ 51 - 1 by simp]
 
     rw [Nat.ModEq]
     unfold p
 
-    have : 2^255 ≡ 19 [MOD p] := by
-      unfold p
-      rw [Nat.ModEq]
-      grind
+    have := limbs[0].split_51
+    have := limbs[1].split_51
+    have := limbs[2].split_51
+    have := limbs[3].split_51
+    have := limbs[4].split_51
 
-
-    -- Remaining goals is:
-    -- ⊢ 2 ^ 204 * UInt64.toNat limbs[4] +
-    --  (2 ^ 153 * UInt64.toNat limbs[3] +
-    --  (2 ^ 102 * UInt64.toNat limbs[2] +
-    --  (2 ^ 51 * UInt64.toNat limbs[1] +
-    --  UInt64.toNat limbs[0]))) ≡
-    --  2 ^ 204 * ((UInt64.toNat limbs[4] &&& 2 ^ 51 - 1) + UInt64.toNat limbs[3] >>> 51) +
-    --  (2 ^ 153 * ((UInt64.toNat limbs[3] &&& 2 ^ 51 - 1) + UInt64.toNat limbs[2] >>> 51) +
-    --  (2 ^ 102 * ((UInt64.toNat limbs[2] &&& 2 ^ 51 - 1) + UInt64.toNat limbs[1] >>> 51) +
-    --  (2 ^ 51 * ((UInt64.toNat limbs[1] &&& 2 ^ 51 - 1) + UInt64.toNat limbs[0] >>> 51) +
-    --  (UInt64.toNat limbs[0] &&& 2 ^ 51 - 1) + UInt64.toNat limbs[4] >>> 51 * 19))) [MOD p]
-
-    sorry
+    grind
