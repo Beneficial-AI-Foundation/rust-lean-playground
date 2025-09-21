@@ -48,7 +48,7 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
   · -- The result is equal [Mod p] the input
     subst_vars; simp [-Int.reducePow, -Nat.reducePow, Finset.range] at *
     rw [show 2251799813685247 = 2 ^ 51 - 1 by simp]
-   -- Masking is remainder
+    -- Masking is remainder
     have h_mask : ∀ (x : u64) (y:Nat), x.toNat &&& (2^y - 1) = x.toNat % 2^y := by simp
     repeat rw [h_mask]
     -- Explicit bounds (should be automatically discovered by omega...)
@@ -57,7 +57,7 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
     have := UInt64.toNat_lt (limbs[2])
     have := UInt64.toNat_lt (limbs[3])
     have := UInt64.toNat_lt (limbs[4])
-   -- Remove `% 2^64` on results of arithmetic operations
+    -- Remove `% 2^64` on results of arithmetic operations
     repeat rw [Nat.mod_eq_of_lt (b := 2^64) (by bv_omega)]
     unfold p Nat.ModEq
     omega
