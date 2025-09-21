@@ -13,6 +13,9 @@ set_option mvcgen.warning false
 instance {α : Type} : Coe (RustArray α (5:usize)) (RustArray α 5) where
   coe x := x.cast (by simp)
 
+theorem UInt64.shiftRight_lt (n : Nat) (h : n ≤ 64) (x : UInt64) : x.toNat >>> n < 2^(64 - n) := by
+  have := UInt64.toNat_lt x; interval_cases n <;> omega
+
 /-- Auxiliary definition to convert a vector of u64 to a natural number -/
 @[simp]
 def ArrayU645_to_Nat (limbs : RustArray u64 5) : Nat :=
@@ -34,30 +37,27 @@ theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
     ⦃ ⌜ True ⌝ ⦄
     (Rust_lean_playground.reduce limbs)
     ⦃ ⇓ result => ⌜ post limbs result ⌝ ⦄ := by
-  -- step through the program using the [Spec.BV_post] set of triples
-  open Spec.BV in mvcgen [Rust_lean_playground.reduce]
+  -- step through the program using the [Spec.BV] set of triples
+  open Spec.BV in
+  mvcgen [Rust_lean_playground.reduce]
   -- discard array access side conditions
   all_goals simp [Vector.size, -Int.reducePow, -Nat.reducePow] at *
   -- discard arithmetic overflows
   all_goals try (subst_vars; simp at * ; bv_decide)
-  -- Remains to show the post condition
+  -- remains to show the post condition
   constructor
-  · -- All the limbs of the result are bounded
+  · -- all the limbs of the result are bounded
     intro i _; interval_cases i
     all_goals subst_vars; simp; bv_decide
-  · -- The result is equal [Mod p] the input
+  · -- the result is equal [Mod p] the input
     subst_vars; simp [-Int.reducePow, -Nat.reducePow, Finset.range] at *
     rw [show 2251799813685247 = 2 ^ 51 - 1 by simp]
-    -- Masking is remainder
+    -- masking is remainder
     have h_mask : ∀ (x : u64) (y:Nat), x.toNat &&& (2^y - 1) = x.toNat % 2^y := by simp
     repeat rw [h_mask]
-    -- Explicit bounds (should be automatically discovered by omega...)
-    have := UInt64.toNat_lt (limbs[0])
-    have := UInt64.toNat_lt (limbs[1])
-    have := UInt64.toNat_lt (limbs[2])
-    have := UInt64.toNat_lt (limbs[3])
-    have := UInt64.toNat_lt (limbs[4])
-    -- Remove `% 2^64` on results of arithmetic operations
-    repeat rw [Nat.mod_eq_of_lt (b := 2^64) (by bv_omega)]
+    -- remove `% 2^64` on results of arithmetic operations
+    have := UInt64.shiftRight_lt 51 (by simp)
+    repeat rw [Nat.mod_eq_of_lt (b := 2^64) (by grind)]
+    -- unfold and finish
     unfold p Nat.ModEq
     omega
