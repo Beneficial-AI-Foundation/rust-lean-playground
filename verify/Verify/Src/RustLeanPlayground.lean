@@ -60,4 +60,18 @@ def reduce (limbs : Array U64 5#usize) : Result (Array U64 5#usize) :=
   let i24 ← i23 + c3
   Array.update limbs9 4#usize i24
 
+/- [rust_lean_playground::clamp_integer]:
+   Source: 'src/lib.rs', lines 89:0-94:1 -/
+def clamp_integer (bytes : Array U8 32#usize) : Result (Array U8 32#usize) :=
+  do
+  let i ← Array.index_usize bytes 0#usize
+  let i1 ← (↑(i &&& 248#u8) : Result U8)
+  let bytes1 ← Array.update bytes 0#usize i1
+  let i2 ← Array.index_usize bytes1 31#usize
+  let i3 ← (↑(i2 &&& 127#u8) : Result U8)
+  let bytes2 ← Array.update bytes1 31#usize i3
+  let i4 ← Array.index_usize bytes2 31#usize
+  let i5 ← (↑(i4 ||| 64#u8) : Result U8)
+  Array.update bytes2 31#usize i5
+
 end rust_lean_playground
