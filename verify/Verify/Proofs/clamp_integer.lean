@@ -4,11 +4,9 @@ import Mathlib
 import Verify.Proofs.Aux
 
 set_option linter.style.setOption false
-set_option maxHeartbeats 1000000
+set_option maxHeartbeats 2000000
 
-/-! # clamp_integer
-
--/
+/-! # clamp_integer -/
 
 open Aeneas.Std Result
 open rust_lean_playground
@@ -22,9 +20,12 @@ attribute [local progress] U8.add_bv_spec U8.mul_bv_spec
 
 /-! ## Auxillary theorems -/
 
-theorem dvd_and_248 (byte : U8) : 8 ∣ (byte &&& 248#u8).val := by
-  -- 248 = 0b11111000, so and with 248 clears the lowest 3 bits
-  sorry
+/- This allows `bvify` to automatically do the conversion `a ∣ b ↔ b % a = 0`,
+   which can then be lifted to something which uses bit-vectors -/
+attribute [bvify_simps] Nat.dvd_iff_mod_eq_zero
+
+theorem U8.dvd_and_248 (byte : U8) : 8 ∣ (byte &&& 248#u8).val := by
+  bvify 8; bv_decide
 
 /-! ## Auxillary defs required for specs -/
 
@@ -41,22 +42,33 @@ def h : Nat := 8
 
 /-- **Spec and proof concerning `clamp_integer`**:
 - No panic
-- to do: 2^254 ≤ as_nat_32_u8 result
-- to do: as_nat_32_u8 result < 2^255
-- (as_nat_32_u8 result) is divisible by 8 (the cofactor of curve25519)
+- 2^254 ≤ as_nat_32_u8 result
+- as_nat_32_u8 result < 2^255
+- (as_nat_32_u8 result) is divisible by h (cofactor of curve25519)
 -/
 theorem clamp_integer_spec (bytes : Array U8 32#usize) :
     ∃ result, clamp_integer bytes = ok (result) ∧
-    h ∣ (ArrayU832.as_Nat result)  := by
+    h ∣ ArrayU832.as_Nat result ∧
+    ArrayU832.as_Nat result < 2^255 ∧
+    2^254 ≤ ArrayU832.as_Nat result := by
   unfold clamp_integer
   progress*
   simp
-  apply Finset.dvd_sum
-  intro i hi
-  by_cases hc : i = 0
-  · -- case i = 0
-    subst_vars
-    simpa [i1_post_1] using dvd_and_248 _
-  · -- Case when 0 < i
-    have := List.mem_range.mp hi
-    interval_cases i <;> omega
+  refine ⟨?_, ?_, ?_⟩
+  · apply Finset.dvd_sum
+    intro i hi
+    by_cases hc : i = 0
+    · subst_vars
+      simpa [*] using U8.dvd_and_248 _
+    · have := List.mem_range.mp hi
+      interval_cases i <;> omega
+  · subst_vars
+    simp [Finset.sum_range_succ, *]
+    have : ((bytes : List U8)[31].val &&& 127 ||| 64) < 2^8 := by
+      sorry
+    have (byte : U8) : byte.val < 2^8 := by bv_tac
+    sorry
+  · subst_vars
+    simp [Finset.sum_range_succ, *]
+    have : 64 ≤ ((bytes : List U8)[31] &&& 127 ||| 64) := Nat.right_le_or
+    scalar_tac
