@@ -61,7 +61,7 @@ def reduce (limbs : Array U64 5#usize) : Result (Array U64 5#usize) :=
   Array.update limbs9 4#usize i24
 
 /- [rust_lean_playground::clamp_integer]:
-   Source: 'src/lib.rs', lines 89:0-94:1 -/
+   Source: 'src/lib.rs', lines 88:0-93:1 -/
 def clamp_integer (bytes : Array U8 32#usize) : Result (Array U8 32#usize) :=
   do
   let i ← Array.index_usize bytes 0#usize
@@ -73,5 +73,123 @@ def clamp_integer (bytes : Array U8 32#usize) : Result (Array U8 32#usize) :=
   let i4 ← Array.index_usize bytes2 31#usize
   let i5 ← (↑(i4 ||| 64#u8) : Result U8)
   Array.update bytes2 31#usize i5
+
+/- [rust_lean_playground::ZERO]
+   Source: 'src/lib.rs', lines 96:0-96:43 -/
+@[global_simps]
+def ZERO_body : Result (Array U64 5#usize) := ok (Array.repeat 5#usize 0#u64)
+@[global_simps, irreducible]
+def ZERO : Array U64 5#usize := eval_global ZERO_body
+
+/- [rust_lean_playground::to_bytes]:
+   Source: 'src/lib.rs', lines 101:0-138:1 -/
+def to_bytes (limbs : Array U64 5#usize) : Result (Array U8 32#usize) :=
+  do
+  let s := Array.repeat 32#usize 0#u8
+  let i ← Array.index_usize limbs 0#usize
+  let i1 ← i >>> 0#i32
+  let i2 ← (↑(UScalar.cast .U8 i1) : Result U8)
+  let s1 ← Array.update s 0#usize i2
+  let i3 ← i >>> 8#i32
+  let i4 ← (↑(UScalar.cast .U8 i3) : Result U8)
+  let s2 ← Array.update s1 1#usize i4
+  let i5 ← i >>> 16#i32
+  let i6 ← (↑(UScalar.cast .U8 i5) : Result U8)
+  let s3 ← Array.update s2 2#usize i6
+  let i7 ← i >>> 24#i32
+  let i8 ← (↑(UScalar.cast .U8 i7) : Result U8)
+  let s4 ← Array.update s3 3#usize i8
+  let i9 ← i >>> 32#i32
+  let i10 ← (↑(UScalar.cast .U8 i9) : Result U8)
+  let s5 ← Array.update s4 4#usize i10
+  let i11 ← i >>> 40#i32
+  let i12 ← (↑(UScalar.cast .U8 i11) : Result U8)
+  let s6 ← Array.update s5 5#usize i12
+  let i13 ← i >>> 48#i32
+  let i14 ← Array.index_usize limbs 1#usize
+  let i15 ← i14 <<< 4#i32
+  let i16 ← (↑(i13 ||| i15) : Result U64)
+  let i17 ← (↑(UScalar.cast .U8 i16) : Result U8)
+  let s7 ← Array.update s6 6#usize i17
+  let i18 ← i14 >>> 4#i32
+  let i19 ← (↑(UScalar.cast .U8 i18) : Result U8)
+  let s8 ← Array.update s7 7#usize i19
+  let i20 ← i14 >>> 12#i32
+  let i21 ← (↑(UScalar.cast .U8 i20) : Result U8)
+  let s9 ← Array.update s8 8#usize i21
+  let i22 ← i14 >>> 20#i32
+  let i23 ← (↑(UScalar.cast .U8 i22) : Result U8)
+  let s10 ← Array.update s9 9#usize i23
+  let i24 ← i14 >>> 28#i32
+  let i25 ← (↑(UScalar.cast .U8 i24) : Result U8)
+  let s11 ← Array.update s10 10#usize i25
+  let i26 ← i14 >>> 36#i32
+  let i27 ← (↑(UScalar.cast .U8 i26) : Result U8)
+  let s12 ← Array.update s11 11#usize i27
+  let i28 ← i14 >>> 44#i32
+  let i29 ← (↑(UScalar.cast .U8 i28) : Result U8)
+  let s13 ← Array.update s12 12#usize i29
+  let i30 ← Array.index_usize limbs 2#usize
+  let i31 ← i30 >>> 0#i32
+  let i32 ← (↑(UScalar.cast .U8 i31) : Result U8)
+  let s14 ← Array.update s13 13#usize i32
+  let i33 ← i30 >>> 8#i32
+  let i34 ← (↑(UScalar.cast .U8 i33) : Result U8)
+  let s15 ← Array.update s14 14#usize i34
+  let i35 ← i30 >>> 16#i32
+  let i36 ← (↑(UScalar.cast .U8 i35) : Result U8)
+  let s16 ← Array.update s15 15#usize i36
+  let i37 ← i30 >>> 24#i32
+  let i38 ← (↑(UScalar.cast .U8 i37) : Result U8)
+  let s17 ← Array.update s16 16#usize i38
+  let i39 ← i30 >>> 32#i32
+  let i40 ← (↑(UScalar.cast .U8 i39) : Result U8)
+  let s18 ← Array.update s17 17#usize i40
+  let i41 ← i30 >>> 40#i32
+  let i42 ← (↑(UScalar.cast .U8 i41) : Result U8)
+  let s19 ← Array.update s18 18#usize i42
+  let i43 ← i30 >>> 48#i32
+  let i44 ← Array.index_usize limbs 3#usize
+  let i45 ← i44 <<< 4#i32
+  let i46 ← (↑(i43 ||| i45) : Result U64)
+  let i47 ← (↑(UScalar.cast .U8 i46) : Result U8)
+  let s20 ← Array.update s19 19#usize i47
+  let i48 ← i44 >>> 4#i32
+  let i49 ← (↑(UScalar.cast .U8 i48) : Result U8)
+  let s21 ← Array.update s20 20#usize i49
+  let i50 ← i44 >>> 12#i32
+  let i51 ← (↑(UScalar.cast .U8 i50) : Result U8)
+  let s22 ← Array.update s21 21#usize i51
+  let i52 ← i44 >>> 20#i32
+  let i53 ← (↑(UScalar.cast .U8 i52) : Result U8)
+  let s23 ← Array.update s22 22#usize i53
+  let i54 ← i44 >>> 28#i32
+  let i55 ← (↑(UScalar.cast .U8 i54) : Result U8)
+  let s24 ← Array.update s23 23#usize i55
+  let i56 ← i44 >>> 36#i32
+  let i57 ← (↑(UScalar.cast .U8 i56) : Result U8)
+  let s25 ← Array.update s24 24#usize i57
+  let i58 ← i44 >>> 44#i32
+  let i59 ← (↑(UScalar.cast .U8 i58) : Result U8)
+  let s26 ← Array.update s25 25#usize i59
+  let i60 ← Array.index_usize limbs 4#usize
+  let i61 ← i60 >>> 0#i32
+  let i62 ← (↑(UScalar.cast .U8 i61) : Result U8)
+  let s27 ← Array.update s26 26#usize i62
+  let i63 ← i60 >>> 8#i32
+  let i64 ← (↑(UScalar.cast .U8 i63) : Result U8)
+  let s28 ← Array.update s27 27#usize i64
+  let i65 ← i60 >>> 16#i32
+  let i66 ← (↑(UScalar.cast .U8 i65) : Result U8)
+  let s29 ← Array.update s28 28#usize i66
+  let i67 ← i60 >>> 24#i32
+  let i68 ← (↑(UScalar.cast .U8 i67) : Result U8)
+  let s30 ← Array.update s29 29#usize i68
+  let i69 ← i60 >>> 32#i32
+  let i70 ← (↑(UScalar.cast .U8 i69) : Result U8)
+  let s31 ← Array.update s30 30#usize i70
+  let i71 ← i60 >>> 40#i32
+  let i72 ← (↑(UScalar.cast .U8 i71) : Result U8)
+  Array.update s31 31#usize i72
 
 end rust_lean_playground

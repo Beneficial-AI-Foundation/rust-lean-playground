@@ -2,6 +2,7 @@ import Aeneas
 import Verify.Src.RustLeanPlayground
 import Mathlib
 import Verify.Proofs.Aux
+import Verify.Proofs.Defs
 
 set_option linter.style.longLine false
 set_option maxHeartbeats 1000000
@@ -19,13 +20,6 @@ attribute [-simp] Int.reducePow Nat.reducePow
 /- The `scalar_tac_simps` is important in particular for `scalar_tac` to know
    about this constant (otherwise it treats it as an opaque definition). -/
 attribute [simp, scalar_tac_simps] LOW_51_BIT_MASK_val_eq
-
-/-! ## Auxillary defs required for specs -/
-
-/-- Auxiliary definition to interpret a vector of u32 as an integer -/
-@[simp]
-def ArrayU645_to_Nat (limbs : Array U64 5#usize) : Nat :=
-  ∑ i ∈ Finset.range 5, 2^(51 * i) * (limbs[i]!).val
 
 /-- Curve25519 is the elliptic curve over the prime field with order p -/
 def p : Nat := 2^255 - 19

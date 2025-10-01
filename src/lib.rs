@@ -65,7 +65,6 @@ pub fn reduce(mut limbs: [u64; 5]) -> [u64; 5] {
     limbs
 }
 
-
 /// _Clamps_ the given little-endian representation of a 32-byte integer. Clamping the value puts
 /// it in the range:
 ///
@@ -91,4 +90,49 @@ pub const fn clamp_integer(mut bytes: [u8; 32]) -> [u8; 32] {
     bytes[31] &= 0b0111_1111;
     bytes[31] |= 0b0100_0000;
     bytes
+}
+
+/// The scalar \\( 0 \\).
+pub const ZERO: [u64; 5] = [0, 0, 0, 0, 0];
+
+/// Pack the limbs into 32 bytes
+#[rustfmt::skip] // keep alignment of s[*] calculations
+#[allow(clippy::identity_op)]
+pub fn to_bytes(limbs: [u64; 5]) -> [u8; 32] {
+    let mut s = [0u8; 32];
+
+    s[ 0] =  (limbs[ 0] >>  0)                      as u8;
+    s[ 1] =  (limbs[ 0] >>  8)                      as u8;
+    s[ 2] =  (limbs[ 0] >> 16)                      as u8;
+    s[ 3] =  (limbs[ 0] >> 24)                      as u8;
+    s[ 4] =  (limbs[ 0] >> 32)                      as u8;
+    s[ 5] =  (limbs[ 0] >> 40)                      as u8;
+    s[ 6] = ((limbs[ 0] >> 48) | (limbs[ 1] << 4)) as u8;
+    s[ 7] =  (limbs[ 1] >>  4)                      as u8;
+    s[ 8] =  (limbs[ 1] >> 12)                      as u8;
+    s[ 9] =  (limbs[ 1] >> 20)                      as u8;
+    s[10] =  (limbs[ 1] >> 28)                      as u8;
+    s[11] =  (limbs[ 1] >> 36)                      as u8;
+    s[12] =  (limbs[ 1] >> 44)                      as u8;
+    s[13] =  (limbs[ 2] >>  0)                      as u8;
+    s[14] =  (limbs[ 2] >>  8)                      as u8;
+    s[15] =  (limbs[ 2] >> 16)                      as u8;
+    s[16] =  (limbs[ 2] >> 24)                      as u8;
+    s[17] =  (limbs[ 2] >> 32)                      as u8;
+    s[18] =  (limbs[ 2] >> 40)                      as u8;
+    s[19] = ((limbs[ 2] >> 48) | (limbs[ 3] << 4)) as u8;
+    s[20] =  (limbs[ 3] >>  4)                      as u8;
+    s[21] =  (limbs[ 3] >> 12)                      as u8;
+    s[22] =  (limbs[ 3] >> 20)                      as u8;
+    s[23] =  (limbs[ 3] >> 28)                      as u8;
+    s[24] =  (limbs[ 3] >> 36)                      as u8;
+    s[25] =  (limbs[ 3] >> 44)                      as u8;
+    s[26] =  (limbs[ 4] >>  0)                      as u8;
+    s[27] =  (limbs[ 4] >>  8)                      as u8;
+    s[28] =  (limbs[ 4] >> 16)                      as u8;
+    s[29] =  (limbs[ 4] >> 24)                      as u8;
+    s[30] =  (limbs[ 4] >> 32)                      as u8;
+    s[31] =  (limbs[ 4] >> 40)                      as u8;
+
+    s
 }
