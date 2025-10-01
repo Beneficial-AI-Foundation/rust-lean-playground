@@ -136,3 +136,112 @@ pub fn to_bytes(limbs: [u64; 5]) -> [u8; 32] {
 
     s
 }
+
+/// Compute `a * b`
+#[inline(always)]
+#[rustfmt::skip] // keep alignment of z[*] calculations
+pub (crate) fn mul_internal(a: &[u64; 5], b: &[u64; 5]) -> [u128; 9] {
+    let mut z = [0u128; 9];
+
+    z[0] = m(a[0], b[0]);
+    z[1] = m(a[0], b[1]) + m(a[1], b[0]);
+    z[2] = m(a[0], b[2]) + m(a[1], b[1]) + m(a[2], b[0]);
+    z[3] = m(a[0], b[3]) + m(a[1], b[2]) + m(a[2], b[1]) + m(a[3], b[0]);
+    z[4] = m(a[0], b[4]) + m(a[1], b[3]) + m(a[2], b[2]) + m(a[3], b[1]) + m(a[4], b[0]);
+    z[5] =                 m(a[1], b[4]) + m(a[2], b[3]) + m(a[3], b[2]) + m(a[4], b[1]);
+    z[6] =                                 m(a[2], b[4]) + m(a[3], b[3]) + m(a[4], b[2]);
+    z[7] =                                                 m(a[3], b[4]) + m(a[4], b[3]);
+    z[8] =                                                                 m(a[4], b[4]);
+
+    z
+}
+
+/// Compute `a^2`
+#[inline(always)]
+#[rustfmt::skip] // keep alignment of return calculations
+fn square_internal(a: &[u64; 5]) -> [u128; 9] {
+    let aa = [
+        a[0] * 2,
+        a[1] * 2,
+        a[2] * 2,
+        a[3] * 2,
+    ];
+
+    [
+        m( a[0], a[0]),
+        m(aa[0], a[1]),
+        m(aa[0], a[2]) + m( a[1], a[1]),
+        m(aa[0], a[3]) + m(aa[1], a[2]),
+        m(aa[0], a[4]) + m(aa[1], a[3]) + m( a[2], a[2]),
+                            m(aa[1], a[4]) + m(aa[2], a[3]),
+                                            m(aa[2], a[4]) + m( a[3], a[3]),
+                                                            m(aa[3], a[4]),
+                                                                            m(a[4], a[4])
+    ]
+}
+
+
+// impl<'a> Sub<&'a FieldElement51> for &FieldElement51 {
+//     type Output = FieldElement51;
+//     fn sub(self, _rhs: &'a FieldElement51) -> FieldElement51 {
+//         // To avoid underflow, first add a multiple of p.
+//         // Choose 16*p = p << 4 to be larger than 54-bit _rhs.
+//         //
+//         // If we could statically track the bitlengths of the limbs
+//         // of every FieldElement51, we could choose a multiple of p
+//         // just bigger than _rhs and avoid having to do a reduction.
+//         //
+//         // Since we don't yet have type-level integers to do this, we
+//         // have to add an explicit reduction call here.
+//         FieldElement51::reduce([
+//             (self.0[0] + 36028797018963664u64) - _rhs.0[0],
+//             (self.0[1] + 36028797018963952u64) - _rhs.0[1],
+//             (self.0[2] + 36028797018963952u64) - _rhs.0[2],
+//             (self.0[3] + 36028797018963952u64) - _rhs.0[3],
+//             (self.0[4] + 36028797018963952u64) - _rhs.0[4],
+//         ])
+//     }
+// }
+
+
+
+// /// Load a `FieldElement51` from the low 255 bits of a 256-bit
+// /// input.
+// ///
+// /// # Warning
+// ///
+// /// This function does not check that the input used the canonical
+// /// representative.  It masks the high bit, but it will happily
+// /// decode 2^255 - 18 to 1.  Applications that require a canonical
+// /// encoding of every field element should decode, re-encode to
+// /// the canonical encoding, and check that the input was
+// /// canonical.
+// ///
+// #[rustfmt::skip] // keep alignment of bit shifts
+// pub const fn from_bytes(bytes: &[u8; 32]) -> FieldElement51 {
+//     const fn load8_at(input: &[u8], i: usize) -> u64 {
+//            (input[i] as u64)
+//         | ((input[i + 1] as u64) << 8)
+//         | ((input[i + 2] as u64) << 16)
+//         | ((input[i + 3] as u64) << 24)
+//         | ((input[i + 4] as u64) << 32)
+//         | ((input[i + 5] as u64) << 40)
+//         | ((input[i + 6] as u64) << 48)
+//         | ((input[i + 7] as u64) << 56)
+//     }
+
+//     let low_51_bit_mask = (1u64 << 51) - 1;
+//     FieldElement51(
+//     // load bits [  0, 64), no shift
+//     [  load8_at(bytes,  0)        & low_51_bit_mask
+//     // load bits [ 48,112), shift to [ 51,112)
+//     , (load8_at(bytes,  6) >>  3) & low_51_bit_mask
+//     // load bits [ 96,160), shift to [102,160)
+//     , (load8_at(bytes, 12) >>  6) & low_51_bit_mask
+//     // load bits [152,216), shift to [153,216)
+//     , (load8_at(bytes, 19) >>  1) & low_51_bit_mask
+//     // load bits [192,256), shift to [204,112)
+//     , (load8_at(bytes, 24) >> 12) & low_51_bit_mask
+//     ])
+// }
+
