@@ -192,4 +192,121 @@ def to_bytes (limbs : Array U64 5#usize) : Result (Array U8 32#usize) :=
   let i72 ← (↑(UScalar.cast .U8 i71) : Result U8)
   Array.update s31 31#usize i72
 
+/- [rust_lean_playground::m]:
+   Source: 'src/lib.rs', lines 143:0-145:1 -/
+def m (x : U64) (y : U64) : Result U128 :=
+  do
+  let i ← (↑(UScalar.cast .U128 x) : Result U128)
+  let i1 ← (↑(UScalar.cast .U128 y) : Result U128)
+  i * i1
+
+/- [rust_lean_playground::mul_internal]:
+   Source: 'src/lib.rs', lines 151:0-165:1 -/
+def mul_internal
+  (a : Array U64 5#usize) (b : Array U64 5#usize) :
+  Result (Array U128 9#usize)
+  :=
+  do
+  let z := Array.repeat 9#usize 0#u128
+  let i ← Array.index_usize a 0#usize
+  let i1 ← Array.index_usize b 0#usize
+  let i2 ← m i i1
+  let z1 ← Array.update z 0#usize i2
+  let i3 ← Array.index_usize b 1#usize
+  let i4 ← m i i3
+  let i5 ← Array.index_usize a 1#usize
+  let i6 ← m i5 i1
+  let i7 ← i4 + i6
+  let z2 ← Array.update z1 1#usize i7
+  let i8 ← Array.index_usize b 2#usize
+  let i9 ← m i i8
+  let i10 ← m i5 i3
+  let i11 ← i9 + i10
+  let i12 ← Array.index_usize a 2#usize
+  let i13 ← m i12 i1
+  let i14 ← i11 + i13
+  let z3 ← Array.update z2 2#usize i14
+  let i15 ← Array.index_usize b 3#usize
+  let i16 ← m i i15
+  let i17 ← m i5 i8
+  let i18 ← i16 + i17
+  let i19 ← m i12 i3
+  let i20 ← i18 + i19
+  let i21 ← Array.index_usize a 3#usize
+  let i22 ← m i21 i1
+  let i23 ← i20 + i22
+  let z4 ← Array.update z3 3#usize i23
+  let i24 ← Array.index_usize b 4#usize
+  let i25 ← m i i24
+  let i26 ← m i5 i15
+  let i27 ← i25 + i26
+  let i28 ← m i12 i8
+  let i29 ← i27 + i28
+  let i30 ← m i21 i3
+  let i31 ← i29 + i30
+  let i32 ← Array.index_usize a 4#usize
+  let i33 ← m i32 i1
+  let i34 ← i31 + i33
+  let z5 ← Array.update z4 4#usize i34
+  let i35 ← m i5 i24
+  let i36 ← m i12 i15
+  let i37 ← i35 + i36
+  let i38 ← m i21 i8
+  let i39 ← i37 + i38
+  let i40 ← m i32 i3
+  let i41 ← i39 + i40
+  let z6 ← Array.update z5 5#usize i41
+  let i42 ← m i12 i24
+  let i43 ← m i21 i15
+  let i44 ← i42 + i43
+  let i45 ← m i32 i8
+  let i46 ← i44 + i45
+  let z7 ← Array.update z6 6#usize i46
+  let i47 ← m i21 i24
+  let i48 ← m i32 i15
+  let i49 ← i47 + i48
+  let z8 ← Array.update z7 7#usize i49
+  let i50 ← m i32 i24
+  Array.update z8 8#usize i50
+
+/- [rust_lean_playground::square_internal]:
+   Source: 'src/lib.rs', lines 170:0-189:1 -/
+def square_internal (a : Array U64 5#usize) : Result (Array U128 9#usize) :=
+  do
+  let i ← Array.index_usize a 0#usize
+  let i1 ← i * 2#u64
+  let i2 ← Array.index_usize a 1#usize
+  let i3 ← i2 * 2#u64
+  let i4 ← Array.index_usize a 2#usize
+  let i5 ← i4 * 2#u64
+  let i6 ← Array.index_usize a 3#usize
+  let i7 ← i6 * 2#u64
+  let i8 ← m i i
+  let i9 ← Array.index_usize (Array.make 4#usize [ i1, i3, i5, i7 ]) 0#usize
+  let i10 ← m i9 i2
+  let i11 ← m i9 i4
+  let i12 ← m i2 i2
+  let i13 ← i11 + i12
+  let i14 ← m i9 i6
+  let i15 ← Array.index_usize (Array.make 4#usize [ i1, i3, i5, i7 ]) 1#usize
+  let i16 ← m i15 i4
+  let i17 ← i14 + i16
+  let i18 ← Array.index_usize a 4#usize
+  let i19 ← m i9 i18
+  let i20 ← m i15 i6
+  let i21 ← i19 + i20
+  let i22 ← m i4 i4
+  let i23 ← i21 + i22
+  let i24 ← m i15 i18
+  let i25 ← Array.index_usize (Array.make 4#usize [ i1, i3, i5, i7 ]) 2#usize
+  let i26 ← m i25 i6
+  let i27 ← i24 + i26
+  let i28 ← m i25 i18
+  let i29 ← m i6 i6
+  let i30 ← i28 + i29
+  let i31 ← Array.index_usize (Array.make 4#usize [ i1, i3, i5, i7 ]) 3#usize
+  let i32 ← m i31 i18
+  let i33 ← m i18 i18
+  ok (Array.make 9#usize [ i8, i10, i13, i17, i23, i27, i30, i32, i33 ])
+
 end rust_lean_playground

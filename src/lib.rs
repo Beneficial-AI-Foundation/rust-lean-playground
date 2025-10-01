@@ -137,10 +137,18 @@ pub fn to_bytes(limbs: [u64; 5]) -> [u8; 32] {
     s
 }
 
+
+/// u64 * u64 = u128 multiply helper
+#[inline(always)]
+fn m(x: u64, y: u64) -> u128 {
+    (x as u128) * (y as u128)
+}
+
+
 /// Compute `a * b`
 #[inline(always)]
 #[rustfmt::skip] // keep alignment of z[*] calculations
-pub (crate) fn mul_internal(a: &[u64; 5], b: &[u64; 5]) -> [u128; 9] {
+pub fn mul_internal(a: &[u64; 5], b: &[u64; 5]) -> [u128; 9] {
     let mut z = [0u128; 9];
 
     z[0] = m(a[0], b[0]);
@@ -159,7 +167,7 @@ pub (crate) fn mul_internal(a: &[u64; 5], b: &[u64; 5]) -> [u128; 9] {
 /// Compute `a^2`
 #[inline(always)]
 #[rustfmt::skip] // keep alignment of return calculations
-fn square_internal(a: &[u64; 5]) -> [u128; 9] {
+pub fn square_internal(a: &[u64; 5]) -> [u128; 9] {
     let aa = [
         a[0] * 2,
         a[1] * 2,
