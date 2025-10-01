@@ -7,7 +7,7 @@ import Verify.Proofs.M
 
 set_option linter.style.longLine false
 set_option linter.style.setOption false
-set_option maxHeartbeats 2000000
+set_option maxHeartbeats 3000000
 
 /-! # MulInternal
 
@@ -45,17 +45,87 @@ theorem mul_internal_spec (a b : Array U64 5#usize)
     ArrayU1289_to_Nat result = ArrayU645_to_Nat a * ArrayU645_to_Nat b := by
   unfold mul_internal
   progress*
-  have := ha 0 (by simp)
-  have := ha 1 (by simp)
-  have := ha 2 (by simp)
-  have := ha 3 (by simp)
-  have := ha 4 (by simp)
-  have := hb 0 (by simp)
-  have := hb 1 (by simp)
-  have := hb 2 (by simp)
-  have := hb 3 (by simp)
-  have := hb 4 (by simp)
-  all_goals try subst_vars; simp [Nat.reducePow] at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
+  · simp [*];
+    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+    have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+    simp at *; scalar_tac_preprocess; omega
+
   -- remains to show that `ArrayU1289_to_Nat res = ArrayU645_to_Nat a * ArrayU645_to_Nat b`
 
   sorry

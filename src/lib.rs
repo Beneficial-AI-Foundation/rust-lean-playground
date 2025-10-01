@@ -137,13 +137,11 @@ pub fn to_bytes(limbs: [u64; 5]) -> [u8; 32] {
     s
 }
 
-
 /// u64 * u64 = u128 multiply helper
 #[inline(always)]
 fn m(x: u64, y: u64) -> u128 {
     (x as u128) * (y as u128)
 }
-
 
 /// Compute `a * b`
 #[inline(always)]
@@ -188,7 +186,6 @@ pub fn square_internal(a: &[u64; 5]) -> [u128; 9] {
     ]
 }
 
-
 // impl<'a> Sub<&'a FieldElement51> for &FieldElement51 {
 //     type Output = FieldElement51;
 //     fn sub(self, _rhs: &'a FieldElement51) -> FieldElement51 {
@@ -210,8 +207,6 @@ pub fn square_internal(a: &[u64; 5]) -> [u128; 9] {
 //         ])
 //     }
 // }
-
-
 
 // /// Load a `FieldElement51` from the low 255 bits of a 256-bit
 // /// input.
@@ -252,4 +247,3 @@ pub fn square_internal(a: &[u64; 5]) -> [u128; 9] {
 //     , (load8_at(bytes, 24) >> 12) & low_51_bit_mask
 //     ])
 // }
-

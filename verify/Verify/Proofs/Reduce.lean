@@ -5,6 +5,7 @@ import Verify.Proofs.Aux
 import Verify.Proofs.Defs
 
 set_option linter.style.longLine false
+set_option linter.style.setOption false
 set_option maxHeartbeats 1000000
 
 /-! # Reduce
