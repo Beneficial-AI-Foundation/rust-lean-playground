@@ -2,9 +2,9 @@ name: Rust-Lean Verification Pipeline
 
 on:
   push:
-    branches: [master]
+    branches: [master, aeneas]
   pull_request:
-    branches: [master]
+    branches: [master, aeneas]
 
 env:
   CARGO_TERM_COLOR: always
