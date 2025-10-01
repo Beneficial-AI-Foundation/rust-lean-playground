@@ -39,12 +39,13 @@ def post (limbs result : RustArray u64 5) :=
   (∀ i, (h : i < 5) → result[i] ≤ (2^51 + (2^13 - 1) * 19).toUInt64) ∧
   ArrayU645_to_Nat limbs ≡ ArrayU645_to_Nat result [MOD p]
 
+open Spec.BV in
 /-- Spec theroem for `reduce` -/
 theorem reduce.spec (limbs : (RustArray u64 (5 : usize))) :
     ⦃ ⌜ True ⌝ ⦄
     (reduce limbs)
     ⦃ ⇓ result => ⌜ post limbs result ⌝ ⦄ := by
-  open Spec.BV in mvcgen [reduce]
+  mvcgen [reduce]
   all_goals try simp [Vector.size]
   all_goals try subst_vars; simp_all; bv_decide
   constructor
