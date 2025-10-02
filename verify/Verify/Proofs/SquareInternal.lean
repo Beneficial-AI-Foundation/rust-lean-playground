@@ -1,11 +1,6 @@
-import Aeneas
-import Verify.Src.RustLeanPlayground
-import Mathlib
-import Verify.Proofs.Aux
 import Verify.Proofs.Defs
 import Verify.Proofs.M
 
-set_option linter.style.longLine false
 set_option linter.style.setOption false
 set_option maxHeartbeats 2000000
 
@@ -37,46 +32,83 @@ attribute [progress] m_spec
 /-- **Spec for `square_internal`**:
 - Does not error and hence returns a result
 - The result represents the square of the input field element
-- Requires that each input limb is at most 63 bits to prevent overflow in the doubling step -/
+- Requires each limb to be less than 62 bits to prevent overflow
+(The optimal bound on the limbs is 2^64 / √5  ≈ 2^62.839) -/
 theorem square_internal_spec (a : Array U64 5#usize)
-    (ha : ∀ i, i < 5 → (a[i]!).val < 2^62) :
+    (ha : ∀ i, i < 5 → (a[i]!).val < 2 ^ 62) :
     ∃ result, square_internal a = ok (result) ∧
     ArrayU1289_to_Nat result = ArrayU645_to_Nat a * ArrayU645_to_Nat a := by
   unfold square_internal
-  progress*
-  · simp [*];
-    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp)
-    simp at *; scalar_tac_preprocess; omega
-  · simp [*];
-    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp)
-    simp at *; scalar_tac_preprocess; omega
-  · simp [*];
-    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp)
-    simp at *; scalar_tac_preprocess; omega
-  · simp [*];
-    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp)
-    simp at *; scalar_tac_preprocess; omega
-  · simp [*];
-    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp)
-    simp at *; scalar_tac_preprocess; omega
-  · simp [*];
-    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp)
-    simp at *; scalar_tac_preprocess; omega
-  · simp [*];
-    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp)
-    simp at *; scalar_tac_preprocess; omega
-  · simp [*];
-    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp)
-    simp at *; scalar_tac_preprocess; omega
-  · simp [*];
-    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp)
-    simp at *; scalar_tac_preprocess; omega
-  · simp [*];
-    have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp)
-    simp at *; scalar_tac_preprocess; omega
+  -- testing to see if avoiding progress* is quicker
+  progress
+  progress
+  · have := ha 0 (by omega)
+    scalar_tac
+  progress
+  progress
+  · have := ha 1 (by omega)
+    scalar_tac
+  progress
+  progress
+  · have := ha 2 (by omega)
+    scalar_tac
+  progress
+  progress
+  · have := ha 3 (by omega)
+    scalar_tac
+  progress
+  progress
+  progress
+  progress
+  progress
+  progress
+  · subst_vars
+    have := ha 1 (by simp)
+    have := ha 2 (by simp)
+    scalar_tac
+  progress
+  progress
+  progress
+  progress
+  · subst_vars
+    have := ha 3 (by simp)
+    have := ha 2 (by simp)
+    scalar_tac
+  progress
+  progress
+  progress
+  progress
+  · subst_vars
+    have := ha 3 (by simp);
+    have := ha 4 (by simp)
+    scalar_tac
+  progress
+  progress
+  · subst_vars
+    have := ha 3 (by simp)
+    have := ha 4 (by simp)
+    have := ha 2 (by simp)
+    scalar_tac
+  progress
+  progress
+  progress
+  progress
+  · subst_vars
+    have := ha 3 (by simp)
+    have := ha 4 (by simp)
+    scalar_tac
+  progress
+  progress
+  progress
+  · subst_vars
+    have := ha 3 (by simp)
+    have := ha 4 (by simp)
+    scalar_tac
+  progress
+  progress
+  progress
   -- remains to show that `ArrayU1289_to_Nat result = ArrayU645_to_Nat a * ArrayU645_to_Nat a`
-  unfold ArrayU1289_to_Nat ArrayU645_to_Nat
-  simp [Finset.sum_range_succ, *]
-  -- `Array.make` and `square_internale._proof_5` still preent in goal
-
-  sorry
+  simp [ArrayU1289_to_Nat, ArrayU645_to_Nat, Finset.sum_range_succ, *]
+  unfold Array.make at *
+  simp_all
+  ring
