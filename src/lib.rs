@@ -186,7 +186,6 @@ pub fn square_internal(a: &[u64; 5]) -> [u128; 9] {
     ]
 }
 
-
 // from: curve25519-dalek/src/field.rs
 //    /// Determine if this `FieldElement` is negative, in the sense
 //     /// used in the ed25519 paper: `x` is negative if the low bit is
@@ -199,7 +198,6 @@ pub fn square_internal(a: &[u64; 5]) -> [u128; 9] {
 //         let bytes = self.to_bytes();
 //         (bytes[0] & 1).into()
 //     }
-
 
 // impl<'a> Sub<&'a FieldElement51> for &FieldElement51 {
 //     type Output = FieldElement51;
