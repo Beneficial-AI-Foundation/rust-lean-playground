@@ -110,13 +110,28 @@ clone_aeneas() {
 # Setup Charon
 setup_charon() {
     echo "Setting up Charon..."
-    
+
     cd aeneas
     
     # First, get the Charon repository at the correct commit
     echo "Setting up Charon repository..."
     make setup-charon
-    
+
+    # Install the required nightly toolchain specified by Charon
+    echo "Installing required Rust nightly toolchain for Charon..."
+    if [ -f "charon/charon/rust-toolchain" ]; then
+        NIGHTLY_VERSION=$(grep 'channel = ' charon/charon/rust-toolchain | sed 's/.*"\(.*\)".*/\1/')
+        echo "Found Charon toolchain specification: $NIGHTLY_VERSION"
+        rustup toolchain install $NIGHTLY_VERSION
+        rustup component add --toolchain $NIGHTLY_VERSION rustfmt
+        echo "✓ Installed $NIGHTLY_VERSION with rustfmt"
+    else
+        echo "Warning: Charon rust-toolchain file not found, using latest nightly"
+        rustup toolchain install nightly
+        rustup component add --toolchain nightly rustfmt
+    fi
+    echo
+
     # Now build Charon manually with proper OCaml environment
     echo "Building Charon with OCaml environment..."
     cd charon
