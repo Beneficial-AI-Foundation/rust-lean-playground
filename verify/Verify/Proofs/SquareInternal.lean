@@ -14,14 +14,6 @@ open rust_lean_playground
 
 attribute [-simp] Int.reducePow Nat.reducePow
 
-/-! ## Auxiliary definitions -/
-
-/-- Auxiliary definition to interpret a 9-element u128 array as a natural number.
-This represents the result of polynomial multiplication where each limb is at position 51*i bits. -/
-@[simp]
-def ArrayU1289_to_Nat (limbs : Array U128 9#usize) : Nat :=
-  ∑ i ∈ Finset.range 9, 2^(51 * i) * (limbs[i]!).val
-
 /-! ## Spec for `square_internal` -/
 
 /- Using the specs with bit-vectors -/

@@ -22,9 +22,6 @@ attribute [-simp] Int.reducePow Nat.reducePow
    about this constant (otherwise it treats it as an opaque definition). -/
 attribute [simp, scalar_tac_simps] LOW_51_BIT_MASK_val_eq
 
-/-- Curve25519 is the elliptic curve over the prime field with order p -/
-def p : Nat := 2^255 - 19
-
 /- Using the specs with bit-vectors -/
 attribute [-progress] U64.add_spec U64.mul_spec
 attribute [local progress] U64.add_bv_spec U64.mul_bv_spec

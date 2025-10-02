@@ -1,4 +1,5 @@
 import Verify.Proofs.Aux
+import Verify.Proofs.ClampInteger
 import Verify.Proofs.Defs
 import Verify.Proofs.M
 import Verify.Proofs.MulInternal
@@ -6,5 +7,4 @@ import Verify.Proofs.Reduce
 import Verify.Proofs.SquareInternal
 import Verify.Proofs.ToBytes
 import Verify.Proofs.Zero
-import Verify.Proofs.clamp_integer
 import Verify.Src.RustLeanPlayground

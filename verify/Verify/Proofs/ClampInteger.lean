@@ -2,6 +2,7 @@ import Aeneas
 import Verify.Src.RustLeanPlayground
 import Mathlib
 import Verify.Proofs.Aux
+import Verify.Proofs.Defs
 
 set_option linter.style.setOption false
 set_option grind.warning false
@@ -28,24 +29,13 @@ attribute [bvify_simps] Nat.dvd_iff_mod_eq_zero
 theorem U8.dvd_and_248 (byte : U8) : 8 ∣ (byte &&& 248#u8).val := by
   bvify 8; bv_decide
 
-/-! ## Auxillary defs required for specs -/
-
-/-- Auxiliary definition to interpret a vector of u32 as an integer -/
-@[simp]
-def ArrayU832.as_Nat (bytes : Array U8 32#usize) : Nat :=
-  ∑ i ∈ Finset.range 32, 2^(8 * i) * (bytes[i]!).val
-
-/-- The cofactor of curve25519 -/
-@[simp]
-def h : Nat := 8
-
 /-! ## Spec for `clamp_integer` -/
 
 /-- **Spec and proof concerning `clamp_integer`**:
 - No panic
 - (as_nat_32_u8 result) is divisible by h (cofactor of curve25519)
-- 2^254 ≤ as_nat_32_u8 result
 - as_nat_32_u8 result < 2^255
+- 2^254 ≤ as_nat_32_u8 result
 -/
 theorem clamp_integer_spec (bytes : Array U8 32#usize) :
     ∃ result, clamp_integer bytes = ok (result) ∧
@@ -65,22 +55,17 @@ theorem clamp_integer_spec (bytes : Array U8 32#usize) :
       interval_cases i <;> omega
   · subst_vars
     simp [Finset.sum_range_succ, *]
-    have (n : Nat) : n &&& 127 ≤ 127 := by exact Nat.and_le_right
-    have (n : Nat) : n &&& 127 ||| 64 < 2^7 := by
-      sorry
-    have h1 (byte : U8) : byte.val < 2^8 := by bv_tac
-    have (n : Nat) : (n &&& 248) ≤ 248 := by simp [Nat.and_le_right]
-    have : (bytes : List U8)[0].val &&& 248 ≤ 248 := by grind
-    have : (bytes : List U8)[31].val &&& 127 ||| 64 ≤ 2^7 := by grind
-    have (n i : Nat) (byte : U8) : 2 ^ n * byte.val < 2 ^ (8 + n) := by
-      have := h1 byte
-      rw [Nat.pow_add' 2 8 n]
-      exact (Nat.mul_lt_mul_left (by simp)).mpr (h1 byte)
-    -- simp_all
-
-
-
-
+    -- have (n : Nat) : n &&& 127 ≤ 127 := by exact Nat.and_le_right
+    -- have (n : Nat) : n &&& 127 ||| 64 ≤ 127 := by
+    --   sorry
+    -- have h1 (byte : U8) : byte.val < 2^8 := by bv_tac
+    -- have (n : Nat) : (n &&& 248) ≤ 248 := by simp [Nat.and_le_right]
+    -- have : (bytes : List U8)[0].val &&& 248 ≤ 248 := by grind
+    -- have : (bytes : List U8)[31].val &&& 127 ||| 64 ≤ 2^7 := by grind
+    -- have (n i : Nat) (byte : U8) : 2 ^ n * byte.val < 2 ^ (8 + n) := by
+    --   have := h1 byte
+    --   rw [Nat.pow_add' 2 8 n]
+    --   exact (Nat.mul_lt_mul_left (by simp)).mpr (h1 byte)
     sorry
   · subst_vars
     simp [Finset.sum_range_succ, *]
