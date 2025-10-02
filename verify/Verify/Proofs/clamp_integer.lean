@@ -43,9 +43,9 @@ def h : Nat := 8
 
 /-- **Spec and proof concerning `clamp_integer`**:
 - No panic
+- (as_nat_32_u8 result) is divisible by h (cofactor of curve25519)
 - 2^254 ≤ as_nat_32_u8 result
 - as_nat_32_u8 result < 2^255
-- (as_nat_32_u8 result) is divisible by h (cofactor of curve25519)
 -/
 theorem clamp_integer_spec (bytes : Array U8 32#usize) :
     ∃ result, clamp_integer bytes = ok (result) ∧
@@ -68,8 +68,19 @@ theorem clamp_integer_spec (bytes : Array U8 32#usize) :
     have (n : Nat) : n &&& 127 ≤ 127 := by exact Nat.and_le_right
     have (n : Nat) : n &&& 127 ||| 64 < 2^7 := by
       sorry
-    have (byte : U8) : byte.val < 2^8 := by bv_tac
+    have h1 (byte : U8) : byte.val < 2^8 := by bv_tac
     have (n : Nat) : (n &&& 248) ≤ 248 := by simp [Nat.and_le_right]
+    have : (bytes : List U8)[0].val &&& 248 ≤ 248 := by grind
+    have : (bytes : List U8)[31].val &&& 127 ||| 64 ≤ 2^7 := by grind
+    have (n i : Nat) (byte : U8) : 2 ^ n * byte.val < 2 ^ (8 + n) := by
+      have := h1 byte
+      rw [Nat.pow_add' 2 8 n]
+      exact (Nat.mul_lt_mul_left (by simp)).mpr (h1 byte)
+    -- simp_all
+
+
+
+
     sorry
   · subst_vars
     simp [Finset.sum_range_succ, *]
