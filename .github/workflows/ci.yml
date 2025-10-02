@@ -134,8 +134,11 @@ jobs:
         
     - name: Install nightly toolchain for Charon
       run: |
-        rustup toolchain install nightly-2025-07-08
-        rustup component add --toolchain nightly-2025-07-08 rustfmt
+        # Read the required nightly version from Hax's rust-toolchain.toml
+        NIGHTLY_VERSION=$(grep 'channel = ' .lake/packages/Hax/rust-toolchain.toml | sed 's/.*"\(.*\)".*/\1/')
+        echo "Installing Rust toolchain: $NIGHTLY_VERSION"
+        rustup toolchain install $NIGHTLY_VERSION
+        rustup component add --toolchain $NIGHTLY_VERSION rustfmt
         
     - name: Setup OCaml environment
       run: |
