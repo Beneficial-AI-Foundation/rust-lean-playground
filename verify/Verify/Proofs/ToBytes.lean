@@ -21,8 +21,8 @@ attribute [-simp] Int.reducePow Nat.reducePow
 /-! ## Spec for `to_bytes` -/
 
 /- Using the specs with bit-vectors -/
-attribute [-progress] U64.add_spec U64.mul_spec U8.add_spec U8.mul_spec
-attribute [local progress] U64.add_bv_spec U64.mul_bv_spec U8.add_bv_spec U8.mul_bv_spec
+attribute [-progress] U64.add_spec U64.mul_spec
+attribute [local progress] U64.add_bv_spec U64.mul_bv_spec
 
 /-- **Spec for `to_bytes`**:
 - Does not overflow and hence returns a result

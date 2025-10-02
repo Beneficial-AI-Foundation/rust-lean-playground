@@ -35,14 +35,11 @@ theorem mul_internal_spec (a b : Array U64 5#usize)
     ∃ result, mul_internal a b = ok (result) ∧
     ArrayU1289_to_Nat result = ArrayU645_to_Nat a * ArrayU645_to_Nat b := by
   unfold mul_internal
-  -- progress*
-
-  -- · simp [*];
-  --   have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
-  --   have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
-  --   simp at *; scalar_tac_preprocess; omega
-
-
+  have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
+  have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
+  progress*
+  all_goals try simp [*]; simp at *; scalar_tac
   -- remains to show that `ArrayU1289_to_Nat res = ArrayU645_to_Nat a * ArrayU645_to_Nat b`
-
-  sorry
+  simp [*, Finset.sum_range_succ]
+  simp at *
+  ring_nf
