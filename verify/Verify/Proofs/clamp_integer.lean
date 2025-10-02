@@ -61,19 +61,15 @@ theorem clamp_integer_spec (bytes : Array U8 32#usize) :
     by_cases hc : i = 0
     · subst_vars
       simpa [*] using U8.dvd_and_248 _
-    · have := List.mem_range.mp hi
+    · have := List.mem_range.mp hi -- needed for inteval_cases bound
       interval_cases i <;> omega
   · subst_vars
     simp [Finset.sum_range_succ, *]
     have (n : Nat) : n &&& 127 ≤ 127 := by exact Nat.and_le_right
-
-    have (n : Nat) (hn : n < 2^7) : n ||| 64 < 2^7 := by
-
+    have (n : Nat) : n &&& 127 ||| 64 < 2^7 := by
       sorry
-    have (n : Nat) : n &&& 127 ||| 64 < 2^7 := by sorry
     have (byte : U8) : byte.val < 2^8 := by bv_tac
     have (n : Nat) : (n &&& 248) ≤ 248 := by simp [Nat.and_le_right]
-
     sorry
   · subst_vars
     simp [Finset.sum_range_succ, *]

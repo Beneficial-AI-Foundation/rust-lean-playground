@@ -1,6 +1,6 @@
 import Aeneas
 import Verify.Src.RustLeanPlayground
-import Mathlib
+-- import Mathlib
 import Verify.Proofs.Aux
 import Verify.Proofs.Defs
 import Verify.Proofs.M
@@ -39,8 +39,8 @@ attribute [progress] m_spec
 - The result represents the product of the two input field elements
 - Requires that each input limb is at most 62 bits to prevent overflow -/
 theorem mul_internal_spec (a b : Array U64 5#usize)
-    (ha : ∀ i, i < 5 → (a[i]!).val < 2^62)
-    (hb : ∀ i, i < 5 → (b[i]!).val < 2^62) :
+    (ha : ∀ i, i < 5 → (a[i]!).val < 2 ^ 62)
+    (hb : ∀ i, i < 5 → (b[i]!).val < 2 ^ 62) :
     ∃ result, mul_internal a b = ok (result) ∧
     ArrayU1289_to_Nat result = ArrayU645_to_Nat a * ArrayU645_to_Nat b := by
   unfold mul_internal
