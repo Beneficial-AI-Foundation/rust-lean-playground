@@ -4,6 +4,7 @@ import Mathlib
 import Verify.Proofs.Aux
 
 set_option linter.style.setOption false
+set_option grind.warning false
 set_option maxHeartbeats 2000000
 
 /-! # clamp_integer -/
@@ -64,9 +65,15 @@ theorem clamp_integer_spec (bytes : Array U8 32#usize) :
       interval_cases i <;> omega
   · subst_vars
     simp [Finset.sum_range_succ, *]
-    have : ((bytes : List U8)[31].val &&& 127 ||| 64) < 2^8 := by
+    have (n : Nat) : n &&& 127 ≤ 127 := by exact Nat.and_le_right
+
+    have (n : Nat) (hn : n < 2^7) : n ||| 64 < 2^7 := by
+
       sorry
+    have (n : Nat) : n &&& 127 ||| 64 < 2^7 := by sorry
     have (byte : U8) : byte.val < 2^8 := by bv_tac
+    have (n : Nat) : (n &&& 248) ≤ 248 := by simp [Nat.and_le_right]
+
     sorry
   · subst_vars
     simp [Finset.sum_range_succ, *]
