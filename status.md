@@ -10,15 +10,15 @@ This document tracks the verification status of functions in [src/lib.rs](src/li
 
 ## Function Status
 
-| Function | Status | Spec File | Notes |
-|----------|--------|-----------|-------|
-| `reduce` | ✅ Verified | [Reduce.lean](verify/Verify/Proofs/Reduce.lean) | Complete proof that reduction maintains value mod p and bounds limbs |
-| `clamp_integer` | 📝 Has spec | [clamp_integer.lean](verify/Verify/Proofs/clamp_integer.lean) | Spec shows divisibility by h=8 and bounds, but contains 2 sorries |
-| `to_bytes` | 📝 Has spec | [ToBytes.lean](verify/Verify/Proofs/ToBytes.lean) | Spec shows byte array equals limbs as nat, final equality has sorry |
-| `m` | ✅ Verified | [M.lean](verify/Verify/Proofs/M.lean) | Complete proof that u64*u64=u128 multiply works correctly |
-| `mul_internal` | 📝 Has spec | [MulInternal.lean](verify/Verify/Proofs/MulInternal.lean) | Spec shows result equals product, final equality has sorry |
-| `square_internal` | ✅ Verified | [SquareInternal.lean](verify/Verify/Proofs/SquareInternal.lean) | Complete proof that result equals square using `ring` tactic |
-| `ZERO` | ✅ Verified | [Zero.lean](verify/Verify/Proofs/Zero.lean) | Trivial proof that ZERO represents 0 |
+| Function          | Status      | Spec File                                                       | Notes                                                                |
+| ----------------- | ----------- | --------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `reduce`          | ✅ Verified | [Reduce.lean](verify/Verify/Proofs/Reduce.lean)                 | Complete proof that reduction maintains value mod p and bounds limbs |
+| `clamp_integer`   | 📝 Has spec | [clamp_integer.lean](verify/Verify/Proofs/clamp_integer.lean)   | Spec shows divisibility by h=8 and bounds, but contains 2 sorries    |
+| `to_bytes`        | 📝 Has spec | [ToBytes.lean](verify/Verify/Proofs/ToBytes.lean)               | Spec shows byte array equals limbs as nat, final equality has sorry  |
+| `m`               | ✅ Verified | [M.lean](verify/Verify/Proofs/M.lean)                           | Complete proof that u64\*u64=u128 multiply works correctly           |
+| `mul_internal`    | 📝 Has spec | [MulInternal.lean](verify/Verify/Proofs/MulInternal.lean)       | Spec shows result equals product, final equality has sorry           |
+| `square_internal` | ✅ Verified | [SquareInternal.lean](verify/Verify/Proofs/SquareInternal.lean) | Complete proof that result equals square using `ring` tactic         |
+| `ZERO`            | ✅ Verified | [Zero.lean](verify/Verify/Proofs/Zero.lean)                     | Trivial proof that ZERO represents 0                                 |
 
 ## Summary
 
