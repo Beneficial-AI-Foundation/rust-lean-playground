@@ -88,7 +88,7 @@ theorem decompose_or_limbs (limb0 limb1 : U64) (h : limb0.val < 2 ^ 51) :
 - Does not overflow and hence returns a result
 - The result byte array represents the same natural number as the input limbs -/
 theorem to_bytes_spec (limbs : Array U64 5#usize)
-  (h : ∀ i, (h : i < 5) → (getElem limbs.val i (by scalar_tac)).val < 2 ^ 51) :
+    (h : ∀ i, (h : i < 5) → (getElem limbs.val i (by scalar_tac)).val < 2 ^ 51) :
     ∃ result, to_bytes limbs = ok (result) ∧
     U8x32_as_Nat result = U64x5_as_Nat limbs := by
   unfold to_bytes
