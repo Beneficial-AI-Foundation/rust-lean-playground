@@ -1,10 +1,7 @@
-// Source:
-// [curve25519-dalek](https://docs.rs/curve25519-dalek/latest/src/curve25519_dalek/backend/serial/u64/field.rs.html#288)
-
+// Source: curve25519-dalek/src/backend/serial/u64/field.rs:276
 pub const LOW_51_BIT_MASK: u64 = 2251799813685247u64; // 2^51  -1
 
-// curve25519-dalek/src/backend/serial/u64/field.rs
-
+// Source: curve25519-dalek/src/backend/serial/u64/field.rs:436-470
 /// Given 64-bit input limbs, reduce to enforce the bound 2^(51 + epsilon).
 ///
 /// ## Spec:
@@ -65,6 +62,7 @@ pub fn reduce(mut limbs: [u64; 5]) -> [u64; 5] {
     limbs
 }
 
+// Source: curve25519-dalek/src/scalar.rs:1024
 /// _Clamps_ the given little-endian representation of a 32-byte integer. Clamping the value puts
 /// it in the range:
 ///
@@ -92,9 +90,11 @@ pub const fn clamp_integer(mut bytes: [u8; 32]) -> [u8; 32] {
     bytes
 }
 
+// Source: curve25519-dalek (implicit, standard zero constant)
 /// The scalar \\( 0 \\).
 pub const ZERO: [u64; 5] = [0, 0, 0, 0, 0];
 
+// Source: curve25519-dalek/src/backend/serial/u64/field.rs:471-533
 /// Pack the limbs into 32 bytes
 #[rustfmt::skip] // keep alignment of s[*] calculations
 #[allow(clippy::identity_op)]
@@ -137,12 +137,14 @@ pub fn to_bytes(limbs: [u64; 5]) -> [u8; 32] {
     s
 }
 
+// Source: curve25519-dalek/src/backend/serial/u64/field.rs:251
 /// u64 * u64 = u128 multiply helper
 #[inline(always)]
 fn m(x: u64, y: u64) -> u128 {
     (x as u128) * (y as u128)
 }
 
+// Source: curve25519-dalek/src/backend/serial/u64/field.rs:251-436 (mul implementation)
 /// Compute `a * b`
 #[inline(always)]
 #[rustfmt::skip] // keep alignment of z[*] calculations
@@ -162,6 +164,7 @@ pub fn mul_internal(a: &[u64; 5], b: &[u64; 5]) -> [u128; 9] {
     z
 }
 
+// Source: curve25519-dalek/src/backend/serial/u64/field.rs:599-605 (square implementation)
 /// Compute `a^2`
 #[inline(always)]
 #[rustfmt::skip] // keep alignment of return calculations
@@ -186,7 +189,7 @@ pub fn square_internal(a: &[u64; 5]) -> [u128; 9] {
     ]
 }
 
-// from: curve25519-dalek/src/field.rs
+// Source: curve25519-dalek/src/field.rs:362-366
 /// Determine if this `FieldElement` is negative, in the sense
 /// used in the ed25519 paper: `x` is negative if the low bit is
 /// set.
@@ -221,6 +224,7 @@ pub fn is_negative(limbs: &[u64; 5]) -> bool {
 //     }
 // }
 
+// Source: curve25519-dalek/src/backend/serial/u64/field.rs:246
 /// Load a `FieldElement51` from the low 255 bits of a 256-bit
 /// input.
 ///
