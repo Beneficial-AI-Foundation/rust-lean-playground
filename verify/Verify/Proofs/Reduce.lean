@@ -3,6 +3,7 @@ import Verify.Src.RustLeanPlayground
 import Mathlib
 import Verify.Proofs.Aux
 import Verify.Proofs.Defs
+import Verify.Proofs.Low51BitMask
 
 set_option linter.style.longLine false
 set_option linter.style.setOption false
