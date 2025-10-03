@@ -16,6 +16,10 @@ The main statement concerning `mul_internal` is `mul_internal_spec` (below).
 open Aeneas.Std Result
 open rust_lean_playground
 
+set_option linter.hashCommand false
+-- This activates/deactives some simps to reason about lists
+#setup_aeneas_simps
+
 attribute [-simp] Int.reducePow Nat.reducePow
 
 /-! ## Spec for `mul_internal` -/
@@ -38,8 +42,8 @@ theorem mul_internal_spec (a b : Array U64 5#usize)
   have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
   have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
   progress*
-  all_goals try simp [*]; simp at *; scalar_tac
+  all_goals try simp [*]; scalar_tac
   -- remains to show that `ArrayU1289_to_Nat res = ArrayU645_to_Nat a * ArrayU645_to_Nat b`
   simp [*, Finset.sum_range_succ]
   simp at *
-  ring_nf
+  ring
