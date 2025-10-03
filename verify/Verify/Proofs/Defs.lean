@@ -27,21 +27,16 @@ def h : Nat := 8
 
 /-- Auxiliary definition to interpret a vector of u64 limbs as a natural number (51-bit limbs) -/
 @[simp]
-def ArrayU645_to_Nat (limbs : Array U64 5#usize) : Nat :=
+def U64x5_as_Nat (limbs : Array U64 5#usize) : Nat :=
   ∑ i ∈ Finset.range 5, 2^(51 * i) * (limbs[i]!).val
 
 /-- Auxiliary definition to interpret a 9-element u128 array as a natural number.
 This represents the result of polynomial multiplication where each limb is at position 51*i bits. -/
 @[simp]
-def ArrayU1289_to_Nat (limbs : Array U128 9#usize) : Nat :=
+def U128x9_as_Nat (limbs : Array U128 9#usize) : Nat :=
   ∑ i ∈ Finset.range 9, 2^(51 * i) * (limbs[i]!).val
 
 /-- Auxiliary definition to interpret a byte array as a natural number (little-endian) -/
 @[simp]
-def ArrayU832_to_Nat (bytes : Array U8 32#usize) : Nat :=
-  ∑ i ∈ Finset.range 32, 2^(8 * i) * (bytes[i]!).val
-
-/-- Auxiliary definition to interpret a vector of u32 as an integer -/
-@[simp]
-def ArrayU832.as_Nat (bytes : Array U8 32#usize) : Nat :=
+def U8x32_as_Nat (bytes : Array U8 32#usize) : Nat :=
   ∑ i ∈ Finset.range 32, 2^(8 * i) * (bytes[i]!).val

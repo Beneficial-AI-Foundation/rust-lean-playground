@@ -193,7 +193,7 @@ def to_bytes (limbs : Array U64 5#usize) : Result (Array U8 32#usize) :=
   Array.update s31 31#usize i72
 
 /- [rust_lean_playground::m]:
-   Source: 'src/lib.rs', lines 143:0-145:1 -/
+   Source: 'src/lib.rs', lines 142:0-144:1 -/
 def m (x : U64) (y : U64) : Result U128 :=
   do
   let i ← (↑(UScalar.cast .U128 x) : Result U128)
@@ -201,7 +201,7 @@ def m (x : U64) (y : U64) : Result U128 :=
   i * i1
 
 /- [rust_lean_playground::mul_internal]:
-   Source: 'src/lib.rs', lines 151:0-165:1 -/
+   Source: 'src/lib.rs', lines 149:0-163:1 -/
 def mul_internal
   (a : Array U64 5#usize) (b : Array U64 5#usize) :
   Result (Array U128 9#usize)
@@ -270,7 +270,7 @@ def mul_internal
   Array.update z8 8#usize i50
 
 /- [rust_lean_playground::square_internal]:
-   Source: 'src/lib.rs', lines 170:0-189:1 -/
+   Source: 'src/lib.rs', lines 168:0-187:1 -/
 def square_internal (a : Array U64 5#usize) : Result (Array U128 9#usize) :=
   do
   let i ← Array.index_usize a 0#usize
@@ -308,5 +308,14 @@ def square_internal (a : Array U64 5#usize) : Result (Array U128 9#usize) :=
   let i32 ← m i31 i18
   let i33 ← m i18 i18
   ok (Array.make 9#usize [ i8, i10, i13, i17, i23, i27, i30, i32, i33 ])
+
+/- [rust_lean_playground::is_negative]:
+   Source: 'src/lib.rs', lines 197:0-200:1 -/
+def is_negative (limbs : Array U64 5#usize) : Result Bool :=
+  do
+  let bytes ← to_bytes limbs
+  let i ← Array.index_usize bytes 0#usize
+  let i1 ← (↑(i &&& 1#u8) : Result U8)
+  ok (i1 != 0#u8)
 
 end rust_lean_playground

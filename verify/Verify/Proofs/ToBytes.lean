@@ -81,6 +81,7 @@ theorem decompose_or_limbs (limb0 limb1 : U64) (h : limb0.val < 2 ^ 51) :
   ((limb1.val <<< 4) % 2 ^ 8) := by
   bvify 64 at *
   -- The idea is to do something similar to the proof above
+
   sorry
 
 /-- **Spec for `to_bytes`**:
@@ -89,10 +90,10 @@ theorem decompose_or_limbs (limb0 limb1 : U64) (h : limb0.val < 2 ^ 51) :
 theorem to_bytes_spec (limbs : Array U64 5#usize)
   (h : ∀ i, (h : i < 5) → (getElem limbs.val i (by scalar_tac)).val < 2 ^ 51) :
     ∃ result, to_bytes limbs = ok (result) ∧
-    ArrayU832_to_Nat result = ArrayU645_to_Nat limbs := by
+    U8x32_as_Nat result = U64x5_as_Nat limbs := by
   unfold to_bytes
   progress*
-  -- remains to show that `ArrayU832_to_Nat result = ArrayU645_to_Nat limbs`
+  -- remains to show that `U8x32_as_Nat result = U64x5_as_Nat limbs`
   simp [Finset.sum_range_succ, Nat.ModEq, *]
   -- We need those
   have h0 := h 0 (by simp)
@@ -101,11 +102,23 @@ theorem to_bytes_spec (limbs : Array U64 5#usize)
   have h3 := h 3 (by simp)
   have h4 := h 4 (by simp)
   -- Decompose the rhs (we also need to decompose limbs[1], etc.)
-  conv => rhs; rw [recompose_decomposed_limb (limbs.val[0]) (h0)]
+  conv =>
+    rhs;
+    rw [recompose_decomposed_limb (limbs.val[0]) (h0)];
+    -- rw [recompose_decomposed_limb (limbs.val[1]) (h1)];
+    -- rw [recompose_decomposed_limb (limbs.val[2]) (h2)];
+    -- rw [recompose_decomposed_limb (limbs.val[3]) (h3)];
+    -- rw [recompose_decomposed_limb (limbs.val[4]) (h4)];
+
 
 
   -- Simplify the lhs with the rhs
   simp [add_assoc, mul_add, decompose_or_limbs (limbs.val[0]) (limbs.val[1]) (h0)]
+
+
+
+
+  -- rw [← recompose_decomposed_limb_split]
 
   -- I think the spec is wrong: on the RHS we have 2^51 * limbs[1] while
   -- we should have 2^52

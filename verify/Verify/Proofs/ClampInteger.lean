@@ -39,9 +39,9 @@ theorem U8.dvd_and_248 (byte : U8) : 8 ∣ (byte &&& 248#u8).val := by
 -/
 theorem clamp_integer_spec (bytes : Array U8 32#usize) :
     ∃ result, clamp_integer bytes = ok (result) ∧
-    h ∣ ArrayU832.as_Nat result ∧
-    ArrayU832.as_Nat result < 2^255 ∧
-    2^254 ≤ ArrayU832.as_Nat result := by
+    h ∣ U8x32_as_Nat result ∧
+    U8x32_as_Nat result < 2^255 ∧
+    2^254 ≤ U8x32_as_Nat result := by
   unfold clamp_integer
   progress*
   simp

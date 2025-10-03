@@ -37,13 +37,13 @@ theorem mul_internal_spec (a b : Array U64 5#usize)
     (ha : ∀ i, i < 5 → (a[i]!).val < 2 ^ 62)
     (hb : ∀ i, i < 5 → (b[i]!).val < 2 ^ 62) :
     ∃ result, mul_internal a b = ok (result) ∧
-    ArrayU1289_to_Nat result = ArrayU645_to_Nat a * ArrayU645_to_Nat b := by
+    U128x9_as_Nat result = U64x5_as_Nat a * U64x5_as_Nat b := by
   unfold mul_internal
   have := ha 0 (by simp); have := ha 1 (by simp); have := ha 2 (by simp); have := ha 3 (by simp); have := ha 4 (by simp);
   have := hb 0 (by simp); have := hb 1 (by simp); have := hb 2 (by simp); have := hb 3 (by simp); have := hb 4 (by simp)
   progress*
   all_goals try simp [*]; scalar_tac
-  -- remains to show that `ArrayU1289_to_Nat res = ArrayU645_to_Nat a * ArrayU645_to_Nat b`
+  -- remains to show that `U128x9_as_Nat res = U64x5_as_Nat a * U64x5_as_Nat b`
   simp [*, Finset.sum_range_succ]
   simp at *
   ring

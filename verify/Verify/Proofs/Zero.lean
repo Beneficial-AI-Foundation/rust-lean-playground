@@ -20,6 +20,6 @@ attribute [-simp] Int.reducePow Nat.reducePow
 
 /-- **Spec for `ZERO`**:
 - The ZERO constant represents the scalar 0 -/
-theorem ZERO_spec : ArrayU645_to_Nat ZERO = 0 := by
+theorem ZERO_spec : U64x5_as_Nat ZERO = 0 := by
   unfold ZERO
   decide

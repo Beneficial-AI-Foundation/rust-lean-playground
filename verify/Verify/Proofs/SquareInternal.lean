@@ -29,7 +29,7 @@ attribute [progress] m_spec
 theorem square_internal_spec (a : Array U64 5#usize)
     (ha : ∀ i, i < 5 → (a[i]!).val < 2 ^ 62) :
     ∃ result, square_internal a = ok (result) ∧
-    ArrayU1289_to_Nat result = ArrayU645_to_Nat a * ArrayU645_to_Nat a := by
+    U128x9_as_Nat result = U64x5_as_Nat a * U64x5_as_Nat a := by
   unfold square_internal
   -- testing to see if avoiding progress* is quicker
   progress
@@ -99,8 +99,8 @@ theorem square_internal_spec (a : Array U64 5#usize)
   progress
   progress
   progress
-  -- remains to show that `ArrayU1289_to_Nat result = ArrayU645_to_Nat a * ArrayU645_to_Nat a`
-  simp [ArrayU1289_to_Nat, ArrayU645_to_Nat, Finset.sum_range_succ, *]
+  -- remains to show that `U128x9_as_Nat result = U64x5_as_Nat a * U64x5_as_Nat a`
+  simp [U128x9_as_Nat, U64x5_as_Nat, Finset.sum_range_succ, *]
   unfold Array.make at *
   simp_all
   ring
