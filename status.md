@@ -12,14 +12,14 @@ This document tracks the verification status of functions in [src/lib.rs](src/li
 
 | Function          | Status      | Source Code                   | Spec File                                                       | Notes                                                  |
 | ----------------- | ----------- | ----------------------------- | --------------------------------------------------------------- | ------------------------------------------------------ |
-| `clamp_integer`   | 📝 Has spec | [lib.rs:88](src/lib.rs#L88)   | [ClampInteger.lean](verify/Verify/Proofs/ClampInteger.lean)     | Proven divisibility, remains to prove additional bound |
+| `clamp_integer`   | 📝 Has spec | [lib.rs:88](src/lib.rs#L88)   | [ClampInteger.lean](verify/Verify/Proofs/ClampInteger.lean)     | Proven divisibility, remains to prove bound            |
 | `from_bytes`      | 📄 No spec  | [lib.rs:237](src/lib.rs#L237) | -                                                               | Load field element from 32-byte little-endian encoding |
 | `is_negative`     | 📝 Has spec | [lib.rs:197](src/lib.rs#L197) | [IsNegative.lean](verify/Verify/Proofs/IsNegative.lean)         | Checks if field element is negative (low bit set)      |
 | `load8_at`        | 📄 No spec  | [lib.rs:238](src/lib.rs#L238) | -                                                               | Helper: load 8 bytes as u64 (little-endian)            |
 | `LOW_51_BIT_MASK` | ✅ Verified | [lib.rs:4](src/lib.rs#L4)     | [Low51BitMask.lean](verify/Verify/Proofs/Low51BitMask.lean)     | Constant: 2^51 - 1                                     |
-| `m`               | ✅ Verified | [lib.rs:142](src/lib.rs#L142) | [M.lean](verify/Verify/Proofs/M.lean)                           | Trivial proof, corresponds to multiplication           |
+| `m`               | ✅ Verified | [lib.rs:142](src/lib.rs#L142) | [M.lean](verify/Verify/Proofs/M.lean)                           | Trivial proof, is multiplication                       |
 | `mul_internal`    | ✅ Verified | [lib.rs:149](src/lib.rs#L149) | [MulInternal.lean](verify/Verify/Proofs/MulInternal.lean)       | Result equals product                                  |
-| `reduce`          | ✅ Verified | [lib.rs:35](src/lib.rs#L35)   | [Reduce.lean](verify/Verify/Proofs/Reduce.lean)                 | Reduction maintains value mod p and bounds limbs       |
+| `reduce`          | ✅ Verified | [lib.rs:35](src/lib.rs#L35)   | [Reduce.lean](verify/Verify/Proofs/Reduce.lean)                 | Maintains value mod p and bounds limbs                 |
 | `square_internal` | ✅ Verified | [lib.rs:168](src/lib.rs#L168) | [SquareInternal.lean](verify/Verify/Proofs/SquareInternal.lean) | Result equals square                                   |
 | `to_bytes`        | 📝 Has spec | [lib.rs:101](src/lib.rs#L101) | [ToBytes.lean](verify/Verify/Proofs/ToBytes.lean)               | One equality remains to be proven                      |
 | `ZERO`            | ✅ Verified | [lib.rs:96](src/lib.rs#L96)   | [Zero.lean](verify/Verify/Proofs/Zero.lean)                     | Trivial proof, ZERO represents 0                       |
