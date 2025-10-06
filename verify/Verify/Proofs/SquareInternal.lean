@@ -32,39 +32,15 @@ theorem square_internal_spec (a : Array U64 5#usize)
     U128x9_as_Nat result = U64x5_as_Nat a * U64x5_as_Nat a := by
   unfold square_internal
   progress*
-  · have := ha 0 (by omega)
-    scalar_tac
-  · have := ha 1 (by omega)
-    scalar_tac
-  · have := ha 2 (by omega)
-    scalar_tac
-  · have := ha 3 (by omega)
-    scalar_tac
-  · subst_vars
+  all_goals try {
+    subst_vars
+    have := ha 0 (by omega)
     have := ha 1 (by omega)
     have := ha 2 (by omega)
-    scalar_tac
-  · subst_vars
-    have := ha 3 (by omega)
-    have := ha 2 (by omega)
-    scalar_tac
-  · subst_vars
-    have := ha 3 (by omega);
-    have := ha 4 (by omega)
-    scalar_tac
-  · subst_vars
-    have := ha 3 (by omega)
-    have := ha 4 (by omega)
-    have := ha 2 (by omega)
-    scalar_tac
-  · subst_vars
     have := ha 3 (by omega)
     have := ha 4 (by omega)
     scalar_tac
-  · subst_vars
-    have := ha 3 (by omega)
-    have := ha 4 (by omega)
-    scalar_tac
+  }
   -- remains to show that `U128x9_as_Nat result = U64x5_as_Nat a * U64x5_as_Nat a`
   simp [U128x9_as_Nat, U64x5_as_Nat, Finset.sum_range_succ, *]
   unfold Array.make at *
