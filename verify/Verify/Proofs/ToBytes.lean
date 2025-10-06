@@ -92,19 +92,19 @@ theorem to_bytes_spec (limbs : Array U64 5#usize)
     ∃ result, to_bytes limbs = ok (result) ∧
     U8x32_as_Nat result = U64x5_as_Nat limbs := by
   unfold to_bytes
-  progress*
-  -- remains to show that `U8x32_as_Nat result = U64x5_as_Nat limbs`
-  simp [Finset.sum_range_succ, Nat.ModEq, *]
-  -- We need those
-  have h0 := h 0 (by simp)
-  have h1 := h 1 (by simp)
-  have h2 := h 2 (by simp)
-  have h3 := h 3 (by simp)
-  have h4 := h 4 (by simp)
+  -- progress*
+  -- -- remains to show that `U8x32_as_Nat result = U64x5_as_Nat limbs`
+  -- simp [Finset.sum_range_succ, Nat.ModEq, *]
+  -- -- We need those
+  -- have h0 := h 0 (by simp)
+  -- have h1 := h 1 (by simp)
+  -- have h2 := h 2 (by simp)
+  -- have h3 := h 3 (by simp)
+  -- have h4 := h 4 (by simp)
   -- Decompose the rhs (we also need to decompose limbs[1], etc.)
-  conv =>
-    rhs;
-    rw [recompose_decomposed_limb (limbs.val[0]) (h0)];
+  -- conv =>
+  --   rhs;
+  --   rw [recompose_decomposed_limb (limbs.val[0]) (h0)];
     -- rw [recompose_decomposed_limb (limbs.val[1]) (h1)];
     -- rw [recompose_decomposed_limb (limbs.val[2]) (h2)];
     -- rw [recompose_decomposed_limb (limbs.val[3]) (h3)];
@@ -113,7 +113,7 @@ theorem to_bytes_spec (limbs : Array U64 5#usize)
 
 
   -- Simplify the lhs with the rhs
-  simp [add_assoc, mul_add, decompose_or_limbs (limbs.val[0]) (limbs.val[1]) (h0)]
+  -- simp [add_assoc, mul_add, decompose_or_limbs (limbs.val[0]) (limbs.val[1]) (h0)]
 
 
 
@@ -122,4 +122,45 @@ theorem to_bytes_spec (limbs : Array U64 5#usize)
 
   -- I think the spec is wrong: on the RHS we have 2^51 * limbs[1] while
   -- we should have 2^52
+  sorry
+
+/-- Byte-by-byte specification for `to_bytes` -/
+theorem to_bytes_spec' (limbs : Array U64 5#usize)
+    (h : ∀ i, (h : i < 5) → (getElem limbs.val i (by scalar_tac)).val < 2 ^ 51) :
+    ∃ result, to_bytes limbs = ok result ∧
+    ∀ (i : Fin 32), result.val[i.val].val = match i.val with
+      | 0  => limbs.val[0].val >>> 0 % 2^8
+      | 1  => limbs.val[0].val >>> 8 % 2^8
+      | 2  => limbs.val[0].val >>> 16 % 2^8
+      | 3  => limbs.val[0].val >>> 24 % 2^8
+      | 4  => limbs.val[0].val >>> 32 % 2^8
+      | 5  => limbs.val[0].val >>> 40 % 2^8
+      | 6  => (limbs.val[0].val >>> 48 ||| limbs.val[1].val <<< 4) % 2^8
+      | 7  => limbs.val[1].val >>> 4 % 2^8
+      | 8  => limbs.val[1].val >>> 12 % 2^8
+      | 9  => limbs.val[1].val >>> 20 % 2^8
+      | 10 => limbs.val[1].val >>> 28 % 2^8
+      | 11 => limbs.val[1].val >>> 36 % 2^8
+      | 12 => limbs.val[1].val >>> 44 % 2^8
+      | 13 => limbs.val[2].val >>> 0 % 2^8
+      | 14 => limbs.val[2].val >>> 8 % 2^8
+      | 15 => limbs.val[2].val >>> 16 % 2^8
+      | 16 => limbs.val[2].val >>> 24 % 2^8
+      | 17 => limbs.val[2].val >>> 32 % 2^8
+      | 18 => limbs.val[2].val >>> 40 % 2^8
+      | 19 => (limbs.val[2].val >>> 48 ||| limbs.val[3].val <<< 4) % 2^8
+      | 20 => limbs.val[3].val >>> 4 % 2^8
+      | 21 => limbs.val[3].val >>> 12 % 2^8
+      | 22 => limbs.val[3].val >>> 20 % 2^8
+      | 23 => limbs.val[3].val >>> 28 % 2^8
+      | 24 => limbs.val[3].val >>> 36 % 2^8
+      | 25 => limbs.val[3].val >>> 44 % 2^8
+      | 26 => limbs.val[4].val >>> 0 % 2^8
+      | 27 => limbs.val[4].val >>> 8 % 2^8
+      | 28 => limbs.val[4].val >>> 16 % 2^8
+      | 29 => limbs.val[4].val >>> 24 % 2^8
+      | 30 => limbs.val[4].val >>> 32 % 2^8
+      | 31 => limbs.val[4].val >>> 40 % 2^8
+      | _  => 0
+    := by
   sorry
