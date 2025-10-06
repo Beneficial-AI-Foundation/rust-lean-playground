@@ -32,7 +32,7 @@ This document tracks the verification status of functions in [src/lib.rs](src/li
 
 ## Next Steps
 
-1. Check the spec and complete the final equality proof in [to_bytes_spec](verify/Verify/Proofs/ToBytes.lean:39)
-2. Prove the upper bound in [clamp_integer_spec](verify/Verify/Proofs/ClampInteger.lean:68)
-3. Complete the proof for [is_negative_spec](verify/Verify/Proofs/IsNegative.lean:26)
+1. Check the spec and complete the final equality proof in [to_bytes_spec](verify/Verify/Proofs/ToBytes.lean:39). This requires several lemmas to be added. Already substatial progress.
+2. Small detail remaining for the upper bound in [clamp_integer_spec](verify/Verify/Proofs/ClampInteger.lean:68). Proof almost complete, remains to manipulate some bitwise operations correctly.
+3. Complete the proof for [is_negative_spec](verify/Verify/Proofs/IsNegative.lean:26). Probably requies bitvector arguments.
 4. Complete the proofs for [load8_at_spec](verify/Verify/Proofs/FromBytes.lean:27) and [from_bytes_spec](verify/Verify/Proofs/FromBytes.lean:42)
