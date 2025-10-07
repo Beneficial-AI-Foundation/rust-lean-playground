@@ -36,3 +36,7 @@ This document tracks the verification status of functions in [src/lib.rs](src/li
 2. Small detail remaining for the upper bound in [clamp_integer_spec](verify/Verify/Proofs/ClampInteger.lean:68). Proof almost complete, remains to manipulate some bitwise operations correctly.
 3. Complete the proof for [is_negative_spec](verify/Verify/Proofs/IsNegative.lean:26). Probably requies bitvector arguments.
 4. Complete the proofs for [load8_at_spec](verify/Verify/Proofs/FromBytes.lean:27) and [from_bytes_spec](verify/Verify/Proofs/FromBytes.lean:42)
+
+## Verilib
+
+https://verilib.org/repobrowser?id=3197
