@@ -8,6 +8,238 @@ set_option linter.unusedVariables false
 
 namespace rust_lean_playground
 
+/- Trait declaration: [core::iter::adapters::zip::TrustedRandomAccessNoCoerce]
+   Source: '/rustc/library/core/src/iter/adapters/zip.rs', lines 585:0-585:51
+   Name pattern: [core::iter::adapters::zip::TrustedRandomAccessNoCoerce] -/
+structure core.iter.adapters.zip.TrustedRandomAccessNoCoerce (Self : Type)
+  where
+  MAY_HAVE_SIDE_EFFECT : Bool
+
+/- Trait declaration: [core::iter::range::Step]
+   Source: '/rustc/library/core/src/iter/range.rs', lines 25:0-25:42
+   Name pattern: [core::iter::range::Step] -/
+structure core.iter.range.Step (Self : Type) where
+  cloneCloneInst : core.clone.Clone Self
+  cmpPartialOrdInst : core.cmp.PartialOrd Self Self
+  steps_between : Self → Self → Result (Usize × (Option Usize))
+  forward_checked : Self → Usize → Result (Option Self)
+  backward_checked : Self → Usize → Result (Option Self)
+
+/- [core::iter::range::{core::iter::range::Step for usize}::steps_between]:
+   Source: '/rustc/library/core/src/iter/range.rs', lines 263:16-263:84
+   Name pattern: [core::iter::range::{core::iter::range::Step<usize>}::steps_between] -/
+axiom core.iter.range.StepUsize.steps_between
+  : Usize → Usize → Result (Usize × (Option Usize))
+
+/- [core::iter::range::{core::iter::range::Step for usize}::forward_checked]:
+   Source: '/rustc/library/core/src/iter/range.rs', lines 274:16-274:73
+   Name pattern: [core::iter::range::{core::iter::range::Step<usize>}::forward_checked] -/
+axiom core.iter.range.StepUsize.forward_checked
+  : Usize → Usize → Result (Option Usize)
+
+/- [core::iter::range::{core::iter::range::Step for usize}::backward_checked]:
+   Source: '/rustc/library/core/src/iter/range.rs', lines 282:16-282:74
+   Name pattern: [core::iter::range::{core::iter::range::Step<usize>}::backward_checked] -/
+axiom core.iter.range.StepUsize.backward_checked
+  : Usize → Usize → Result (Option Usize)
+
+/- Trait implementation: [core::iter::range::{core::iter::range::Step for usize}]
+   Source: '/rustc/library/core/src/iter/range.rs', lines 258:12-258:37
+   Name pattern: [core::iter::range::Step<usize>] -/
+@[reducible]
+def core.iter.range.StepUsize : core.iter.range.Step Usize := {
+  cloneCloneInst := core.clone.CloneUsize
+  cmpPartialOrdInst := core.cmp.PartialOrdUsize
+  steps_between := core.iter.range.StepUsize.steps_between
+  forward_checked := core.iter.range.StepUsize.forward_checked
+  backward_checked := core.iter.range.StepUsize.backward_checked
+}
+
+/- Trait declaration: [core::iter::traits::iterator::Iterator]
+   Source: '/rustc/library/core/src/iter/traits/iterator.rs', lines 39:0-39:18
+   Name pattern: [core::iter::traits::iterator::Iterator] -/
+structure core.iter.traits.iterator.Iterator (Self : Type) (Self_Item : Type)
+  where
+  next : Self → Result ((Option Self_Item) × Self)
+
+/- [core::iter::range::{core::iter::traits::iterator::Iterator<A> for core::ops::range::Range<A>}::next]:
+   Source: '/rustc/library/core/src/iter/range.rs', lines 849:4-849:35
+   Name pattern: [core::iter::range::{core::iter::traits::iterator::Iterator<core::ops::range::Range<@A>, @A>}::next] -/
+axiom core.iter.range.IteratorcoreopsrangeRangeA.next
+  {A : Type} (StepInst : core.iter.range.Step A) :
+  core.ops.range.Range A → Result ((Option A) × (core.ops.range.Range A))
+
+/- Trait implementation: [core::iter::range::{core::iter::traits::iterator::Iterator<A> for core::ops::range::Range<A>}]
+   Source: '/rustc/library/core/src/iter/range.rs', lines 845:0-845:40
+   Name pattern: [core::iter::traits::iterator::Iterator<core::ops::range::Range<@A>, @A>] -/
+@[reducible]
+def core.iter.traits.iterator.IteratorcoreopsrangeRangeA {A : Type} (StepInst :
+  core.iter.range.Step A) : core.iter.traits.iterator.Iterator
+  (core.ops.range.Range A) A := {
+  next := core.iter.range.IteratorcoreopsrangeRangeA.next StepInst
+}
+
+/- Trait declaration: [core::iter::traits::accum::Sum]
+   Source: '/rustc/library/core/src/iter/traits/accum.rs', lines 17:0-17:30
+   Name pattern: [core::iter::traits::accum::Sum] -/
+structure core.iter.traits.accum.Sum (Self : Type) (A : Type) where
+  sum : forall {I : Type} (iteratorIteratorInst :
+    core.iter.traits.iterator.Iterator I A), I → Result Self
+
+/- Trait declaration: [core::iter::traits::accum::Product]
+   Source: '/rustc/library/core/src/iter/traits/accum.rs', lines 38:0-38:34
+   Name pattern: [core::iter::traits::accum::Product] -/
+structure core.iter.traits.accum.Product (Self : Type) (A : Type) where
+  product : forall {I : Type} (iteratorIteratorInst :
+    core.iter.traits.iterator.Iterator I A), I → Result Self
+
+/- Trait declaration: [core::iter::traits::collect::IntoIterator]
+   Source: '/rustc/library/core/src/iter/traits/collect.rs', lines 282:0-282:22
+   Name pattern: [core::iter::traits::collect::IntoIterator] -/
+structure core.iter.traits.collect.IntoIterator (Self : Type) (Self_Item :
+  Type) (Self_IntoIter : Type) where
+  iteratorIteratorInst : core.iter.traits.iterator.Iterator Self_IntoIter
+    Self_Item
+  into_iter : Self → Result Self_IntoIter
+
+/- Trait declaration: [core::iter::traits::collect::FromIterator]
+   Source: '/rustc/library/core/src/iter/traits/collect.rs', lines 134:0-134:32
+   Name pattern: [core::iter::traits::collect::FromIterator] -/
+structure core.iter.traits.collect.FromIterator (Self : Type) (A : Type) where
+  from_iter : forall {T : Type} {Clause1_IntoIter : Type} (IntoIteratorInst :
+    core.iter.traits.collect.IntoIterator T A Clause1_IntoIter), T → Result
+    Self
+
+/- [core::iter::traits::collect::{core::iter::traits::collect::IntoIterator<Clause1_Item, I> for I}::into_iter]:
+   Source: '/rustc/library/core/src/iter/traits/collect.rs', lines 319:4-319:27
+   Name pattern: [core::iter::traits::collect::{core::iter::traits::collect::IntoIterator<@I, @Clause1_Item, @I>}::into_iter] -/
+axiom core.iter.traits.collect.IntoIterator.Blanket.into_iter
+  {I : Type} {Clause1_Item : Type} (iteratorIteratorInst :
+  core.iter.traits.iterator.Iterator I Clause1_Item) :
+  I → Result I
+
+/- Trait implementation: [core::iter::traits::collect::{core::iter::traits::collect::IntoIterator<Clause1_Item, I> for I}]
+   Source: '/rustc/library/core/src/iter/traits/collect.rs', lines 314:0-314:36
+   Name pattern: [core::iter::traits::collect::IntoIterator<@I, @Clause1_Item, @I>] -/
+@[reducible]
+def core.iter.traits.collect.IntoIterator.Blanket {I : Type} {Clause1_Item :
+  Type} (iteratorIteratorInst : core.iter.traits.iterator.Iterator I
+  Clause1_Item) : core.iter.traits.collect.IntoIterator I Clause1_Item I := {
+  iteratorIteratorInst := iteratorIteratorInst
+  into_iter := core.iter.traits.collect.IntoIterator.Blanket.into_iter
+    iteratorIteratorInst
+}
+
+/- Trait declaration: [core::iter::traits::collect::Extend]
+   Source: '/rustc/library/core/src/iter/traits/collect.rs', lines 394:0-394:19
+   Name pattern: [core::iter::traits::collect::Extend] -/
+structure core.iter.traits.collect.Extend (Self : Type) (A : Type) where
+  extend : forall {T : Type} {Clause1_IntoIter : Type} (IntoIteratorInst :
+    core.iter.traits.collect.IntoIterator T A Clause1_IntoIter), Self → T →
+    Result Self
+
+/- Trait declaration: [core::iter::traits::double_ended::DoubleEndedIterator]
+   Source: '/rustc/library/core/src/iter/traits/double_ended.rs', lines 41:0-41:39
+   Name pattern: [core::iter::traits::double_ended::DoubleEndedIterator] -/
+structure core.iter.traits.double_ended.DoubleEndedIterator (Self : Type)
+  (Self_Clause1_Item : Type) where
+  iteratorIteratorInst : core.iter.traits.iterator.Iterator Self
+    Self_Clause1_Item
+  next_back : Self → Result ((Option Self_Clause1_Item) × Self)
+
+/- Trait declaration: [core::iter::traits::exact_size::ExactSizeIterator]
+   Source: '/rustc/library/core/src/iter/traits/exact_size.rs', lines 86:0-86:37
+   Name pattern: [core::iter::traits::exact_size::ExactSizeIterator] -/
+structure core.iter.traits.exact_size.ExactSizeIterator (Self : Type)
+  (Self_Clause1_Item : Type) where
+  iteratorIteratorInst : core.iter.traits.iterator.Iterator Self
+    Self_Clause1_Item
+
+/- [core::ops::control_flow::ControlFlow]
+   Source: '/rustc/library/core/src/ops/control_flow.rs', lines 87:0-87:31
+   Name pattern: [core::ops::control_flow::ControlFlow] -/
+inductive core.ops.control_flow.ControlFlow (B : Type) (C : Type) where
+| Continue : C → core.ops.control_flow.ControlFlow B C
+| Break : B → core.ops.control_flow.ControlFlow B C
+
+/- Trait declaration: [core::ops::function::FnOnce]
+   Source: '/rustc/library/core/src/ops/function.rs', lines 245:0-245:29
+   Name pattern: [core::ops::function::FnOnce] -/
+structure core.ops.function.FnOnce (Self : Type) (Args : Type) (Self_Output :
+  Type) where
+  call_once : Self → Args → Result Self_Output
+
+/- Trait declaration: [core::ops::function::FnMut]
+   Source: '/rustc/library/core/src/ops/function.rs', lines 165:0-165:42
+   Name pattern: [core::ops::function::FnMut] -/
+structure core.ops.function.FnMut (Self : Type) (Args : Type)
+  (Self_Clause1_Output : Type) where
+  FnOnceInst : core.ops.function.FnOnce Self Args Self_Clause1_Output
+  call_mut : Self → Args → Result (Self_Clause1_Output × Self)
+
+/- Trait declaration: [core::ops::try_trait::FromResidual]
+   Source: '/rustc/library/core/src/ops/try_trait.rs', lines 307:0-307:51
+   Name pattern: [core::ops::try_trait::FromResidual] -/
+structure core.ops.try_trait.FromResidual (Self : Type) (R : Type) where
+  from_residual : R → Result Self
+
+/- Trait declaration: [core::ops::try_trait::Try]
+   Source: '/rustc/library/core/src/ops/try_trait.rs', lines 131:0-131:27
+   Name pattern: [core::ops::try_trait::Try] -/
+structure core.ops.try_trait.Try (Self : Type) (Self_Output : Type)
+  (Self_Residual : Type) where
+  FromResidualInst : core.ops.try_trait.FromResidual Self Self_Residual
+  from_output : Self_Output → Result Self
+  branch : Self → Result (core.ops.control_flow.ControlFlow Self_Residual
+    Self_Output)
+
+/- Trait declaration: [core::ops::try_trait::Residual]
+   Source: '/rustc/library/core/src/ops/try_trait.rs', lines 360:0-360:21
+   Name pattern: [core::ops::try_trait::Residual] -/
+structure core.ops.try_trait.Residual (Self : Type) (O : Type) (Self_TryType :
+  Type) where
+  TryInst : core.ops.try_trait.Try Self_TryType O Self
+
+/- [subtle::Choice]
+   Source: '/home/oliver/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/subtle-2.6.1/src/lib.rs', lines 120:0-120:17
+   Name pattern: [subtle::Choice] -/
+axiom subtle.Choice : Type
+
+/- [subtle::{core::convert::From<u8> for subtle::Choice}::from]:
+   Source: '/home/oliver/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/subtle-2.6.1/src/lib.rs', lines 238:4-238:32
+   Name pattern: [subtle::{core::convert::From<subtle::Choice, u8>}::from] -/
+axiom subtle.FromsubtleChoiceU8.from : U8 → Result subtle.Choice
+
+/- Trait implementation: [subtle::{core::convert::From<u8> for subtle::Choice}]
+   Source: '/home/oliver/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/subtle-2.6.1/src/lib.rs', lines 236:0-236:24
+   Name pattern: [core::convert::From<subtle::Choice, u8>] -/
+@[reducible]
+def core.convert.FromsubtleChoiceU8 : core.convert.From subtle.Choice U8 := {
+  from_ := subtle.FromsubtleChoiceU8.from
+}
+
+/- Trait declaration: [subtle::ConditionallySelectable]
+   Source: '/home/oliver/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/subtle-2.6.1/src/lib.rs', lines 393:0-393:39
+   Name pattern: [subtle::ConditionallySelectable] -/
+structure subtle.ConditionallySelectable (Self : Type) where
+  coremarkerCopyInst : core.marker.Copy Self
+  conditional_select : Self → Self → subtle.Choice → Result Self
+
+/- [subtle::{subtle::ConditionallySelectable for u64}::conditional_select]:
+   Source: '/home/oliver/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/subtle-2.6.1/src/lib.rs', lines 513:12-513:77
+   Name pattern: [subtle::{subtle::ConditionallySelectable<u64>}::conditional_select] -/
+axiom subtle.ConditionallySelectableU64.conditional_select
+  : U64 → U64 → subtle.Choice → Result U64
+
+/- Trait implementation: [subtle::{subtle::ConditionallySelectable for u64}]
+   Source: '/home/oliver/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/subtle-2.6.1/src/lib.rs', lines 511:8-537:10
+   Name pattern: [subtle::ConditionallySelectable<u64>] -/
+@[reducible]
+def subtle.ConditionallySelectableU64 : subtle.ConditionallySelectable U64 := {
+  coremarkerCopyInst := core.marker.CopyU64
+  conditional_select := subtle.ConditionallySelectableU64.conditional_select
+}
+
 /- [rust_lean_playground::LOW_51_BIT_MASK]
    Source: 'src/lib.rs', lines 4:0-4:53 -/
 @[global_simps]
@@ -16,7 +248,7 @@ def LOW_51_BIT_MASK_body : Result U64 := ok 2251799813685247#u64
 def LOW_51_BIT_MASK : U64 := eval_global LOW_51_BIT_MASK_body
 
 /- [rust_lean_playground::reduce]:
-   Source: 'src/lib.rs', lines 35:0-66:1 -/
+   Source: 'src/lib.rs', lines 34:0-65:1 -/
 def reduce (limbs : Array U64 5#usize) : Result (Array U64 5#usize) :=
   do
   let i ← Array.index_usize limbs 0#usize
@@ -75,14 +307,14 @@ def clamp_integer (bytes : Array U8 32#usize) : Result (Array U8 32#usize) :=
   Array.update bytes2 31#usize i5
 
 /- [rust_lean_playground::ZERO]
-   Source: 'src/lib.rs', lines 96:0-96:43 -/
+   Source: 'src/lib.rs', lines 97:0-97:43 -/
 @[global_simps]
 def ZERO_body : Result (Array U64 5#usize) := ok (Array.repeat 5#usize 0#u64)
 @[global_simps, irreducible]
 def ZERO : Array U64 5#usize := eval_global ZERO_body
 
 /- [rust_lean_playground::to_bytes]:
-   Source: 'src/lib.rs', lines 101:0-138:1 -/
+   Source: 'src/lib.rs', lines 103:0-140:1 -/
 def to_bytes (limbs : Array U64 5#usize) : Result (Array U8 32#usize) :=
   do
   let s := Array.repeat 32#usize 0#u8
@@ -193,7 +425,7 @@ def to_bytes (limbs : Array U64 5#usize) : Result (Array U8 32#usize) :=
   Array.update s31 31#usize i72
 
 /- [rust_lean_playground::m]:
-   Source: 'src/lib.rs', lines 142:0-144:1 -/
+   Source: 'src/lib.rs', lines 145:0-147:1 -/
 def m (x : U64) (y : U64) : Result U128 :=
   do
   let i ← (↑(UScalar.cast .U128 x) : Result U128)
@@ -201,7 +433,7 @@ def m (x : U64) (y : U64) : Result U128 :=
   i * i1
 
 /- [rust_lean_playground::mul_internal]:
-   Source: 'src/lib.rs', lines 149:0-163:1 -/
+   Source: 'src/lib.rs', lines 153:0-167:1 -/
 def mul_internal
   (a : Array U64 5#usize) (b : Array U64 5#usize) :
   Result (Array U128 9#usize)
@@ -270,7 +502,7 @@ def mul_internal
   Array.update z8 8#usize i50
 
 /- [rust_lean_playground::square_internal]:
-   Source: 'src/lib.rs', lines 168:0-187:1 -/
+   Source: 'src/lib.rs', lines 173:0-192:1 -/
 def square_internal (a : Array U64 5#usize) : Result (Array U128 9#usize) :=
   do
   let i ← Array.index_usize a 0#usize
@@ -310,7 +542,7 @@ def square_internal (a : Array U64 5#usize) : Result (Array U128 9#usize) :=
   ok (Array.make 9#usize [ i8, i10, i13, i17, i23, i27, i30, i32, i33 ])
 
 /- [rust_lean_playground::is_negative]:
-   Source: 'src/lib.rs', lines 197:0-200:1 -/
+   Source: 'src/lib.rs', lines 202:0-205:1 -/
 def is_negative (limbs : Array U64 5#usize) : Result Bool :=
   do
   let bytes ← to_bytes limbs
@@ -318,8 +550,106 @@ def is_negative (limbs : Array U64 5#usize) : Result Bool :=
   let i1 ← (↑(i &&& 1#u8) : Result U8)
   ok (i1 != 0#u8)
 
+/- [rust_lean_playground::L]
+   Source: 'src/lib.rs', lines 209:0-215:2 -/
+@[global_simps]
+def L_body : Result (Array U64 5#usize) :=
+  ok
+    (Array.make 5#usize [
+      671914833335277#u64, 3916664325105025#u64, 1367801#u64, 0#u64,
+      17592186044416#u64
+      ])
+@[global_simps, irreducible] def L : Array U64 5#usize := eval_global L_body
+
+/- [rust_lean_playground::conditional_add_l]: loop 0:
+   Source: 'src/lib.rs', lines 240:4-244:5 -/
+def conditional_add_l_loop
+  (limbs : Array U64 5#usize) (condition : subtle.Choice) (carry : U64)
+  (mask : U64) (iter : core.ops.range.Range Usize) :
+  Result U64
+  :=
+  do
+  let (o, iter1) ←
+    core.iter.range.IteratorcoreopsrangeRangeA.next core.iter.range.StepUsize
+      iter
+  match o with
+  | none => ok carry
+  | some i =>
+    do
+    let i1 ← Array.index_usize L i
+    let addend ←
+      subtle.ConditionallySelectableU64.conditional_select 0#u64 i1 condition
+    let i2 ← carry >>> 52#i32
+    let i3 ← Array.index_usize limbs i
+    let i4 ← i2 + i3
+    let carry1 ← i4 + addend
+    let i5 ← (↑(carry1 &&& mask) : Result U64)
+    let limbs1 ← Array.update limbs i i5
+    conditional_add_l_loop limbs1 condition carry1 mask iter1
+partial_fixpoint
+
+/- [rust_lean_playground::conditional_add_l]:
+   Source: 'src/lib.rs', lines 236:0-247:1 -/
+def conditional_add_l
+  (limbs : Array U64 5#usize) (condition : subtle.Choice) : Result U64 :=
+  do
+  let i ← 1#u64 <<< 52#i32
+  let mask ← i - 1#u64
+  let iter ←
+    core.iter.traits.collect.IntoIterator.Blanket.into_iter
+      (core.iter.traits.iterator.IteratorcoreopsrangeRangeA
+      core.iter.range.StepUsize) { start := 0#usize, end_ := 5#usize }
+  conditional_add_l_loop limbs condition 0#u64 mask iter
+
+/- [rust_lean_playground::sub]: loop 0:
+   Source: 'src/lib.rs', lines 225:4-228:5 -/
+def sub_loop
+  (a : Array U64 5#usize) (b : Array U64 5#usize)
+  (difference : Array U64 5#usize) (mask : U64) (borrow : U64)
+  (iter : core.ops.range.Range Usize) :
+  Result (Array U64 5#usize)
+  :=
+  do
+  let (o, iter1) ←
+    core.iter.range.IteratorcoreopsrangeRangeA.next core.iter.range.StepUsize
+      iter
+  match o with
+  | none =>
+    do
+    let i ← borrow >>> 63#i32
+    let i1 ← (↑(UScalar.cast .U8 i) : Result U8)
+    let c ← subtle.FromsubtleChoiceU8.from i1
+    let _ ← conditional_add_l difference c
+    ok difference
+  | some i =>
+    do
+    let i1 ← Array.index_usize a i
+    let i2 ← Array.index_usize b i
+    let i3 ← borrow >>> 63#i32
+    let i4 ← i2 + i3
+    let borrow1 ← (↑(core.num.U64.wrapping_sub i1 i4) : Result U64)
+    let i5 ← (↑(borrow1 &&& mask) : Result U64)
+    let difference1 ← Array.update difference i i5
+    sub_loop a b difference1 mask borrow1 iter1
+partial_fixpoint
+
+/- [rust_lean_playground::sub]:
+   Source: 'src/lib.rs', lines 219:0-233:1 -/
+def sub
+  (a : Array U64 5#usize) (b : Array U64 5#usize) :
+  Result (Array U64 5#usize)
+  :=
+  do
+  let i ← 1#u64 <<< 52#i32
+  let mask ← i - 1#u64
+  let iter ←
+    core.iter.traits.collect.IntoIterator.Blanket.into_iter
+      (core.iter.traits.iterator.IteratorcoreopsrangeRangeA
+      core.iter.range.StepUsize) { start := 0#usize, end_ := 5#usize }
+  sub_loop a b ZERO mask 0#u64 iter
+
 /- [rust_lean_playground::from_bytes::load8_at]:
-   Source: 'src/lib.rs', lines 238:4-247:5 -/
+   Source: 'src/lib.rs', lines 286:4-295:5 -/
 def from_bytes.load8_at (input : Slice U8) (i : Usize) : Result U64 :=
   do
   let i1 ← Slice.index_usize input i
@@ -361,7 +691,7 @@ def from_bytes.load8_at (input : Slice U8) (i : Usize) : Result U64 :=
   ok (i32 ||| i36)
 
 /- [rust_lean_playground::from_bytes]:
-   Source: 'src/lib.rs', lines 237:0-262:1 -/
+   Source: 'src/lib.rs', lines 285:0-310:1 -/
 def from_bytes (bytes : Array U8 32#usize) : Result (Array U64 5#usize) :=
   do
   let i ← 1#u64 <<< 51#i32

@@ -1,3 +1,5 @@
+use subtle::{Choice, ConditionallySelectable};
+
 // Source: curve25519-dalek/src/backend/serial/u64/field.rs:276
 pub const LOW_51_BIT_MASK: u64 = 2251799813685247u64; // 2^51  -1
 
@@ -200,6 +202,48 @@ pub fn square_internal(a: &[u64; 5]) -> [u128; 9] {
 pub fn is_negative(limbs: &[u64; 5]) -> bool {
     let bytes = to_bytes(*limbs);
     (bytes[0] & 1) != 0
+}
+
+// Source: curve25519-dalek/src/backend/serial/u64/constants.rs:129-135
+/// `L` is the order of base point, i.e. 2^252 + 27742317777372353535851937790883648493
+pub const L: [u64; 5] = [
+    0x0002631a5cf5d3ed,
+    0x000dea2f79cd6581,
+    0x000000000014def9,
+    0x0000000000000000,
+    0x0000100000000000,
+];
+
+// Source: curve25519-dalek/src/backend/serial/u64/scalar.rs:177-191
+/// Compute `a - b` (mod l)
+pub fn sub(a: &[u64; 5], b: &[u64; 5]) -> [u64; 5] {
+    let mut difference = ZERO;
+    let mask = (1u64 << 52) - 1;
+
+    // a - b
+    let mut borrow: u64 = 0;
+    for i in 0..5 {
+        borrow = a[i].wrapping_sub(b[i] + (borrow >> 63));
+        difference[i] = borrow & mask;
+    }
+
+    // conditionally add l if the difference is negative
+    conditional_add_l(difference, Choice::from((borrow >> 63) as u8));
+    difference
+}
+
+// Source: curve25519-dalek/src/backend/serial/u64/scalar.rs:193-204
+pub fn conditional_add_l(mut limbs: [u64; 5], condition: Choice) -> u64 {
+    let mut carry: u64 = 0;
+    let mask = (1u64 << 52) - 1;
+
+    for i in 0..5 {
+        let addend = u64::conditional_select(&0, &L[i], condition);
+        carry = (carry >> 52) + limbs[i] + addend;
+        limbs[i] = carry & mask;
+    }
+
+    carry
 }
 
 // impl<'a> Sub<&'a FieldElement51> for &FieldElement51 {

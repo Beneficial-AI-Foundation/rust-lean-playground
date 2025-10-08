@@ -27,7 +27,7 @@ attribute [progress] to_bytes_spec'
 
 /-! ## Spec for `is_negative` -/
 
-set_option maxRecDepth 1000 in
+-- set_option maxRecDepth 1000 in
 /-- **Spec for `is_negative`**:
 - Does not error and hence returns a result
 - Returns true if and only if the least significant bit of the field element is 1
@@ -35,7 +35,9 @@ set_option maxRecDepth 1000 in
 theorem is_negative_spec (limbs : Array U64 5#usize)
     (h : ∀ i, (h : i < 5) → (getElem limbs.val i (by scalar_tac)).val < 2 ^ 51) :
     ∃ result, is_negative limbs = ok (result) ∧
-    (result = true ↔ U64x5_as_Nat limbs % 2 = 1) := by
+    -- (result = true ↔ U64x5_as_Nat limbs % 2 = 1)
+    (result = true ↔ limbs[0].val.testBit 0)
+    := by
   unfold is_negative
   -- unfold to_bytes
 
@@ -44,10 +46,17 @@ theorem is_negative_spec (limbs : Array U64 5#usize)
   · intro h
     have := bytes_post 0
     simp at this
+
     sorry
 
   · simp [Finset.range_succ]
-    intro
+    intro h
+    subst_vars
+    have := bytes_post 0
+    simp at this
+
+
+
 
 
     sorry

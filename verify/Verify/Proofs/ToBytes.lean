@@ -6,7 +6,7 @@ import Verify.Proofs.Defs
 
 set_option linter.style.longLine false
 set_option linter.style.setOption false
-set_option maxHeartbeats 2000000
+set_option maxHeartbeats 4000000
 
 /-! # ToBytes
 
@@ -128,7 +128,7 @@ theorem to_bytes_spec (limbs : Array U64 5#usize)
 theorem to_bytes_spec' (limbs : Array U64 5#usize)
     (h : ∀ i, (h : i < 5) → (getElem limbs.val i (by scalar_tac)).val < 2 ^ 51) :
     ∃ result, to_bytes limbs = ok result ∧
-    ∀ (i : Fin 32), result.val[i.val].val = match i.val with
+    ∀ i < 32, result.val[i]!.val = match i with
       | 0  => limbs.val[0].val >>> 0 % 2^8
       | 1  => limbs.val[0].val >>> 8 % 2^8
       | 2  => limbs.val[0].val >>> 16 % 2^8
@@ -163,4 +163,7 @@ theorem to_bytes_spec' (limbs : Array U64 5#usize)
       | 31 => limbs.val[4].val >>> 40 % 2^8
       | _  => 0
     := by
+  unfold to_bytes
+  -- progress*
+
   sorry
