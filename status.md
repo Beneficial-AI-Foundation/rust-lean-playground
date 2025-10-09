@@ -26,16 +26,15 @@ This document tracks the verification status of functions in [src/lib.rs](src/li
 
 ## Summary
 
-- **Verified**: 6/11 (reduce, m, mul_internal, square_internal, ZERO, LOW_51_BIT_MASK)
-- **Spec only**: 5/11 (clamp_integer, to_bytes, is_negative, from_bytes, load8_at)
+- **Verified**: 7/11 (reduce, m, mul_internal, square_internal, ZERO, LOW_51_BIT_MASK)
+- **Spec only**: 4/11 (clamp_integer, to_bytes, is_negative, from_bytes, load8_at)
 - **No spec**: 0/11
 
 ## Next Steps
 
 1. Write a bitvector version of [to_bytes_spec](verify/Verify/Proofs/ToBytes.lean:39). Put on hold the Nat spec which still requires several lemmas to be added but already substatial progress.
-2. Small detail remaining for the upper bound in [clamp_integer_spec](verify/Verify/Proofs/ClampInteger.lean:68). Proof almost complete, remains to manipulate some bitwise operations correctly.
-3. Complete the proof for [is_negative_spec](verify/Verify/Proofs/IsNegative.lean:26). Probably requies bitvector arguments.
-4. Complete the proofs for [load8_at_spec](verify/Verify/Proofs/FromBytes.lean:27) and [from_bytes_spec](verify/Verify/Proofs/FromBytes.lean:42)
+2. Complete the proof for [is_negative_spec](verify/Verify/Proofs/IsNegative.lean:26). Probably requies bitvector arguments.
+3. Complete the proofs for [load8_at_spec](verify/Verify/Proofs/FromBytes.lean:27) and [from_bytes_spec](verify/Verify/Proofs/FromBytes.lean:42)
 
 ## Verilib
 
