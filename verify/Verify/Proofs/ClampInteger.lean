@@ -54,19 +54,21 @@ theorem clamp_integer_spec (bytes : Array U8 32#usize) :
     · have := List.mem_range.mp hi -- needed for inteval_cases bound
       interval_cases i <;> omega
   · subst_vars
-    simp [Finset.sum_range_succ, *]
-    -- have (n : Nat) : n &&& 127 ≤ 127 := by exact Nat.and_le_right
-    -- have (n : Nat) : n &&& 127 ||| 64 ≤ 127 := by
-    --   sorry
-    -- have h1 (byte : U8) : byte.val < 2^8 := by bv_tac
-    -- have (n : Nat) : (n &&& 248) ≤ 248 := by simp [Nat.and_le_right]
-    -- have : (bytes : List U8)[0].val &&& 248 ≤ 248 := by grind
-    -- have : (bytes : List U8)[31].val &&& 127 ||| 64 ≤ 2^7 := by grind
-    -- have (n i : Nat) (byte : U8) : 2 ^ n * byte.val < 2 ^ (8 + n) := by
-    --   have := h1 byte
-    --   rw [Nat.pow_add' 2 8 n]
-    --   exact (Nat.mul_lt_mul_left (by simp)).mpr (h1 byte)
-    sorry
+    simp [*]
+    rw [Finset.sum_range_succ]
+    simp [*]
+    have (byte : U8): byte.val &&& 127 ||| 64 ≤ 127 := by
+      sorry
+    calc
+      _ ≤ ∑ x ∈ Finset.range 31, 2 ^ (8 * x) * (2^8 - 1) +
+          2 ^ 248 * ((bytes : List U8)[31] &&& 127 ||| 64) := by
+        gcongr
+        bv_tac
+      _ ≤ ∑ x ∈ Finset.range 31, 2 ^ (8 * x) * (2^8 - 1) + 2 ^ 248 * 127 := by
+        gcongr
+        exact this _
+      _ < 2 ^ 255 := by
+        bound
   · subst_vars
     simp [Finset.sum_range_succ, *]
     have : 64 ≤ ((bytes : List U8)[31] &&& 127 ||| 64) := Nat.right_le_or
