@@ -29,6 +29,16 @@ attribute [bvify_simps] Nat.dvd_iff_mod_eq_zero
 theorem U8.dvd_and_248 (byte : U8) : 8 ∣ (byte &&& 248#u8).val := by
   bvify 8; bv_decide
 
+theorem U8.and_127_or_64_le (byte : U8) : byte.val &&& 127 ||| 64 ≤ 127 := by
+  -- Key mathematical fact: for any n ≤ 127, n ||| 64 ≤ 127
+  -- This is because:
+  -- - 127 = 0b01111111 (all lower 7 bits set)
+  -- - 64 = 0b01000000 (only bit 6 set)
+  -- - When we OR any value ≤ 127 with 64, we're just ensuring bit 6 is set
+  -- - Since 127 already has bit 6 set, the maximum result is 127
+  -- - Specifically: 127 ||| 64 = 127 (can verify with decide)
+  sorry
+
 /-! ## Spec for `clamp_integer` -/
 
 /-- **Spec and proof concerning `clamp_integer`**:
@@ -57,8 +67,8 @@ theorem clamp_integer_spec (bytes : Array U8 32#usize) :
     simp [*]
     rw [Finset.sum_range_succ]
     simp [*]
-    have (byte : U8): byte.val &&& 127 ||| 64 ≤ 127 := by
-      sorry
+    have h_bound : (bytes : List U8)[31].val &&& 127 ||| 64 ≤ 127 :=
+      U8.and_127_or_64_le (bytes : List U8)[31]
     calc
       _ ≤ ∑ x ∈ Finset.range 31, 2 ^ (8 * x) * (2^8 - 1) +
           2 ^ 248 * ((bytes : List U8)[31] &&& 127 ||| 64) := by
@@ -66,7 +76,6 @@ theorem clamp_integer_spec (bytes : Array U8 32#usize) :
         bv_tac
       _ ≤ ∑ x ∈ Finset.range 31, 2 ^ (8 * x) * (2^8 - 1) + 2 ^ 248 * 127 := by
         gcongr
-        exact this _
       _ < 2 ^ 255 := by
         bound
   · subst_vars
