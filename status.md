@@ -12,7 +12,7 @@ This document tracks the verification status of functions in [src/lib.rs](src/li
 
 | Function          | Status      | Source Code                   | Spec File                                                       | Notes                                                  |
 | ----------------- | ----------- | ----------------------------- | --------------------------------------------------------------- | ------------------------------------------------------ |
-| `clamp_integer`   | 📝 Has spec | [lib.rs:88](src/lib.rs#L88)   | [ClampInteger.lean](verify/Verify/Proofs/ClampInteger.lean)     | Proven divisibility, remains to prove bound            |
+| `clamp_integer`   | ✅ Verified | [lib.rs:88](src/lib.rs#L88)   | [ClampInteger.lean](verify/Verify/Proofs/ClampInteger.lean)     | Proven divisibility and bounds                         |
 | `from_bytes`      | 📝 Has spec | [lib.rs:237](src/lib.rs#L237) | [FromBytes.lean](verify/Verify/Proofs/FromBytes.lean)           | Load field element from 32-byte little-endian encoding |
 | `is_negative`     | 📝 Has spec | [lib.rs:197](src/lib.rs#L197) | [IsNegative.lean](verify/Verify/Proofs/IsNegative.lean)         | Checks if field element is negative (low bit set)      |
 | `load8_at`        | 📝 Has spec | [lib.rs:238](src/lib.rs#L238) | [FromBytes.lean](verify/Verify/Proofs/FromBytes.lean)           | Helper: load 8 bytes as u64 (little-endian)            |
