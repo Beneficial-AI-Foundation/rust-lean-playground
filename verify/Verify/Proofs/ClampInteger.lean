@@ -1,12 +1,7 @@
-import Aeneas
-import Verify.Src.RustLeanPlayground
-import Mathlib
-import Verify.Proofs.Aux
 import Verify.Proofs.Defs
 
 set_option linter.style.setOption false
 set_option grind.warning false
-set_option maxHeartbeats 2000000
 
 /-! # clamp_integer -/
 
@@ -15,19 +10,18 @@ open rust_lean_playground
 
 attribute [-simp] Int.reducePow Nat.reducePow
 
-/- Using the specs with bit-vectors -/
-attribute [-progress] U8.add_spec U8.mul_spec
-attribute [local progress] U8.add_bv_spec U8.mul_bv_spec
-
-
 /-! ## Auxillary theorems -/
 
 /- This allows `bvify` to automatically do the conversion `a ∣ b ↔ b % a = 0`,
    which can then be lifted to something which uses bit-vectors -/
 attribute [bvify_simps] Nat.dvd_iff_mod_eq_zero
 
-theorem U8.dvd_and_248 (byte : U8) : 8 ∣ (byte &&& 248#u8).val := by
+theorem clamp_integer_spec_aux_a (byte : U8) : 8 ∣ (byte &&& 248#u8).val := by
   bvify 8; bv_decide
+
+theorem clamp_integer_spec_aux_b (byte : U8) : byte.val &&& 127 ||| 64 ≤ 127 := by
+  have h : (byte.bv &&& 127 ||| 64) ≤ 127 := by bv_decide
+  bound
 
 /-! ## Spec for `clamp_integer` -/
 
@@ -50,23 +44,23 @@ theorem clamp_integer_spec (bytes : Array U8 32#usize) :
     intro i hi
     by_cases hc : i = 0
     · subst_vars
-      simpa [*] using U8.dvd_and_248 _
-    · have := List.mem_range.mp hi -- needed for inteval_cases bound
+      simpa [*] using clamp_integer_spec_aux_a _
+    · have := List.mem_range.mp hi
       interval_cases i <;> omega
   · subst_vars
-    simp [Finset.sum_range_succ, *]
-    -- have (n : Nat) : n &&& 127 ≤ 127 := by exact Nat.and_le_right
-    -- have (n : Nat) : n &&& 127 ||| 64 ≤ 127 := by
-    --   sorry
-    -- have h1 (byte : U8) : byte.val < 2^8 := by bv_tac
-    -- have (n : Nat) : (n &&& 248) ≤ 248 := by simp [Nat.and_le_right]
-    -- have : (bytes : List U8)[0].val &&& 248 ≤ 248 := by grind
-    -- have : (bytes : List U8)[31].val &&& 127 ||| 64 ≤ 2^7 := by grind
-    -- have (n i : Nat) (byte : U8) : 2 ^ n * byte.val < 2 ^ (8 + n) := by
-    --   have := h1 byte
-    --   rw [Nat.pow_add' 2 8 n]
-    --   exact (Nat.mul_lt_mul_left (by simp)).mpr (h1 byte)
-    sorry
+    simp [*]
+    rw [Finset.sum_range_succ]
+    simp [*]
+    have := clamp_integer_spec_aux_b (bytes : List U8)[31]
+    calc
+      _ ≤ ∑ x ∈ Finset.range 31, 2 ^ (8 * x) * (2^8 - 1) +
+          2 ^ 248 * ((bytes : List U8)[31] &&& 127 ||| 64) := by
+        gcongr
+        bv_tac
+      _ ≤ ∑ x ∈ Finset.range 31, 2 ^ (8 * x) * (2^8 - 1) + 2 ^ 248 * 127 := by
+        gcongr
+      _ < 2 ^ 255 := by
+        bound
   · subst_vars
     simp [Finset.sum_range_succ, *]
     have : 64 ≤ ((bytes : List U8)[31] &&& 127 ||| 64) := Nat.right_le_or

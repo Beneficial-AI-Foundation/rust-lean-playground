@@ -12,7 +12,7 @@ This document tracks the verification status of functions in [src/lib.rs](src/li
 
 | Function          | Status      | Source Code                   | Spec File                                                       | Notes                                                  |
 | ----------------- | ----------- | ----------------------------- | --------------------------------------------------------------- | ------------------------------------------------------ |
-| `clamp_integer`   | 📝 Has spec | [lib.rs:88](src/lib.rs#L88)   | [ClampInteger.lean](verify/Verify/Proofs/ClampInteger.lean)     | Proven divisibility, remains to prove bound            |
+| `clamp_integer`   | ✅ Verified | [lib.rs:88](src/lib.rs#L88)   | [ClampInteger.lean](verify/Verify/Proofs/ClampInteger.lean)     | Proven divisibility and bounds                         |
 | `from_bytes`      | 📝 Has spec | [lib.rs:237](src/lib.rs#L237) | [FromBytes.lean](verify/Verify/Proofs/FromBytes.lean)           | Load field element from 32-byte little-endian encoding |
 | `is_negative`     | 📝 Has spec | [lib.rs:197](src/lib.rs#L197) | [IsNegative.lean](verify/Verify/Proofs/IsNegative.lean)         | Checks if field element is negative (low bit set)      |
 | `load8_at`        | 📝 Has spec | [lib.rs:238](src/lib.rs#L238) | [FromBytes.lean](verify/Verify/Proofs/FromBytes.lean)           | Helper: load 8 bytes as u64 (little-endian)            |
@@ -26,16 +26,15 @@ This document tracks the verification status of functions in [src/lib.rs](src/li
 
 ## Summary
 
-- **Verified**: 6/11 (reduce, m, mul_internal, square_internal, ZERO, LOW_51_BIT_MASK)
-- **Spec only**: 5/11 (clamp_integer, to_bytes, is_negative, from_bytes, load8_at)
+- **Verified**: 7/11 (reduce, m, mul_internal, square_internal, ZERO, LOW_51_BIT_MASK)
+- **Spec only**: 4/11 (clamp_integer, to_bytes, is_negative, from_bytes, load8_at)
 - **No spec**: 0/11
 
 ## Next Steps
 
 1. Write a bitvector version of [to_bytes_spec](verify/Verify/Proofs/ToBytes.lean:39). Put on hold the Nat spec which still requires several lemmas to be added but already substatial progress.
-2. Small detail remaining for the upper bound in [clamp_integer_spec](verify/Verify/Proofs/ClampInteger.lean:68). Proof almost complete, remains to manipulate some bitwise operations correctly.
-3. Complete the proof for [is_negative_spec](verify/Verify/Proofs/IsNegative.lean:26). Probably requies bitvector arguments.
-4. Complete the proofs for [load8_at_spec](verify/Verify/Proofs/FromBytes.lean:27) and [from_bytes_spec](verify/Verify/Proofs/FromBytes.lean:42)
+2. Complete the proof for [is_negative_spec](verify/Verify/Proofs/IsNegative.lean:26). Probably requies bitvector arguments.
+3. Complete the proofs for [load8_at_spec](verify/Verify/Proofs/FromBytes.lean:27) and [from_bytes_spec](verify/Verify/Proofs/FromBytes.lean:42)
 
 ## Verilib
 
