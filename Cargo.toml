@@ -1,7 +1,0 @@
-[package]
-name = "rust-lean-playground"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-subtle = "2.6.1"
